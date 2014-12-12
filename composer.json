@@ -1,6 +1,6 @@
 {
     "name": "jaroslavtyc/doctrineum",
-    "version": "1.0.0-alpha",
+    "version": "1.0.0",
     "type": "library",
     "description": "Enumeration type for Doctrine",
     "license": "MIT",
@@ -10,5 +10,8 @@
     },
     "autoload": {
         "psr-0": { "Doctrineum\\": "src/" }
+    },
+    "branch-alias": {
+        "dev-master": "1.0.0-dev"
     }
 }
