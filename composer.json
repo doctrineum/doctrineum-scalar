@@ -1,0 +1,17 @@
+{
+    "name": "jaroslavtyc/doctrineum",
+    "version": "1.0.0",
+    "type": "library",
+    "description": "Enumeration type for Doctrine",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.4",
+        "doctrine/dbal": "2.4.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.2.*"
+    },
+    "autoload": {
+        "psr-0": { "Doctrineum\\": "src/" }
+    }
+}
