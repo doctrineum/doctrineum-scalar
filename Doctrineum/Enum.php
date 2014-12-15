@@ -9,7 +9,7 @@ class Enum
     /**
      * @var Enum[]
      */
-    private static $enums = [];
+    private static $builtEnums = [];
 
     /**
      * @var string
@@ -50,41 +50,32 @@ class Enum
     }
 
     /**
-     * @return string
-     */
-    public function getName()
-    {
-        // find the string key of current enum instance
-        return array_search($this, self::$enums, true /* strict */);
-    }
-
-    /**
      * @return Enum[]
      */
-    public function getRegisteredEnums()
+    protected static function getBuiltEnums()
     {
-        return self::$enums;
+        return self::$builtEnums;
     }
 
     /**
-     * @param string $name
+     * @param string $value
      * @return Enum
      */
-    public static function get($name)
+    public static function get($value)
     {
-        if (!isset(self::$enums[$name])) {
-            self::$enums[$name] = self::createByName($name);
+        if (!isset(self::$builtEnums[$value])) {
+            self::$builtEnums[$value] = self::createByValue($value);
         }
 
-        return self::$enums[$name];
+        return self::$builtEnums[$value];
     }
 
     /**
-     * @param $name
+     * @param $value
      * @return static
      */
-    protected static function createByName($name){
-        return new static($name);
+    protected static function createByValue($value){
+        return new static($value);
     }
 
 }
