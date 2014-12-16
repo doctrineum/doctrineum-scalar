@@ -1,6 +1,7 @@
 Enumeration type for Doctrine 2.4+
 
-About custom Doctrine types, see the official [documentation](http://doctrine-orm.readthedocs.org/en/latest/cookbook/custom-mapping-types.html).
+About custom Doctrine types, see the [official documentation](http://doctrine-orm.readthedocs.org/en/latest/cookbook/custom-mapping-types.html).
+For default custom types see the [official documentation as well](http://doctrine-dbal.readthedocs.org/en/latest/reference/types.html).
 
 ## Usage
 ### Custom type registration:
