@@ -4,10 +4,22 @@ namespace Doctrineum;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 
+/**
+ * Class EnumType
+ * @package Doctrineum
+ *
+ * To control type, enum class, or SQL column type and length,
+ * @see DoctrineumPlatform
+ */
 class EnumType extends Type
 {
-    const TYPE = 'enum';
+    // class constant doesn't change by inheritance; you can control it by platform, or by explicit overload in child class
+    const TYPE = __CLASS__;
+
+    // default enum class; you can control it by platform, or by explicit overload it in child class, if needed
     const ENUM_CLASS = Enum::class;
+
+    // default SQL column length; you can control it by platform, or by explicit overload in child class
     const VARCHAR_LENGTH = 64;
 
     /**
@@ -92,7 +104,7 @@ class EnumType extends Type
      */
     public function getName()
     {
-        return __CLASS__;
+        return static::TYPE;
     }
 
     /**
