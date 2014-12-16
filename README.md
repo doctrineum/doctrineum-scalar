@@ -2,7 +2,8 @@ Enumeration type for Doctrine 2.4+
 
 About custom Doctrine types, see the official [documentation](http://doctrine-orm.readthedocs.org/en/latest/cookbook/custom-mapping-types.html).
 
-Custom type registration:
+## Usage
+### Custom type registration:
 
 ```php
 <?php
@@ -18,7 +19,19 @@ Type::addType(\Doctrineum\EnumType::TYPE, '\Doctrineum\EnumType');
 */
 ```
 
-Installation:
+### Map property as an enum
+```php
+<?php
+class Foo
+{
+    /** @Column(type="\Doctrineum\Enum") */
+    protected $field;
+}
+```
+
+*note: the type has the same name as the Enum class itself, but its just a string; you can change it at child class anytime; see **EnumType::TYPE** constant*
+
+### Installation:
 Edit composer.json at your project, add
 ```json
     "repositories": [

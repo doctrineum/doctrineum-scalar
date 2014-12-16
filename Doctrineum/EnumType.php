@@ -13,8 +13,8 @@ use Doctrine\DBAL\Types\Type;
  */
 class EnumType extends Type
 {
-    // class constant doesn't change by inheritance; you can control it by platform, or by explicit overload in child class
-    const TYPE = __CLASS__;
+    // class constant doesn't change by inheritance; you can control it by platform, or explicitly overload this constant or its usage in child class
+    const TYPE = Enum::class;
 
     // default enum class; you can control it by platform, or by explicit overload it in child class, if needed
     const ENUM_CLASS = Enum::class;
