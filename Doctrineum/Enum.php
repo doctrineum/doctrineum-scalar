@@ -7,6 +7,12 @@ namespace Doctrineum;
 class Enum
 {
     /**
+     * __CLASS__ magic constant remains untouched at child classes, it's still this, parent class name
+     * see @link http://php.net/manual/en/language.constants.predefined.php
+     */
+    const INNER_NAMESPACE = __CLASS__;
+
+    /**
      * @var Enum[]
      */
     private static $builtEnums = [];
@@ -59,22 +65,51 @@ class Enum
 
     /**
      * @param string $value
+     * @param string $namespace
      * @return Enum
      */
-    public static function get($value)
+    public static function get($value, $namespace = self::INNER_NAMESPACE)
     {
-        if (!isset(self::$builtEnums[$value])) {
-            self::$builtEnums[$value] = self::createByValue($value);
+        if (!isset(self::$builtEnums[$namespace])) {
+            self::$builtEnums[$namespace] = [];
         }
 
-        return self::$builtEnums[$value];
+        if (!isset(self::$builtEnums[$namespace][$value])) {
+            self::$builtEnums[$namespace][$value] = self::createByValue($value, $namespace);
+        }
+
+        return self::$builtEnums[$namespace][$value];
+    }
+
+    /**
+     * @param string $value
+     * @param string $namespaceToCheck
+     * @return static
+     */
+    protected static function createByValue($value, $namespaceToCheck)
+    {
+        self::checkNamespace($namespaceToCheck);
+
+        return self::create($value);
+    }
+
+    /**
+     * @param $namespace
+     * @throws Exceptions\UnexpectedInnerNamespace
+     */
+    protected static function checkNamespace($namespace)
+    {
+        if ($namespace !== static::INNER_NAMESPACE) {
+            throw new Exceptions\UnexpectedInnerNamespace('Expecting ' . self::INNER_NAMESPACE . ' inner namespace, got ' . var_export($namespace, true));
+        }
     }
 
     /**
      * @param $value
-     * @return static
+     * @return Enum
      */
-    protected static function createByValue($value){
+    protected static function create($value)
+    {
         return new static($value);
     }
 
