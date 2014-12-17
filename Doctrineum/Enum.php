@@ -75,7 +75,7 @@ class Enum
         }
 
         if (!isset(self::$builtEnums[$namespace][$value])) {
-            self::$builtEnums[$namespace][$value] = self::createByValue($value, $namespace);
+            self::$builtEnums[$namespace][$value] = static::createByValue($value, $namespace);
         }
 
         return self::$builtEnums[$namespace][$value];
@@ -88,9 +88,9 @@ class Enum
      */
     protected static function createByValue($value, $namespaceToCheck)
     {
-        self::checkNamespace($namespaceToCheck);
+        static::checkNamespace($namespaceToCheck);
 
-        return self::create($value);
+        return static::create($value);
     }
 
     /**
@@ -100,7 +100,7 @@ class Enum
     protected static function checkNamespace($namespace)
     {
         if ($namespace !== static::INNER_NAMESPACE) {
-            throw new Exceptions\UnexpectedInnerNamespace('Expecting ' . self::INNER_NAMESPACE . ' inner namespace, got ' . var_export($namespace, true));
+            throw new Exceptions\UnexpectedInnerNamespace('Expecting ' . static::INNER_NAMESPACE . ' inner namespace, got ' . var_export($namespace, true));
         }
     }
 
