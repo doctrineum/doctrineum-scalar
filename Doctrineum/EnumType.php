@@ -7,9 +7,6 @@ use Doctrine\DBAL\Types\Type;
 /**
  * Class EnumType
  * @package Doctrineum
- *
- * To control type, enum class, or SQL column type and length,
- * @see DoctrineumPlatform
  */
 class EnumType extends Type
 {
@@ -32,9 +29,6 @@ class EnumType extends Type
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
-        if ($platform instanceof DoctrineumPlatform) {
-            return $platform->getEnumSQLDeclaration();
-        }
         return 'VARCHAR(' . $this->getDefaultLength($platform) . ')';
     }
 
@@ -74,11 +68,6 @@ class EnumType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        // Enum class can be defined by platform
-        if ($platform instanceof DoctrineumPlatform) {
-            return $platform->convertToEnum($value);
-        }
-
         return $this->convertToEnum($value);
     }
 
