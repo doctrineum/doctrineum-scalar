@@ -4,9 +4,9 @@ About custom Doctrine types, see the [official documentation](http://doctrine-or
 For default custom types see the [official documentation as well](http://doctrine-dbal.readthedocs.org/en/latest/reference/types.html).
 
 ## <span id="usage">Usage</span>
-1. #### [Installation](#installation)
-2. #### [Custom type registration](#custom_type_registration)
-3. #### [Map property as an enum](#map_property_as_an_enum)
+1. [Installation](#installation)
+2. [Custom type registration](#custom_type_registration)
+3. [Map property as an enum](#map_property_as_an_enum)
 
 ### <span id="installation">Installation</span>
 Edit composer.json at your project, add
@@ -21,7 +21,6 @@ Edit composer.json at your project, add
 then extend in the same composer.json file the field require by doctrineum
 ```json
     "require": {
-        ...
         "jaroslavtyc/doctrineum": "1.0.*@alpha"
     }
 ```
