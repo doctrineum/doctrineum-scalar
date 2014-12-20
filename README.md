@@ -51,5 +51,5 @@ class Foo
 }
 ```
 
-*note: the type has the same name as the Enum class itself, but its just a string; you can change it at child class anytime; see **EnumType::TYPE** constant*
+*note: the type has the same name as the Enum class itself, but its just a string; you can change it at child class anytime; see EnumType::TYPE constant*
 
