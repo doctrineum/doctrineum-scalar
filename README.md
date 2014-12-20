@@ -1,4 +1,4 @@
-Enumeration type for Doctrine 2.4+
+Customizable enumeration type for Doctrine 2.4+
 
 About custom Doctrine types, see the [official documentation](http://doctrine-orm.readthedocs.org/en/latest/cookbook/custom-mapping-types.html).
 For default custom types see the [official documentation as well](http://doctrine-dbal.readthedocs.org/en/latest/reference/types.html).
@@ -21,7 +21,7 @@ Edit composer.json at your project, add
 then extend in the same composer.json file the field require by doctrineum
 ```json
     "require": {
-        "jaroslavtyc/doctrineum": "1.0.*@alpha"
+        "jaroslavtyc/doctrineum": "1.*@alpha"
     }
 ```
 
