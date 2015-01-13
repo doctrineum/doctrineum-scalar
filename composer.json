@@ -9,7 +9,7 @@
         "doctrine/dbal": "2.4.*"
     },
     "autoload": {
-        "psr-0": { "Doctrineum\\": "./" }
+        "psr-4": { "Doctrineum\\": "Doctrineum/" }
     },
     "extra": {
         "branch-alias": {
