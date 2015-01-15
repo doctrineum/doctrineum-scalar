@@ -100,7 +100,9 @@ class Enum
     protected static function checkNamespace($namespace)
     {
         if ($namespace !== static::INNER_NAMESPACE) {
-            throw new Exceptions\UnexpectedInnerNamespace('Expecting ' . static::INNER_NAMESPACE . ' inner namespace, got ' . var_export($namespace, true));
+            throw new Exceptions\UnexpectedInnerNamespace(
+                'Expecting ' . static::INNER_NAMESPACE . ' inner namespace, got ' . var_export($namespace, true)
+            );
         }
     }
 
