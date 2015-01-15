@@ -84,7 +84,7 @@ class Enum
     /**
      * @param string $value
      * @param string $namespaceToCheck
-     * @return static
+     * @return Enum
      */
     protected static function createByValue($value, $namespaceToCheck)
     {
