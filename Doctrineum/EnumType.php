@@ -80,7 +80,7 @@ class EnumType extends Type
             return null;
         }
 
-        $enumClass = self::ENUM_CLASS;
+        $enumClass = static::ENUM_CLASS;
         /** @var Enum $enumClass */
         return $enumClass::get($value);
     }
