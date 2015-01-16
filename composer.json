@@ -13,7 +13,7 @@
     "require": {
         "php": ">=5.5",
         "doctrine/dbal": "2.4.*",
-        "granam/strict-object": "~1.1.0"
+        "granam/strict-object": "~1.2.0"
     },
     "autoload": {
         "psr-4": { "Doctrineum\\": "Doctrineum/" }
@@ -22,5 +22,9 @@
         "branch-alias": {
             "dev-master": "1.4-dev"
         }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.4",
+        "mockery/mockery": "0.9.*"
     }
 }
