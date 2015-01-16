@@ -1,10 +1,11 @@
 <?php
 namespace Doctrineum;
+use Granam\StrictObject\StrictObject;
 
 /**
  * Inspired by @link http://github.com/marc-mabe/php-enum
  */
-class Enum
+class Enum extends StrictObject
 {
     /**
      * __CLASS__ magic constant remains untouched at child classes, it's still this, parent class name

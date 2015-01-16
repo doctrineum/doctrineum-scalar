@@ -4,9 +4,16 @@
     "description": "Enumeration type for Doctrine",
     "license": "MIT",
     "version": "1.4",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/jaroslavtyc/granam-strict-object"
+        }
+    ],
     "require": {
         "php": ">=5.5",
-        "doctrine/dbal": "2.4.*"
+        "doctrine/dbal": "2.4.*",
+        "granam/strict-object": "~1.1.0"
     },
     "autoload": {
         "psr-4": { "Doctrineum\\": "Doctrineum/" }

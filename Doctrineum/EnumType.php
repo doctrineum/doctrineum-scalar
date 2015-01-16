@@ -3,6 +3,8 @@ namespace Doctrineum;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Granam\StrictObject\StrictObject;
+use Granam\StrictObject\StrictObjectTrait;
 
 /**
  * Class EnumType
@@ -10,6 +12,8 @@ use Doctrine\DBAL\Types\Type;
  */
 class EnumType extends Type
 {
+    use StrictObjectTrait;
+
     const TYPE = 'enum';
 
     // default enum class; you can control it by platform, or by explicit overload it in child class, if needed
