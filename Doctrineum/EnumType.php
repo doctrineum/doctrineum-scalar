@@ -50,7 +50,6 @@ class EnumType extends Type
      * @param Enum $value
      * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
      * @return string
-     * @throws Exceptions\InvalidArgument
      * @throws Exceptions\Logic
      */
     public function convertToDatabaseValue($value = null, AbstractPlatform $platform)
@@ -60,7 +59,7 @@ class EnumType extends Type
         }
 
         if (!is_a($value, Enum::class)) {
-            throw new \LogicException('Unexpected value. Expected ' . Enum::class. ', got ' . gettype($value));
+            throw new Exceptions\Logic('Unexpected value. Expected ' . Enum::class. ', got ' . gettype($value));
         }
 
         return $value->getValue();
