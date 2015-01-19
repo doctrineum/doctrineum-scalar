@@ -65,7 +65,7 @@ class Enum extends StrictObject
     }
 
     /**
-     * @param string $value
+     * @param string|float|int|bool $value
      * @param string $namespace
      * @return Enum
      */
@@ -75,11 +75,12 @@ class Enum extends StrictObject
             self::$builtEnums[$namespace] = [];
         }
 
-        if (!isset(self::$builtEnums[$namespace][$value])) {
-            self::$builtEnums[$namespace][$value] = static::createByValue($value, $namespace);
+        $valueKey = serialize($value);
+        if (!isset(self::$builtEnums[$namespace][$valueKey])) {
+            self::$builtEnums[$namespace][$valueKey] = static::createByValue($value, $namespace);
         }
 
-        return self::$builtEnums[$namespace][$value];
+        return self::$builtEnums[$namespace][$valueKey];
     }
 
     /**
