@@ -55,10 +55,14 @@ class EnumType extends Type
      * @throws Exceptions\InvalidArgument
      * @throws Exceptions\Logic
      */
-    public function convertToDatabaseValue(Enum $value = null, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value = null, AbstractPlatform $platform)
     {
         if (is_null($value)) {
             return null;
+        }
+
+        if (!is_a($value, Enum::class)) {
+            throw new \LogicException('Unexpected value. Expected ' . Enum::class. ', got ' . gettype($value));
         }
 
         return $value->getValue();
