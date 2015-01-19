@@ -43,4 +43,13 @@ class EnumTest extends \PHPUnit_Framework_TestCase
         $enum = Enum::get('foo');
         clone $enum;
     }
+
+    /**
+     * @test
+     * @expectedException \Doctrineum\Exceptions\UnexpectedInnerNamespace
+     */
+    public function unknown_enum_namespace_throws_exception()
+    {
+        Enum::get('foo', 'bar');
+    }
 }
