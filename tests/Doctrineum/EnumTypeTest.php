@@ -34,9 +34,41 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     }
 
     /** @test */
-    public function sql_declaration_is_valid(){
+    public function sql_declaration_is_valid()
+    {
         $enumType = EnumType::getType(EnumType::TYPE);
         $sql = $enumType->getSQLDeclaration([], \Mockery::mock(AbstractPlatform::class));
         $this->assertSame('VARCHAR(64)', $sql);
+    }
+
+    /**
+     * @test
+     */
+    public function null_to_database_value_is_null()
+    {
+        $enumType = EnumType::getType(EnumType::TYPE);
+        $this->assertNull(null, $enumType->convertToDatabaseValue(null, \Mockery::mock(AbstractPlatform::class)));
+    }
+
+    /**
+     * @test
+     */
+    public function enum_as_database_value_is_string_value_of_that_enum()
+    {
+        $enumType = EnumType::getType(EnumType::TYPE);
+        $enum = \Mockery::mock(Enum::class);
+        $enum->shouldReceive('getValue')
+            ->andReturn($value = 'foo');
+        $this->assertSame($value, $enumType->convertToDatabaseValue($enum, \Mockery::mock(AbstractPlatform::class)));
+    }
+
+    /**
+     * @test
+     * @expectedException \Doctrineum\Exceptions\Logic
+     */
+    public function non_enum_type_as_database_value_throws_exception()
+    {
+        $enumType = EnumType::getType(EnumType::TYPE);
+        $enumType->convertToDatabaseValue('foo', \Mockery::mock(AbstractPlatform::class));
     }
 }
