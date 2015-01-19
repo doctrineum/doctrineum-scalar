@@ -9,6 +9,8 @@ use Granam\StrictObject\StrictObjectTrait;
 /**
  * Class EnumType
  * @package Doctrineum
+ * @method static EnumType getType($name),
+ * @see Type::getType
  */
 class EnumType extends Type
 {
