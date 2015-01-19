@@ -68,8 +68,12 @@ class EnumType extends Type
     /**
      * Convert database string value to Enum instance
      *
+     * This does NOT cast non-string scalars into string (integers, floats etc).
+     * (But saving the value into database and pulling it back probably will.)
+     *
      * @param string|null $value
      * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
+     * @throws Exceptions\InvalidArgument
      * @return Enum|null
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
@@ -85,6 +89,13 @@ class EnumType extends Type
     {
         if (is_null($value)) {
             return null;
+        }
+
+        // note: forcing the value to string is not intended
+        if (!is_string($value)) {
+            if (!is_scalar($value)) {
+                throw new Exceptions\InvalidArgument('Unexpected value convert. Expected string (scalar) or null, got ' . var_export($value, true));
+            }
         }
 
         $enumClass = static::ENUM_CLASS;
