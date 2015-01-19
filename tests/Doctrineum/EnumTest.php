@@ -38,7 +38,7 @@ class EnumTest extends \PHPUnit_Framework_TestCase
      * @test
      * @expectedException \Doctrineum\Exceptions\Logic
      */
-    public function cant_not_be_cloned()
+    public function can_not_be_cloned()
     {
         $enum = Enum::get('foo');
         clone $enum;
