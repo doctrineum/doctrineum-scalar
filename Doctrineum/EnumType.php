@@ -3,7 +3,6 @@ namespace Doctrineum;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Granam\StrictObject\StrictObject;
 use Granam\StrictObject\StrictObjectTrait;
 
 /**
@@ -61,7 +60,7 @@ class EnumType extends Type
         }
 
         if (!is_a($value, Enum::class)) {
-            throw new Exceptions\Logic('Unexpected value. Expected ' . Enum::class . ', got ' . gettype($value));
+            throw new Exceptions\UnexpectedValueToDatabaseValue('Expected ' . Enum::class . ', got ' . gettype($value));
         }
 
         return $value->getValue();
@@ -96,7 +95,7 @@ class EnumType extends Type
         // note: forcing the value to string is not intended
         if (!is_string($value)) {
             if (!is_scalar($value)) {
-                throw new Exceptions\InvalidArgument('Unexpected value convert. Expected string (scalar) or null, got ' . var_export($value, true));
+                throw new Exceptions\UnexpectedValueToEnum('Unexpected value convert. Expected string (scalar) or null, got ' . var_export($value, true));
             }
         }
 

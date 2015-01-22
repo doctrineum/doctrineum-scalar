@@ -64,9 +64,9 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException \Doctrineum\Exceptions\Logic
+     * @expectedException \Doctrineum\Exceptions\UnexpectedValueToDatabaseValue
      */
-    public function non_enum_type_as_database_value_throws_exception()
+    public function non_enum_type_as_database_value_throws_specific_exception()
     {
         $enumType = EnumType::getType(EnumType::TYPE);
         $enumType->convertToDatabaseValue('foo', \Mockery::mock(AbstractPlatform::class));
@@ -189,13 +189,41 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException
+     * @expectedException \Doctrineum\Exceptions\UnexpectedValueToEnum
      */
-    public function non_scalar_to_php_value_cause_exception()
+    public function array_to_php_value_cause_exception()
     {
         $enumType = EnumType::getType(EnumType::TYPE);
-        $enum = $enumType->convertToPHPValue($true = true, \Mockery::mock(AbstractPlatform::class));
-        $this->assertInstanceOf(Enum::class, $enum);
-        $this->assertSame($true, $enum->getValue());
+        $enumType->convertToPHPValue($nonNullNonScalar = [], \Mockery::mock(AbstractPlatform::class));
+    }
+
+    /**
+     * @test
+     * @expectedException \Doctrineum\Exceptions\UnexpectedValueToEnum
+     */
+    public function resource_to_php_value_cause_exception()
+    {
+        $enumType = EnumType::getType(EnumType::TYPE);
+        $enumType->convertToPHPValue($nonNullNonScalar = tmpfile(), \Mockery::mock(AbstractPlatform::class));
+    }
+
+    /**
+     * @test
+     * @expectedException \Doctrineum\Exceptions\UnexpectedValueToEnum
+     */
+    public function object_to_php_value_cause_exception()
+    {
+        $enumType = EnumType::getType(EnumType::TYPE);
+        $enumType->convertToPHPValue($nonNullNonScalar = new \stdClass(), \Mockery::mock(AbstractPlatform::class));
+    }
+
+    /**
+     * @test
+     * @expectedException \Doctrineum\Exceptions\UnexpectedValueToEnum
+     */
+    public function callback_to_php_value_cause_exception()
+    {
+        $enumType = EnumType::getType(EnumType::TYPE);
+        $enumType->convertToPHPValue($nonNullNonScalar = function(){}, \Mockery::mock(AbstractPlatform::class));
     }
 }
