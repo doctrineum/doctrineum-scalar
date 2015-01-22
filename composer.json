@@ -3,7 +3,6 @@
     "type": "library",
     "description": "Enumeration type for Doctrine",
     "license": "MIT",
-    "version": "1.4",
     "repositories": [
         {
             "type": "vcs",
