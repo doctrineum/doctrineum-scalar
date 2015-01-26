@@ -22,7 +22,7 @@ Edit composer.json at your project, add
 then extend in the same composer.json file the field require by doctrineum
 ```json
     "require": {
-        "jaroslavtyc/doctrineum": "1.*@alpha"
+        "jaroslavtyc/doctrineum": "~2.0"
     }
 ```
 
@@ -33,13 +33,27 @@ then extend in the same composer.json file the field require by doctrineum
 // in bootstrapping code
 // ...
 use Doctrine\DBAL\Types\Type;
+use Doctrineum\EnumType;
 // ...
 // Register type
-Type::addType(\Doctrineum\EnumType::TYPE, '\Doctrineum\EnumType');
-/*
- Or better for PHP 5.5+
- Type::addType(\Doctrineum\EnumType::TYPE, \Doctrineum\EnumType::class);
-*/
+Type::addType(EnumType::TYPE, '\Doctrineum\EnumType');
+```
+
+Or better for PHP [5.5+](http://php.net/manual/en/language.oop5.basic.php#language.oop5.basic.class.class)
+```php
+// ...
+ Type::addType(EnumType::TYPE, EnumType::class);
+```
+
+For Symfony2 using the config is the best approach
+
+```yaml
+# app/config/config.yml
+doctrine:
+    dbal:
+        # ...
+        types:
+            enum: Doctrineum\EnumType
 ```
 
 ### <span id="map_property_as_an_enum">Map property as an enum</span>
