@@ -17,6 +17,11 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    protected function tearDown()
+    {
+        \Mockery::close();
+    }
+
     /**
      * @return \Doctrine\DBAL\Types\Type
      * @throws \Doctrine\DBAL\DBALException
@@ -44,10 +49,15 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function null_to_database_value_is_null()
+    public function enum_with_null_to_database_value_is_null()
     {
         $enumType = EnumType::getType(EnumType::TYPE);
-        $this->assertNull(null, $enumType->convertToDatabaseValue(null, \Mockery::mock(AbstractPlatform::class)));
+        $nullEnum = \Mockery::mock(Enum::class);
+        $nullEnum->shouldReceive('getValue')
+            ->once()
+            ->andReturn(null);
+        /** @var Enum $nullEnum */
+        $this->assertNull($enumType->convertToDatabaseValue($nullEnum, \Mockery::mock(AbstractPlatform::class)));
     }
 
     /**
@@ -58,27 +68,20 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         $enumType = EnumType::getType(EnumType::TYPE);
         $enum = \Mockery::mock(Enum::class);
         $enum->shouldReceive('getValue')
+            ->once()
             ->andReturn($value = 'foo');
         $this->assertSame($value, $enumType->convertToDatabaseValue($enum, \Mockery::mock(AbstractPlatform::class)));
     }
 
     /**
      * @test
-     * @expectedException \Doctrineum\Exceptions\UnexpectedValueToDatabaseValue
      */
-    public function non_enum_type_as_database_value_throws_specific_exception()
+    public function null_to_php_value_creates_enum()
     {
         $enumType = EnumType::getType(EnumType::TYPE);
-        $enumType->convertToDatabaseValue('foo', \Mockery::mock(AbstractPlatform::class));
-    }
-
-    /**
-     * @test
-     */
-    public function null_to_php_value_is_null()
-    {
-        $enumType = EnumType::getType(EnumType::TYPE);
-        $this->assertNull($enumType->convertToPHPValue(null, \Mockery::mock(AbstractPlatform::class)));
+        $enum = $enumType->convertToPHPValue(null, \Mockery::mock(AbstractPlatform::class));
+        $this->assertInstanceOf(Enum::class, $enum);
+        $this->assertNull($enum->getValue());
     }
 
     /**
@@ -224,6 +227,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     public function callback_to_php_value_cause_exception()
     {
         $enumType = EnumType::getType(EnumType::TYPE);
-        $enumType->convertToPHPValue($nonNullNonScalar = function(){}, \Mockery::mock(AbstractPlatform::class));
+        $enumType->convertToPHPValue($nonNullNonScalar = function () {
+        }, \Mockery::mock(AbstractPlatform::class));
     }
 }

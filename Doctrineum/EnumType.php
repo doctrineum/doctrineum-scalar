@@ -46,14 +46,14 @@ class EnumType extends Type
     }
 
     /**
-     * Convert enum instance to database string value
+     * Convert enum instance to database string (or null) value
      *
-     * @param Enum|null $value
+     * @param Enum $value
      * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-     * @return string
-     * @throws Exceptions\Logic
+     * @throws Exceptions\UnexpectedValueToDatabaseValue
+     * @return string|null
      */
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue(Enum $value, AbstractPlatform $platform)
     {
         if (is_null($value)) {
             return null;
@@ -70,12 +70,13 @@ class EnumType extends Type
      * Convert database string value to Enum instance
      *
      * This does NOT cast non-string scalars into string (integers, floats etc).
+     * Even null remains null in returned Enum.
      * (But saving the value into database and pulling it back probably will.)
      *
-     * @param string|null $value
+     * @param string|int|float|bool|null $value
      * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
      * @throws Exceptions\InvalidArgument
-     * @return Enum|null
+     * @return Enum
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
@@ -84,24 +85,26 @@ class EnumType extends Type
 
     /**
      * @param $value
-     * @return Enum|null
+     * @return Enum
      */
     protected function convertToEnum($value)
     {
-        if (is_null($value)) {
-            return null;
-        }
-
         // note: forcing the value to string is not intended
-        if (!is_string($value)) {
-            if (!is_scalar($value)) {
-                throw new Exceptions\UnexpectedValueToEnum('Unexpected value convert. Expected string (scalar) or null, got ' . var_export($value, true));
-            }
+        if (!is_scalar($value) && !is_null($value)) {
+            throw new Exceptions\UnexpectedValueToEnum('Unexpected value to convert. Expected scalar or null, got ' . gettype($value));
         }
 
-        $enumClass = static::ENUM_CLASS;
+        $enumClass = static::getEnumClass();
         /** @var Enum $enumClass */
         return $enumClass::get($value);
+    }
+
+    /**
+     * @return string Enum class absolute name
+     */
+    protected static function getEnumClass()
+    {
+        return static::ENUM_CLASS;
     }
 
     /**

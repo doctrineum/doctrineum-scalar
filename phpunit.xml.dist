@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <phpunit
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.4/phpunit.xsd"
         bootstrap="./vendor/autoload.php"
         convertErrorsToExceptions="true"
         convertNoticesToExceptions="true"
@@ -7,8 +9,8 @@
         stopOnFailure="true"
         processIsolation="false"
         backupGlobals="false"
-        syntaxCheck="true"
         strict="true"
+        colors="true"
         >
     <testsuite name="doctrineum">
         <directory>./tests/Doctrineum/</directory>

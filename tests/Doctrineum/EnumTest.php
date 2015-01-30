@@ -36,20 +36,23 @@ class EnumTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException \Doctrineum\Exceptions\Logic
+     * @expectedException \Doctrineum\Exceptions\CanNotBeCloned
      */
     public function can_not_be_cloned()
     {
         $enum = Enum::get('foo');
+        /**  */
         clone $enum;
     }
 
     /**
      * @test
-     * @expectedException \Doctrineum\Exceptions\UnexpectedInnerNamespace
      */
-    public function unknown_enum_namespace_throws_exception()
+    public function any_enum_namespace_is_accepted()
     {
-        Enum::get('foo', 'bar');
+        $enum = Enum::get('foo', 'bar');
+        $this->assertInstanceOf(Enum::class, $enum);
+        $this->assertSame('foo', $enum->getValue());
+        $this->assertSame('foo', (string)$enum);
     }
 }
