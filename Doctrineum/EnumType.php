@@ -53,14 +53,13 @@ class EnumType extends Type
      * @throws Exceptions\UnexpectedValueToDatabaseValue
      * @return string|null
      */
-    public function convertToDatabaseValue(Enum $value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        if (is_null($value)) {
-            return null;
+        if (!is_object($value)) {
+            throw new Exceptions\UnexpectedValueToDatabaseValue('Expected object of class ' . Enum::class . ', got ' . gettype($value));
         }
-
         if (!is_a($value, Enum::class)) {
-            throw new Exceptions\UnexpectedValueToDatabaseValue('Expected ' . Enum::class . ', got ' . gettype($value));
+            throw new Exceptions\UnexpectedValueToDatabaseValue('Expected ' . Enum::class . ', got ' . get_class($value));
         }
 
         return $value->getValue();
