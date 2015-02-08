@@ -12,15 +12,7 @@ trait EnumTrait
     /**
      * @var string|int|float|bool|null
      */
-    private $value;
-
-    /**
-     * @param string|int|float|bool|null $value The value of enum
-     */
-    protected function __construct($value)
-    {
-        $this->value = $value;
-    }
+    protected $enumValue;
 
     /**
      * @return string (null is casted into empty string!)
@@ -44,7 +36,7 @@ trait EnumTrait
      */
     public function getValue()
     {
-        return $this->value;
+        return $this->enumValue;
     }
 
     /**
