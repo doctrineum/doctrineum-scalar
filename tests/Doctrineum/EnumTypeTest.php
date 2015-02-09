@@ -2,7 +2,7 @@
 namespace Doctrineum;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Granam\StrictObject\Tests\StrictObjectTestTrait;
+use Granam\Strict\Object\Tests\StrictObjectTestTrait;
 
 class EnumTypeTest extends \PHPUnit_Framework_TestCase
 {

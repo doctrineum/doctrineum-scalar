@@ -3,7 +3,7 @@ namespace Doctrineum;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Granam\StrictObject\StrictObjectTrait;
+use Granam\Strict\Object\StrictObjectTrait;
 
 /**
  * Class EnumType

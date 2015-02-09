@@ -1,7 +1,7 @@
 <?php
 namespace Doctrineum;
 
-use Granam\StrictObject\StrictObject;
+use Granam\Strict\Object\StrictObject;
 
 /**
  * Inspired by @link http://github.com/marc-mabe/php-enum
