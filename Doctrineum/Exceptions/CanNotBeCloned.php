@@ -2,7 +2,7 @@
 namespace Doctrineum\Exceptions;
 
 /**
- * Cloning is prohibited.
+ * Cloning is prohibited for enum.
  *
  * Class CanNotBeCloned
  * @package Doctrineum\Exceptions
