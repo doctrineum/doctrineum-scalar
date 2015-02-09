@@ -1,7 +1,7 @@
 <?php
 namespace Doctrineum\Exceptions;
 
-interface Logic extends Exception
+interface Runtime extends Exception
 {
 
 }

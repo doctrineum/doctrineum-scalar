@@ -1,6 +1,6 @@
 <?php
 namespace Doctrineum\Exceptions;
 
-class UnexpectedInnerNamespace extends Logic {
+class UnexpectedInnerNamespace extends \LogicException implements Logic {
 
 }

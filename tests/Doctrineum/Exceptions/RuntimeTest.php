@@ -1,7 +1,7 @@
 <?php
 namespace Doctrineum\Exceptions;
 
-class LogicTest extends \PHPUnit_Framework_TestCase
+class RuntimeTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -9,7 +9,7 @@ class LogicTest extends \PHPUnit_Framework_TestCase
      */
     public function is_interface()
     {
-        $this->assertTrue(interface_exists(Logic::class));
+        $this->assertTrue(interface_exists(Runtime::class));
     }
 
     /**
@@ -18,12 +18,12 @@ class LogicTest extends \PHPUnit_Framework_TestCase
      */
     public function extends_base_mark_interface()
     {
-        throw new TestLogicInterface();
+        throw new TestRuntimeInterface();
     }
 }
 
 /** inner */
-class TestLogicInterface extends \Exception implements Logic
+class TestRuntimeInterface extends \Exception implements Runtime
 {
 
 }

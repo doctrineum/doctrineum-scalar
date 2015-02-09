@@ -1,7 +1,13 @@
 <?php
 namespace Doctrineum\Exceptions;
 
-class CanNotBeCloned extends Logic
+/**
+ * Cloning is prohibited.
+ *
+ * Class CanNotBeCloned
+ * @package Doctrineum\Exceptions
+ */
+class CanNotBeCloned extends \LogicException implements Logic
 {
 
 }
