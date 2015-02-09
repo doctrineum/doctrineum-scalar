@@ -9,7 +9,6 @@
         stopOnFailure="true"
         processIsolation="false"
         backupGlobals="false"
-        strict="true"
         colors="true"
         >
     <testsuite name="doctrineum">
