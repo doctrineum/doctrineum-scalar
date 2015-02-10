@@ -48,52 +48,52 @@ trait EnumTrait
     }
 
     /**
-     * @param string|float|int|bool|null $value
+     * @param string|float|int|bool|null $enumValue
      * @param string $namespace
      * @return Enum
      */
-    public static function get($value, $namespace = __CLASS__)
+    public static function get($enumValue, $namespace = __CLASS__)
     {
-        static::checkIfScalarOrNull($value);
+        static::checkIfScalarOrNull($enumValue);
 
         if (!isset(self::$builtEnums[$namespace])) {
             self::$builtEnums[$namespace] = [];
         }
 
-        $valueKey = serialize($value);
-        if (!isset(self::$builtEnums[$namespace][$valueKey])) {
-            self::$builtEnums[$namespace][$valueKey] = static::createByValue($value);
+        $enumKey = serialize($enumValue);
+        if (!isset(self::$builtEnums[$namespace][$enumKey])) {
+            self::$builtEnums[$namespace][$enumKey] = static::createByValue($enumValue);
         }
 
-        return self::$builtEnums[$namespace][$valueKey];
+        return self::$builtEnums[$namespace][$enumKey];
     }
 
     /**
-     * @param string|float|int|null $value
+     * @param string|float|int|null $enumValue
      */
-    protected static function checkIfScalarOrNull($value)
+    protected static function checkIfScalarOrNull($enumValue)
     {
-        if (!is_scalar($value) && !is_null($value)) {
-            throw new Exceptions\UnexpectedValueToEnum('Expected scalar or null, got ' . gettype($value));
+        if (!is_scalar($enumValue) && !is_null($enumValue)) {
+            throw new Exceptions\UnexpectedValueToEnum('Expected scalar or null, got ' . gettype($enumValue));
         }
     }
 
     /**
-     * @param string|int|float|bool|null $value
+     * @param string|int|float|bool|null $enumValue
      * @return Enum
      */
-    protected static function createByValue($value)
+    protected static function createByValue($enumValue)
     {
-        return static::create($value);
+        return static::create($enumValue);
     }
 
     /**
-     * @param string|int|float|bool|null $value
+     * @param string|int|float|bool|null $enumValue
      * @return Enum
      */
-    protected static function create($value)
+    protected static function create($enumValue)
     {
-        return new static($value);
+        return new static($enumValue);
     }
 
 }
