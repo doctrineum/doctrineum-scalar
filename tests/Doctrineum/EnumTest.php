@@ -41,13 +41,10 @@ class EnumTest extends \PHPUnit_Framework_TestCase
     public function can_not_be_cloned()
     {
         $enum = Enum::get('foo');
-        /**  */
         clone $enum;
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function any_enum_namespace_is_accepted()
     {
         $enum = Enum::get('foo', 'bar');

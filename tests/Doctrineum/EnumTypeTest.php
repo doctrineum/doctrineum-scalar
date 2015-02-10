@@ -8,6 +8,8 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
 {
     use StrictObjectTestTrait;
 
+    // SET UP
+
     protected function setUp()
     {
         if (\Doctrine\DBAL\Types\Type::hasType(EnumType::TYPE)) {
@@ -30,6 +32,8 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     {
         return EnumType::getType(EnumType::TYPE);
     }
+
+    // TESTS THEMSELVES
 
     /** @test */
     public function instance_can_be_obtained()
@@ -101,9 +105,9 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     public function empty_string_to_php_value_is_enum_with_that_empty_string()
     {
         $enumType = EnumType::getType(EnumType::TYPE);
-        $enum = $enumType->convertToPHPValue($string = '', \Mockery::mock(AbstractPlatform::class));
+        $enum = $enumType->convertToPHPValue($emptyString = '', \Mockery::mock(AbstractPlatform::class));
         $this->assertInstanceOf(Enum::class, $enum);
-        $this->assertSame($string, $enum->getValue());
+        $this->assertSame($emptyString, $enum->getValue());
     }
 
     /**
@@ -129,9 +133,9 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     public function zero_integer_to_php_value_is_enum_with_that_zero_integer()
     {
         $enumType = EnumType::getType(EnumType::TYPE);
-        $enum = $enumType->convertToPHPValue($integer = 0, \Mockery::mock(AbstractPlatform::class));
+        $enum = $enumType->convertToPHPValue($zeroInteger = 0, \Mockery::mock(AbstractPlatform::class));
         $this->assertInstanceOf(Enum::class, $enum);
-        $this->assertSame($integer, $enum->getValue());
+        $this->assertSame($zeroInteger, $enum->getValue());
     }
 
     /**
@@ -157,9 +161,9 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     public function zero_float_to_php_value_is_enum_with_that_zero_float()
     {
         $enumType = EnumType::getType(EnumType::TYPE);
-        $enum = $enumType->convertToPHPValue($float = 0, \Mockery::mock(AbstractPlatform::class));
+        $enum = $enumType->convertToPHPValue($zeroFloat = 0.0, \Mockery::mock(AbstractPlatform::class));
         $this->assertInstanceOf(Enum::class, $enum);
-        $this->assertSame($float, $enum->getValue());
+        $this->assertSame($zeroFloat, $enum->getValue());
     }
 
     /**
@@ -197,7 +201,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     public function array_to_php_value_cause_exception()
     {
         $enumType = EnumType::getType(EnumType::TYPE);
-        $enumType->convertToPHPValue($nonNullNonScalar = [], \Mockery::mock(AbstractPlatform::class));
+        $enumType->convertToPHPValue([], \Mockery::mock(AbstractPlatform::class));
     }
 
     /**
@@ -207,7 +211,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     public function resource_to_php_value_cause_exception()
     {
         $enumType = EnumType::getType(EnumType::TYPE);
-        $enumType->convertToPHPValue($nonNullNonScalar = tmpfile(), \Mockery::mock(AbstractPlatform::class));
+        $enumType->convertToPHPValue(tmpfile(), \Mockery::mock(AbstractPlatform::class));
     }
 
     /**
@@ -217,7 +221,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     public function object_to_php_value_cause_exception()
     {
         $enumType = EnumType::getType(EnumType::TYPE);
-        $enumType->convertToPHPValue($nonNullNonScalar = new \stdClass(), \Mockery::mock(AbstractPlatform::class));
+        $enumType->convertToPHPValue(new \stdClass(), \Mockery::mock(AbstractPlatform::class));
     }
 
     /**
@@ -227,7 +231,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     public function callback_to_php_value_cause_exception()
     {
         $enumType = EnumType::getType(EnumType::TYPE);
-        $enumType->convertToPHPValue($nonNullNonScalar = function () {
+        $enumType->convertToPHPValue(function () {
         }, \Mockery::mock(AbstractPlatform::class));
     }
 }
