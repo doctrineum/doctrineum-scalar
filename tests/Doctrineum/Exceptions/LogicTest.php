@@ -16,7 +16,7 @@ class LogicTest extends \PHPUnit_Framework_TestCase
      * @test
      * @expectedException \Doctrineum\Exceptions\Exception
      */
-    public function extends_base_mark_interface()
+    public function extends_local_mark_interface()
     {
         throw new TestLogicInterface();
     }
