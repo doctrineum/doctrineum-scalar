@@ -22,7 +22,7 @@ Edit composer.json at your project, add
 then extend in the same composer.json file the field require by doctrineum
 ```json
     "require": {
-        "jaroslavtyc/doctrineum": "~2.0"
+        "jaroslavtyc/doctrineum": "dev-master"
     }
 ```
 
