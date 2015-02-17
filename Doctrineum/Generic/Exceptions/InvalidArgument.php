@@ -1,5 +1,5 @@
 <?php
-namespace Doctrineum\Exceptions;
+namespace Doctrineum\Generic\Exceptions;
 
 class InvalidArgument extends \InvalidArgumentException implements Logic
 {

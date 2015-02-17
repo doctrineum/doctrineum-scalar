@@ -1,5 +1,5 @@
 <?php
-namespace Doctrineum\Exceptions;
+namespace Doctrineum\Generic\Exceptions;
 
 class UnexpectedValueToConvertTest extends \PHPUnit_Framework_TestCase
 {
@@ -15,7 +15,7 @@ class UnexpectedValueToConvertTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException \Doctrineum\Exceptions\Logic
+     * @expectedException \Doctrineum\Generic\Exceptions\Logic
      */
     public function is_local_exception()
     {
@@ -24,7 +24,7 @@ class UnexpectedValueToConvertTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException \Doctrineum\Exceptions\InvalidArgument
+     * @expectedException \Doctrineum\Generic\Exceptions\InvalidArgument
      */
     public function is_local_invalid_argument_exception()
     {

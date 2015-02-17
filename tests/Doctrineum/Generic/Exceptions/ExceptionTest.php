@@ -1,5 +1,5 @@
 <?php
-namespace Doctrineum\Exceptions;
+namespace Doctrineum\Generic\Exceptions;
 
 class ExceptionTest extends \PHPUnit_Framework_TestCase
 {
@@ -14,7 +14,7 @@ class ExceptionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException \Doctrineum\Exceptions\Exception
+     * @expectedException \Doctrineum\Generic\Exceptions\Exception
      */
     public function is_local_mark_interface()
     {

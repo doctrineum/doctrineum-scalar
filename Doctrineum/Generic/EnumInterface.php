@@ -1,5 +1,5 @@
 <?php
-namespace Doctrineum;
+namespace Doctrineum\Generic;
 
 interface EnumInterface
 {

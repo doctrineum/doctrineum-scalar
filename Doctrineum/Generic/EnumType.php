@@ -1,5 +1,5 @@
 <?php
-namespace Doctrineum;
+namespace Doctrineum\Generic;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
@@ -7,7 +7,7 @@ use Granam\Strict\Object\StrictObjectTrait;
 
 /**
  * Class EnumType
- * @package Doctrineum
+ * @package Doctrineum\Generic
  * @method static EnumType getType($name),
  * @see Type::getType
  */
@@ -120,7 +120,7 @@ class EnumType extends Type
      * If this Doctrine Type maps to an already mapped database type,
      * reverse schema engineering can't take them apart. You need to mark
      * one of those types as commented, which will have Doctrine use an SQL
-     * comment to typehint the actual Doctrine Type.
+     * comment to type-hint the actual Doctrine Type.
      *
      * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
      * @return boolean

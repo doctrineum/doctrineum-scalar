@@ -1,5 +1,5 @@
 <?php
-namespace Doctrineum\Exceptions;
+namespace Doctrineum\Generic\Exceptions;
 
 class UnexpectedValueToConvert extends InvalidArgument {
 

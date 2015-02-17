@@ -1,5 +1,5 @@
 <?php
-namespace Doctrineum\Exceptions;
+namespace Doctrineum\Generic\Exceptions;
 
 class CanNotBeClonedTest extends \PHPUnit_Framework_TestCase
 {
@@ -15,7 +15,7 @@ class CanNotBeClonedTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException \Doctrineum\Exceptions\Logic
+     * @expectedException \Doctrineum\Generic\Exceptions\Logic
      */
     public function is_local_logic_exception()
     {

@@ -1,5 +1,5 @@
 <?php
-namespace Doctrineum;
+namespace Doctrineum\Generic;
 
 use Granam\Strict\Object\StrictObject;
 
