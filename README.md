@@ -37,12 +37,14 @@ use Doctrineum\EnumType;
 // ...
 // Register type
 Type::addType(EnumType::TYPE, '\Doctrineum\EnumType');
+Type::addType(BarEnumType::TYPE, '\Foo\BarEnumType');
 ```
 
 Or better for PHP [5.5+](http://php.net/manual/en/language.oop5.basic.php#language.oop5.basic.class.class)
 ```php
 // ...
 Type::addType(EnumType::TYPE, EnumType::class);
+Type::addType(BarEnumType::TYPE, BarEnumType::class);
 ```
 
 For Symfony2 using the config is the best approach
@@ -54,6 +56,8 @@ doctrine:
         # ...
         types:
             enum: Doctrineum\EnumType
+            baz: Foo\BarEnumType
+            #...
 ```
 
 ### <span id="map_property_as_an_enum">Map property as an enum</span>
