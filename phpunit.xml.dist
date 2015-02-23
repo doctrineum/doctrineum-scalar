@@ -12,6 +12,6 @@
         colors="true"
         >
     <testsuite name="doctrineum">
-        <directory>./tests/Doctrineum/</directory>
+        <directory>./Doctrineum/Tests</directory>
     </testsuite>
 </phpunit>
