@@ -15,4 +15,12 @@ class SelfTypedEnum extends EnumType implements EnumInterface
     {
         $this->enumValue = $enumValue;
     }
+
+    /**
+     * @return string
+     */
+    protected static function getEnumClass()
+    {
+        return static::class;
+    }
 }

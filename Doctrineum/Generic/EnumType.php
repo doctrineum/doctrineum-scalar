@@ -17,9 +17,6 @@ class EnumType extends Type
 
     const TYPE = 'enum';
 
-    // default enum class; you can control it by platform, or by explicit overload it in child class, if needed
-    const ENUM_CLASS = Enum::class;
-
     // default SQL column length; you can control it by platform, or by explicit overload in child class
     const VARCHAR_LENGTH = 64;
 
@@ -103,7 +100,7 @@ class EnumType extends Type
      */
     protected static function getEnumClass()
     {
-        return static::ENUM_CLASS;
+        return Enum::class;
     }
 
     /**
