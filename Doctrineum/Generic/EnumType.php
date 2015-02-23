@@ -15,11 +15,6 @@ class EnumType extends Type
 {
     use StrictObjectTrait;
 
-    const TYPE = 'enum';
-
-    // default SQL column length; you can control it by platform, or by explicit overload in child class
-    const VARCHAR_LENGTH = 64;
-
     /**
      * Gets the SQL declaration snippet for a field of this type.
      *
@@ -39,7 +34,7 @@ class EnumType extends Type
      */
     public function getDefaultLength(AbstractPlatform $platform)
     {
-        return self::VARCHAR_LENGTH;
+        return 64;
     }
 
     /**
@@ -104,13 +99,25 @@ class EnumType extends Type
     }
 
     /**
-     * Gets the name of this type.
+     * Gets the strongly recommended name of this type.
+     * Its used at @see \Doctrine\DBAL\Platforms\AbstractPlatform::getDoctrineTypeComment
      *
      * @return string
      */
     public function getName()
     {
-        return static::TYPE;
+        return static::getTypeName();
+    }
+
+    /**
+     * Gets the strongly recommended name of this type.
+     * Its used at @see \Doctrine\DBAL\Platforms\AbstractPlatform::getDoctrineTypeComment
+     *
+     * @return string
+     */
+    public static function getTypeName()
+    {
+        return 'enum';
     }
 
     /**

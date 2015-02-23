@@ -12,10 +12,10 @@ trait EnumTypeTestTrait {
 
     protected function setUp()
     {
-        if (Type::hasType(EnumType::TYPE)) {
-            Type::overrideType(EnumType::TYPE, EnumType::class);
+        if (Type::hasType(EnumType::getTypeName())) {
+            Type::overrideType(EnumType::getTypeName(), EnumType::class);
         } else {
-            Type::addType(EnumType::TYPE, EnumType::class);
+            Type::addType(EnumType::getTypeName(), EnumType::class);
         }
     }
 
@@ -33,7 +33,7 @@ trait EnumTypeTestTrait {
      */
     protected function createObjectInstance()
     {
-        return EnumType::getType(EnumType::TYPE);
+        return EnumType::getType(EnumType::getTypeName());
     }
 
     // TESTS THEMSELVES
@@ -41,7 +41,7 @@ trait EnumTypeTestTrait {
     /** @test */
     public function instance_can_be_obtained()
     {
-        $instance = EnumType::getType(EnumType::TYPE);
+        $instance = EnumType::getType(EnumType::getTypeName());
         /** @var \PHPUnit_Framework_TestCase $this */
         $this->assertInstanceOf(EnumType::class, $instance);
     }
@@ -49,7 +49,7 @@ trait EnumTypeTestTrait {
     /** @test */
     public function sql_declaration_is_valid()
     {
-        $enumType = EnumType::getType(EnumType::TYPE);
+        $enumType = EnumType::getType(EnumType::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $sql = $enumType->getSQLDeclaration([], $platform);
@@ -62,7 +62,7 @@ trait EnumTypeTestTrait {
      */
     public function enum_with_null_to_database_value_is_null()
     {
-        $enumType = EnumType::getType(EnumType::TYPE);
+        $enumType = EnumType::getType(EnumType::getTypeName());
         $nullEnum = \Mockery::mock(Enum::class);
         $nullEnum->shouldReceive('getValue')
             ->once()
@@ -80,7 +80,7 @@ trait EnumTypeTestTrait {
      */
     public function enum_as_database_value_is_string_value_of_that_enum()
     {
-        $enumType = EnumType::getType(EnumType::TYPE);
+        $enumType = EnumType::getType(EnumType::getTypeName());
         $enum = \Mockery::mock(Enum::class);
         $enum->shouldReceive('getValue')
             ->once()
@@ -98,7 +98,7 @@ trait EnumTypeTestTrait {
      */
     public function null_to_php_value_creates_enum()
     {
-        $enumType = EnumType::getType(EnumType::TYPE);
+        $enumType = EnumType::getType(EnumType::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue(null, $platform);
@@ -112,7 +112,7 @@ trait EnumTypeTestTrait {
      */
     public function string_to_php_value_is_enum_with_that_string()
     {
-        $enumType = EnumType::getType(EnumType::TYPE);
+        $enumType = EnumType::getType(EnumType::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($string = 'foo', $platform);
@@ -126,7 +126,7 @@ trait EnumTypeTestTrait {
      */
     public function empty_string_to_php_value_is_enum_with_that_empty_string()
     {
-        $enumType = EnumType::getType(EnumType::TYPE);
+        $enumType = EnumType::getType(EnumType::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($emptyString = '', $platform);
@@ -143,7 +143,7 @@ trait EnumTypeTestTrait {
      */
     public function integer_to_php_value_is_enum_with_that_integer()
     {
-        $enumType = EnumType::getType(EnumType::TYPE);
+        $enumType = EnumType::getType(EnumType::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($integer = 12345, $platform);
@@ -160,7 +160,7 @@ trait EnumTypeTestTrait {
      */
     public function zero_integer_to_php_value_is_enum_with_that_zero_integer()
     {
-        $enumType = EnumType::getType(EnumType::TYPE);
+        $enumType = EnumType::getType(EnumType::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($zeroInteger = 0, $platform);
@@ -177,7 +177,7 @@ trait EnumTypeTestTrait {
      */
     public function float_to_php_value_is_enum_with_that_float()
     {
-        $enumType = EnumType::getType(EnumType::TYPE);
+        $enumType = EnumType::getType(EnumType::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($float = 12345.6789, $platform);
@@ -194,7 +194,7 @@ trait EnumTypeTestTrait {
      */
     public function zero_float_to_php_value_is_enum_with_that_zero_float()
     {
-        $enumType = EnumType::getType(EnumType::TYPE);
+        $enumType = EnumType::getType(EnumType::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($zeroFloat = 0.0, $platform);
@@ -211,7 +211,7 @@ trait EnumTypeTestTrait {
      */
     public function false_to_php_value_is_enum_with_that_false()
     {
-        $enumType = EnumType::getType(EnumType::TYPE);
+        $enumType = EnumType::getType(EnumType::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($false = false, $platform);
@@ -228,7 +228,7 @@ trait EnumTypeTestTrait {
      */
     public function true_to_php_value_is_enum_with_that_true()
     {
-        $enumType = EnumType::getType(EnumType::TYPE);
+        $enumType = EnumType::getType(EnumType::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($true = true, $platform);
@@ -243,7 +243,7 @@ trait EnumTypeTestTrait {
      */
     public function array_to_php_value_cause_exception()
     {
-        $enumType = EnumType::getType(EnumType::TYPE);
+        $enumType = EnumType::getType(EnumType::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enumType->convertToPHPValue([], $platform);
@@ -255,7 +255,7 @@ trait EnumTypeTestTrait {
      */
     public function resource_to_php_value_cause_exception()
     {
-        $enumType = EnumType::getType(EnumType::TYPE);
+        $enumType = EnumType::getType(EnumType::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enumType->convertToPHPValue(tmpfile(), $platform);
@@ -267,7 +267,7 @@ trait EnumTypeTestTrait {
      */
     public function object_to_php_value_cause_exception()
     {
-        $enumType = EnumType::getType(EnumType::TYPE);
+        $enumType = EnumType::getType(EnumType::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enumType->convertToPHPValue(new \stdClass(), $platform);
@@ -279,7 +279,7 @@ trait EnumTypeTestTrait {
      */
     public function callback_to_php_value_cause_exception()
     {
-        $enumType = EnumType::getType(EnumType::TYPE);
+        $enumType = EnumType::getType(EnumType::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enumType->convertToPHPValue(function () {

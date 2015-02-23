@@ -36,15 +36,15 @@ use Doctrine\DBAL\Types\Type;
 use Doctrineum\EnumType;
 // ...
 // Register type
-Type::addType(EnumType::TYPE, '\Doctrineum\EnumType');
-Type::addType(BarEnumType::TYPE, '\Foo\BarEnumType');
+Type::addType(EnumType::getTypeName(), '\Doctrineum\EnumType');
+Type::addType(BarEnumType::getTypeName(), '\Foo\BarEnumType');
 ```
 
 Or better for PHP [5.5+](http://php.net/manual/en/language.oop5.basic.php#language.oop5.basic.class.class)
 ```php
 // ...
-Type::addType(EnumType::TYPE, EnumType::class);
-Type::addType(BarEnumType::TYPE, BarEnumType::class);
+Type::addType(EnumType::getTypeName(), EnumType::class);
+Type::addType(BarEnumType::getTypeName(), BarEnumType::class);
 ```
 
 For Symfony2 using the config is the best approach
@@ -70,7 +70,7 @@ class Foo
 }
 ```
 
-*note: the type has the same name as the Enum class itself, but its just a string; you can change it at child class anytime; see EnumType::TYPE constant*
+*note: the type has the same name as the Enum class itself, but its just a string; you can change it at child class anytime; see EnumType::getTypeName()*
 
 #### <span id="understand_the_basics">Understand the basics</span>
 There are two roles - the factory and the value.
