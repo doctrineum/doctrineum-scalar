@@ -3,6 +3,10 @@ namespace Doctrineum\Generic;
 
 use Granam\Strict\Object\StrictObjectTrait;
 
+/**
+ * @method static SelfTypedEnum getType($name),
+ * @see EnumType::getType
+ */
 class SelfTypedEnum extends EnumType implements EnumInterface
 {
     use StrictObjectTrait;
