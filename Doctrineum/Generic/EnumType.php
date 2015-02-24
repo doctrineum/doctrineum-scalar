@@ -76,19 +76,22 @@ class EnumType extends Type
     }
 
     /**
-     * @param $value
+     * @param $enumValue
      * @return Enum
      */
-    protected function convertToEnum($value)
+    protected function convertToEnum($enumValue)
     {
-        // note: forcing the value to string is not intended
-        if (!is_scalar($value) && !is_null($value)) {
-            throw new Exceptions\UnexpectedValueToEnum('Unexpected value to convert. Expected scalar or null, got ' . gettype($value));
+        if (!is_scalar($enumValue) && !is_null($enumValue)
+            && (!is_object($enumValue) || !method_exists($enumValue, '__toString'))
+        ) {
+            throw new Exceptions\UnexpectedValueToEnum(
+                'Unexpected value to convert. Expected scalar or null, got ' . gettype($enumValue)
+            );
         }
 
         $enumClass = static::getEnumClass();
         /** @var Enum $enumClass */
-        return $enumClass::getEnum($value);
+        return $enumClass::getEnum($enumValue);
     }
 
     /**

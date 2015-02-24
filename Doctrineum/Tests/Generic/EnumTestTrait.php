@@ -6,7 +6,8 @@ trait EnumTestTrait
     /**
      * @return \Doctrineum\Generic\Enum|\Doctrineum\Generic\SelfTypedEnum
      */
-    protected function getEnumClass() {
+    protected function getEnumClass()
+    {
         return preg_replace('~Test$~', '', static::class);
     }
 
@@ -59,6 +60,26 @@ trait EnumTestTrait
         $enum = $enumClass::getEnum('foo');
         /** @noinspection PhpExpressionResultUnusedInspection */
         clone $enum;
+    }
+
+    /** @test */
+    public function with_to_string_object_is_of_same_value_as_object()
+    {
+        $enumClass = $this->getEnumClass();
+        $enum = $enumClass::getEnum(new WithToStringTestObject('foo'));
+        /** @var \PHPUnit_Framework_TestCase $this */
+        $this->assertSame('foo', $enum->getEnumValue());
+        $this->assertSame('foo', (string)$enum);
+    }
+
+    /**
+     * @test
+     * @expectedException \Doctrineum\Generic\Exceptions\UnexpectedValueToEnum
+     */
+    public function object_without_to_string_cause_exception()
+    {
+        $enumClass = $this->getEnumClass();
+        $enumClass::getEnum(new \stdClass());
     }
 
     /** @test */

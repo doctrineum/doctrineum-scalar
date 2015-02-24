@@ -54,27 +54,32 @@ trait EnumTrait
      */
     public static function getEnum($enumValue, $namespace = __CLASS__)
     {
-        static::checkIfScalarOrNull($enumValue);
+        $checkedValue = static::convertToScalarOrNull($enumValue);
 
         if (!isset(self::$builtEnums[$namespace])) {
             self::$builtEnums[$namespace] = [];
         }
 
-        $enumKey = serialize($enumValue);
+        $enumKey = serialize($checkedValue);
         if (!isset(self::$builtEnums[$namespace][$enumKey])) {
-            self::$builtEnums[$namespace][$enumKey] = static::createByValue($enumValue);
+            self::$builtEnums[$namespace][$enumKey] = static::createByValue($checkedValue);
         }
 
         return self::$builtEnums[$namespace][$enumKey];
     }
 
     /**
-     * @param string|float|int|null $enumValue
+     * @param mixed $enumValue
+     * @return string|float|int|null
      */
-    protected static function checkIfScalarOrNull($enumValue)
+    protected static function convertToScalarOrNull($enumValue)
     {
-        if (!is_scalar($enumValue) && !is_null($enumValue)) {
-            throw new Exceptions\UnexpectedValueToEnum('Expected scalar or null, got ' . gettype($enumValue));
+        if (is_scalar($enumValue) || is_null($enumValue)) {
+            return $enumValue;
+        } elseif (is_object($enumValue) && method_exists($enumValue, '__toString')) {
+            return $enumValue->__toString();
+        } else {
+            throw new Exceptions\UnexpectedValueToEnum('Expected scalar or null or to string object, got ' . gettype($enumValue));
         }
     }
 

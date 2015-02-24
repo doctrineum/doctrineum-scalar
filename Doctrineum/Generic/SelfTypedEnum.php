@@ -27,15 +27,18 @@ class SelfTypedEnum extends EnumType implements EnumInterface
     }
 
     /**
+     * Type has private constructor, the only way how to create an Enum, which is also Type, is by Type factory method,
+     * @see Type::getType
+     *
      * @param string|int|float|bool|null $enumValue
      * @return SelfTypedEnum
      */
     protected static function createByValue($enumValue)
     {
-        static::checkIfScalarOrNull($enumValue);
+        $checkedValue = static::convertToScalarOrNull($enumValue);
 
         $selfTypedEnum = static::getType(static::getTypeName());
-        $selfTypedEnum->enumValue = $enumValue;
+        $selfTypedEnum->enumValue = $checkedValue;
 
         return $selfTypedEnum;
     }

@@ -10,10 +10,11 @@ trait EnumTypeTestTrait
     /**
      * @return \Doctrineum\Generic\EnumType|\Doctrineum\Generic\SelfTypedEnum
      */
-    protected function getEnumTypeClass() {
+    protected function getEnumTypeClass()
+    {
         return preg_replace('~Test$~', '', static::class);
     }
-    
+
     protected function setUp()
     {
         $enumTypeClass = $this->getEnumTypeClass();
@@ -291,6 +292,22 @@ trait EnumTypeTestTrait
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enumType->convertToPHPValue(new \stdClass(), $platform);
+    }
+
+    /**
+     * @test
+     */
+    public function object_with_to_string_to_php_value_is_enum_with_that_string()
+    {
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumType = $enumTypeClass::getType($enumTypeClass::getTypeName());
+        /** @var AbstractPlatform $platform */
+        $platform = \Mockery::mock(AbstractPlatform::class);
+        $enum = $enumType->convertToPHPValue(new WithToStringTestObject($value = 'foo'), $platform);
+        /** @var \PHPUnit_Framework_TestCase $this */
+        $this->assertInstanceOf(EnumInterface::class, $enum);
+        $this->assertSame($value, $enum->getEnumValue());
+        $this->assertSame($value, (string)$enum);
     }
 
     /**
