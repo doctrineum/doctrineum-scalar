@@ -20,7 +20,7 @@ trait EnumTrait
      */
     public function __toString()
     {
-        return (string)$this->getEnumValue();
+        return (string)$this->enumValue;
     }
 
     /**

@@ -11,10 +11,10 @@ class Enum extends StrictObject implements EnumInterface
     use EnumTrait;
 
     /**
-     * @param int|float|string|bool|null $enumValue
+     * @param mixed $enumValue
      */
     public function __construct($enumValue)
     {
-        $this->enumValue = $enumValue;
+        $this->enumValue = static::convertToScalarOrNull($enumValue);
     }
 }
