@@ -40,7 +40,7 @@ class EnumType extends Type
     /**
      * Convert enum instance to database string (or null) value
      *
-     * @param Enum $value
+     * @param EnumInterface $value
      * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
      * @throws Exceptions\UnexpectedValueToDatabaseValue
      * @return string|null
@@ -48,13 +48,14 @@ class EnumType extends Type
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
         if (!is_object($value)) {
-            throw new Exceptions\UnexpectedValueToDatabaseValue('Expected object of class ' . Enum::class . ', got ' . gettype($value));
+            throw new Exceptions\UnexpectedValueToDatabaseValue('Expected object of class ' . EnumInterface::class . ', got ' . gettype($value));
         }
-        if (!is_a($value, Enum::class)) {
-            throw new Exceptions\UnexpectedValueToDatabaseValue('Expected ' . Enum::class . ', got ' . get_class($value));
+        if (!is_a($value, EnumInterface::class)) {
+            throw new Exceptions\UnexpectedValueToDatabaseValue('Expected ' . EnumInterface::class . ', got ' . get_class($value));
         }
 
-        return $value->getValue();
+        /** @var Enum $value probably */
+        return $value->getEnumValue();
     }
 
     /**
@@ -87,7 +88,7 @@ class EnumType extends Type
 
         $enumClass = static::getEnumClass();
         /** @var Enum $enumClass */
-        return $enumClass::get($value);
+        return $enumClass::getEnum($value);
     }
 
     /**

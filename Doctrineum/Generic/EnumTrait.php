@@ -16,11 +16,11 @@ trait EnumTrait
 
     /**
      * @return string (null is casted into empty string!)
-     * @see getValue()
+     * @see getEnumValue()
      */
     public function __toString()
     {
-        return (string)$this->getValue();
+        return (string)$this->getEnumValue();
     }
 
     /**
@@ -34,7 +34,7 @@ trait EnumTrait
     /**
      * @return string|int|float|bool|null
      */
-    public function getValue()
+    public function getEnumValue()
     {
         return $this->enumValue;
     }
@@ -52,7 +52,7 @@ trait EnumTrait
      * @param string $namespace
      * @return Enum
      */
-    public static function get($enumValue, $namespace = __CLASS__)
+    public static function getEnum($enumValue, $namespace = __CLASS__)
     {
         static::checkIfScalarOrNull($enumValue);
 
@@ -83,15 +83,6 @@ trait EnumTrait
      * @return Enum
      */
     protected static function createByValue($enumValue)
-    {
-        return static::create($enumValue);
-    }
-
-    /**
-     * @param string|int|float|bool|null $enumValue
-     * @return Enum
-     */
-    protected static function create($enumValue)
     {
         return new static($enumValue);
     }

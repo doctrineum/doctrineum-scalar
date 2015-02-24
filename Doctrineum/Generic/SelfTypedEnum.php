@@ -1,20 +1,43 @@
 <?php
 namespace Doctrineum\Generic;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
- * @method static SelfTypedEnum getType($name),
+ * @method static SelfTypedEnum getType(string $name),
  * @see EnumType::getType
+ * @method SelfTypedEnum convertToPHPValue(string $value, AbstractPlatform $platform)
+ * @see EnumType::convertToPHPValue
  */
 class SelfTypedEnum extends EnumType implements EnumInterface
 {
+    /**
+     * The enum __toString overwrites type __toString method
+     * @see \Doctrineum\Generic\EnumTrait::__toString for current
+     * and
+     * @see \Doctrine\DBAL\Types\Type::__toString for overwritten
+     */
     use EnumTrait;
 
     /**
-     * @param int|float|string|bool|null $enumValue
+     * @throws \Doctrine\DBAL\DBALException
      */
-    public function __construct($enumValue)
+    public static function registerSelf()
     {
-        $this->enumValue = $enumValue;
+        static::addType(static::getTypeName(), static::class);
+    }
+
+    /**
+     * @param string|int|float|bool|null $enumValue
+     * @return SelfTypedEnum
+     */
+    protected static function createByValue($enumValue)
+    {
+        static::checkIfScalarOrNull($enumValue);
+
+        $selfTypedEnum = static::getType(static::getTypeName());
+        $selfTypedEnum->enumValue = $enumValue;
+
+        return $selfTypedEnum;
     }
 
     /**
@@ -26,5 +49,16 @@ class SelfTypedEnum extends EnumType implements EnumInterface
     protected static function getEnumClass()
     {
         return static::class;
+    }
+
+    /**
+     * Gets the strongly recommended name of this type.
+     * Its used at @see \Doctrine\DBAL\Platforms\AbstractPlatform::getDoctrineTypeComment
+     *
+     * @return string
+     */
+    public static function getTypeName()
+    {
+        return 'self-typed-enum';
     }
 }

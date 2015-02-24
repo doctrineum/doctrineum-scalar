@@ -6,7 +6,7 @@ class EnumTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function can_create_instance()
     {
-        $instance = Enum::get('foo');
+        $instance = Enum::getEnum('foo');
         /** @var \PHPUnit_Framework_TestCase $this */
         $this->assertInstanceOf(Enum::class, $instance);
     }
@@ -14,9 +14,9 @@ class EnumTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function same_instance_for_same_name_is_returned()
     {
-        $firstInstance = Enum::get('foo');
-        $secondInstance = Enum::get('bar');
-        $thirdInstance = Enum::get('foo');
+        $firstInstance = Enum::getEnum('foo');
+        $secondInstance = Enum::getEnum('bar');
+        $thirdInstance = Enum::getEnum('foo');
         /** @var \PHPUnit_Framework_TestCase $this */
         $this->assertNotSame($firstInstance, $secondInstance);
         $this->assertSame($firstInstance, $thirdInstance);
@@ -25,15 +25,15 @@ class EnumTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function returns_same_value_as_created_with()
     {
-        $enum = Enum::get('foo');
+        $enum = Enum::getEnum('foo');
         /** @var \PHPUnit_Framework_TestCase $this */
-        $this->assertSame('foo', $enum->getValue());
+        $this->assertSame('foo', $enum->getEnumValue());
     }
 
     /** @test */
     public function as_string_is_of_same_value_as_created_with()
     {
-        $enum = Enum::get('foo');
+        $enum = Enum::getEnum('foo');
         /** @var \PHPUnit_Framework_TestCase $this */
         $this->assertSame('foo', (string)$enum);
     }
@@ -44,7 +44,7 @@ class EnumTest extends \PHPUnit_Framework_TestCase
      */
     public function can_not_be_cloned()
     {
-        $enum = Enum::get('foo');
+        $enum = Enum::getEnum('foo');
         /** @noinspection PhpExpressionResultUnusedInspection */
         clone $enum;
     }
@@ -52,10 +52,10 @@ class EnumTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function any_enum_namespace_is_accepted()
     {
-        $enum = Enum::get('foo', 'bar');
+        $enum = Enum::getEnum('foo', 'bar');
         /** @var \PHPUnit_Framework_TestCase $this */
         $this->assertInstanceOf(Enum::class, $enum);
-        $this->assertSame('foo', $enum->getValue());
+        $this->assertSame('foo', $enum->getEnumValue());
         $this->assertSame('foo', (string)$enum);
     }
 }

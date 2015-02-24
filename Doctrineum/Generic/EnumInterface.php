@@ -10,13 +10,8 @@ interface EnumInterface
     public function __toString();
 
     /**
-     * @return static
-     */
-    public function __clone();
-
-    /**
      * @return string
      */
-    public function getValue();
+    public function getEnumValue();
 
 }
