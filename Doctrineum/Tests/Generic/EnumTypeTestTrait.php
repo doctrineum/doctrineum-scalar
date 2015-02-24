@@ -2,12 +2,27 @@
 namespace Doctrineum\Tests\Generic;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrineum\Generic\SelfTypedEnum;
-use Granam\Strict\Object\Tests\StrictObjectTestTrait;
+use Doctrine\DBAL\Types\Type;
+use Doctrineum\Generic\EnumInterface;
 
-class SelfTypesEnumTest extends \PHPUnit_Framework_TestCase
+trait EnumTypeTestTrait
 {
-    use StrictObjectTestTrait;
+    /**
+     * @return \Doctrineum\Generic\EnumType|\Doctrineum\Generic\SelfTypedEnum
+     */
+    protected function getEnumTypeClass() {
+        return preg_replace('~Test$~', '', static::class);
+    }
+    
+    protected function setUp()
+    {
+        $enumTypeClass = $this->getEnumTypeClass();
+        if (Type::hasType($enumTypeClass::getTypeName())) {
+            Type::overrideType($enumTypeClass::getTypeName(), $enumTypeClass);
+        } else {
+            Type::addType($enumTypeClass::getTypeName(), $enumTypeClass);
+        }
+    }
 
     /**
      * This is just for sure - every test should close the Mockery and therefore evaluate expectations itself.
@@ -17,46 +32,34 @@ class SelfTypesEnumTest extends \PHPUnit_Framework_TestCase
         \Mockery::close();
     }
 
-    protected function setUp()
-    {
-        if (SelfTypedEnum::hasType(SelfTypedEnum::getTypeName())) {
-            SelfTypedEnum::overrideType(SelfTypedEnum::getTypeName(), SelfTypedEnum::class);
-        } else {
-            SelfTypedEnum::addType(SelfTypedEnum::getTypeName(), SelfTypedEnum::class);
-        }
-    }
-
     /**
-     * For strict object tests,
-     * @see StrictObjectTestTrait
-     *
      * @return \Doctrine\DBAL\Types\Type
      * @throws \Doctrine\DBAL\DBALException
      */
     protected function createObjectInstance()
     {
-        return SelfTypedEnum::getType(SelfTypedEnum::getTypeName());
+        $enumTypeClass = $this->getEnumTypeClass();
+        return $enumTypeClass::getType($enumTypeClass::getTypeName());
     }
 
-
-    /**
-     * EnumType tests
-     */
-
     /** @test */
-    public function can_create_type_instance()
+    public function instance_can_be_obtained()
     {
-        $instance = SelfTypedEnum::getType(SelfTypedEnum::getTypeName());
-        $this->assertInstanceOf(SelfTypedEnum::class, $instance);
+        $enumTypeClass = $this->getEnumTypeClass();
+        $instance = $enumTypeClass::getType($enumTypeClass::getTypeName());
+        /** @var \PHPUnit_Framework_TestCase $this */
+        $this->assertInstanceOf($enumTypeClass, $instance);
     }
 
     /** @test */
     public function sql_declaration_is_valid()
     {
-        $enumType = SelfTypedEnum::getType(SelfTypedEnum::getTypeName());
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumType = $enumTypeClass::getType($enumTypeClass::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $sql = $enumType->getSQLDeclaration([], $platform);
+        /** @var \PHPUnit_Framework_TestCase $this */
         $this->assertSame('VARCHAR(64)', $sql);
     }
 
@@ -65,11 +68,18 @@ class SelfTypesEnumTest extends \PHPUnit_Framework_TestCase
      */
     public function enum_with_null_to_database_value_is_null()
     {
-        $enumType = SelfTypedEnum::getType(SelfTypedEnum::getTypeName());
-        $nullEnum = SelfTypedEnum::getEnum(null);
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumType = $enumTypeClass::getType($enumTypeClass::getTypeName());
+        $nullEnum = \Mockery::mock(EnumInterface::class);
+        $nullEnum->shouldReceive('getEnumValue')
+            ->once()
+            ->andReturn(null);
+        /** @var EnumInterface $nullEnum */
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
+        /** @var \PHPUnit_Framework_TestCase $this */
         $this->assertNull($enumType->convertToDatabaseValue($nullEnum, $platform));
+        \Mockery::close();
     }
 
     /**
@@ -77,11 +87,18 @@ class SelfTypesEnumTest extends \PHPUnit_Framework_TestCase
      */
     public function enum_as_database_value_is_string_value_of_that_enum()
     {
-        $enumType = SelfTypedEnum::getType(SelfTypedEnum::getTypeName());
-        $enum = SelfTypedEnum::getEnum($value = 'foo');
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumType = $enumTypeClass::getType($enumTypeClass::getTypeName());
+        $enum = \Mockery::mock(EnumInterface::class);
+        $enum->shouldReceive('getEnumValue')
+            ->once()
+            ->andReturn($value = 'foo');
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
+        /** @var EnumInterface $enum */
+        /** @var \PHPUnit_Framework_TestCase $this */
         $this->assertSame($value, $enumType->convertToDatabaseValue($enum, $platform));
+        \Mockery::close();
     }
 
     /**
@@ -89,11 +106,13 @@ class SelfTypesEnumTest extends \PHPUnit_Framework_TestCase
      */
     public function null_to_php_value_creates_enum()
     {
-        $enumType = SelfTypedEnum::getType(SelfTypedEnum::getTypeName());
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumType = $enumTypeClass::getType($enumTypeClass::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue(null, $platform);
-        $this->assertInstanceOf(SelfTypedEnum::class, $enum);
+        /** @var \PHPUnit_Framework_TestCase $this */
+        $this->assertInstanceOf(EnumInterface::class, $enum);
         $this->assertNull($enum->getEnumValue());
     }
 
@@ -102,11 +121,13 @@ class SelfTypesEnumTest extends \PHPUnit_Framework_TestCase
      */
     public function string_to_php_value_is_enum_with_that_string()
     {
-        $enumType = SelfTypedEnum::getType(SelfTypedEnum::getTypeName());
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumType = $enumTypeClass::getType($enumTypeClass::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($string = 'foo', $platform);
-        $this->assertInstanceOf(SelfTypedEnum::class, $enum);
+        /** @var \PHPUnit_Framework_TestCase $this */
+        $this->assertInstanceOf(EnumInterface::class, $enum);
         $this->assertSame($string, $enum->getEnumValue());
     }
 
@@ -115,11 +136,13 @@ class SelfTypesEnumTest extends \PHPUnit_Framework_TestCase
      */
     public function empty_string_to_php_value_is_enum_with_that_empty_string()
     {
-        $enumType = SelfTypedEnum::getType(SelfTypedEnum::getTypeName());
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumType = $enumTypeClass::getType($enumTypeClass::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($emptyString = '', $platform);
-        $this->assertInstanceOf(SelfTypedEnum::class, $enum);
+        /** @var \PHPUnit_Framework_TestCase $this */
+        $this->assertInstanceOf(EnumInterface::class, $enum);
         $this->assertSame($emptyString, $enum->getEnumValue());
     }
 
@@ -131,11 +154,13 @@ class SelfTypesEnumTest extends \PHPUnit_Framework_TestCase
      */
     public function integer_to_php_value_is_enum_with_that_integer()
     {
-        $enumType = SelfTypedEnum::getType(SelfTypedEnum::getTypeName());
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumType = $enumTypeClass::getType($enumTypeClass::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($integer = 12345, $platform);
-        $this->assertInstanceOf(SelfTypedEnum::class, $enum);
+        /** @var \PHPUnit_Framework_TestCase $this */
+        $this->assertInstanceOf(EnumInterface::class, $enum);
         $this->assertSame($integer, $enum->getEnumValue());
     }
 
@@ -147,11 +172,13 @@ class SelfTypesEnumTest extends \PHPUnit_Framework_TestCase
      */
     public function zero_integer_to_php_value_is_enum_with_that_zero_integer()
     {
-        $enumType = SelfTypedEnum::getType(SelfTypedEnum::getTypeName());
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumType = $enumTypeClass::getType($enumTypeClass::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($zeroInteger = 0, $platform);
-        $this->assertInstanceOf(SelfTypedEnum::class, $enum);
+        /** @var \PHPUnit_Framework_TestCase $this */
+        $this->assertInstanceOf(EnumInterface::class, $enum);
         $this->assertSame($zeroInteger, $enum->getEnumValue());
     }
 
@@ -163,11 +190,13 @@ class SelfTypesEnumTest extends \PHPUnit_Framework_TestCase
      */
     public function float_to_php_value_is_enum_with_that_float()
     {
-        $enumType = SelfTypedEnum::getType(SelfTypedEnum::getTypeName());
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumType = $enumTypeClass::getType($enumTypeClass::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($float = 12345.6789, $platform);
-        $this->assertInstanceOf(SelfTypedEnum::class, $enum);
+        /** @var \PHPUnit_Framework_TestCase $this */
+        $this->assertInstanceOf(EnumInterface::class, $enum);
         $this->assertSame($float, $enum->getEnumValue());
     }
 
@@ -179,11 +208,13 @@ class SelfTypesEnumTest extends \PHPUnit_Framework_TestCase
      */
     public function zero_float_to_php_value_is_enum_with_that_zero_float()
     {
-        $enumType = SelfTypedEnum::getType(SelfTypedEnum::getTypeName());
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumType = $enumTypeClass::getType($enumTypeClass::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($zeroFloat = 0.0, $platform);
-        $this->assertInstanceOf(SelfTypedEnum::class, $enum);
+        /** @var \PHPUnit_Framework_TestCase $this */
+        $this->assertInstanceOf(EnumInterface::class, $enum);
         $this->assertSame($zeroFloat, $enum->getEnumValue());
     }
 
@@ -195,11 +226,13 @@ class SelfTypesEnumTest extends \PHPUnit_Framework_TestCase
      */
     public function false_to_php_value_is_enum_with_that_false()
     {
-        $enumType = SelfTypedEnum::getType(SelfTypedEnum::getTypeName());
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumType = $enumTypeClass::getType($enumTypeClass::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($false = false, $platform);
-        $this->assertInstanceOf(SelfTypedEnum::class, $enum);
+        /** @var \PHPUnit_Framework_TestCase $this */
+        $this->assertInstanceOf(EnumInterface::class, $enum);
         $this->assertSame($false, $enum->getEnumValue());
     }
 
@@ -211,11 +244,13 @@ class SelfTypesEnumTest extends \PHPUnit_Framework_TestCase
      */
     public function true_to_php_value_is_enum_with_that_true()
     {
-        $enumType = SelfTypedEnum::getType(SelfTypedEnum::getTypeName());
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumType = $enumTypeClass::getType($enumTypeClass::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($true = true, $platform);
-        $this->assertInstanceOf(SelfTypedEnum::class, $enum);
+        /** @var \PHPUnit_Framework_TestCase $this */
+        $this->assertInstanceOf(EnumInterface::class, $enum);
         $this->assertSame($true, $enum->getEnumValue());
     }
 
@@ -225,7 +260,8 @@ class SelfTypesEnumTest extends \PHPUnit_Framework_TestCase
      */
     public function array_to_php_value_cause_exception()
     {
-        $enumType = SelfTypedEnum::getType(SelfTypedEnum::getTypeName());
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumType = $enumTypeClass::getType($enumTypeClass::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enumType->convertToPHPValue([], $platform);
@@ -237,7 +273,8 @@ class SelfTypesEnumTest extends \PHPUnit_Framework_TestCase
      */
     public function resource_to_php_value_cause_exception()
     {
-        $enumType = SelfTypedEnum::getType(SelfTypedEnum::getTypeName());
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumType = $enumTypeClass::getType($enumTypeClass::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enumType->convertToPHPValue(tmpfile(), $platform);
@@ -249,7 +286,8 @@ class SelfTypesEnumTest extends \PHPUnit_Framework_TestCase
      */
     public function object_to_php_value_cause_exception()
     {
-        $enumType = SelfTypedEnum::getType(SelfTypedEnum::getTypeName());
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumType = $enumTypeClass::getType($enumTypeClass::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enumType->convertToPHPValue(new \stdClass(), $platform);
@@ -261,67 +299,11 @@ class SelfTypesEnumTest extends \PHPUnit_Framework_TestCase
      */
     public function callback_to_php_value_cause_exception()
     {
-        $enumType = SelfTypedEnum::getType(SelfTypedEnum::getTypeName());
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumType = $enumTypeClass::getType($enumTypeClass::getTypeName());
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enumType->convertToPHPValue(function () {
         }, $platform);
     }
-
-    /**
-     * Enum tests
-     */
-
-    /** @test */
-    public function can_create_enum_instance()
-    {
-        $instance = SelfTypedEnum::getEnum('foo');
-        $this->assertInstanceOf(SelfTypedEnum::class, $instance);
-    }
-
-    /** @test */
-    public function same_instance_for_same_name_is_returned()
-    {
-        $firstInstance = SelfTypedEnum::getEnum('foo');
-        $secondInstance = SelfTypedEnum::getEnum('bar');
-        $thirdInstance = SelfTypedEnum::getEnum('foo');
-        $this->assertNotSame($firstInstance, $secondInstance);
-        $this->assertSame($firstInstance, $thirdInstance);
-    }
-
-    /** @test */
-    public function returns_same_value_as_created_with()
-    {
-        $enum = SelfTypedEnum::getEnum('foo');
-        $this->assertSame('foo', $enum->getEnumValue());
-    }
-
-    /** @test */
-    public function as_string_is_of_same_value_as_created_with()
-    {
-        $enum = SelfTypedEnum::getEnum('foo');
-        $this->assertSame('foo', (string)$enum);
-    }
-
-    /**
-     * @test
-     * @expectedException \Doctrineum\Generic\Exceptions\CanNotBeCloned
-     */
-    public function can_not_be_cloned()
-    {
-        $enum = SelfTypedEnum::getEnum('foo');
-        /** @noinspection PhpExpressionResultUnusedInspection */
-        clone $enum;
-    }
-
-    /** @test */
-    public function any_enum_namespace_is_accepted()
-    {
-        $enum = SelfTypedEnum::getEnum('foo', 'bar');
-        /** @var \PHPUnit_Framework_TestCase $this */
-        $this->assertInstanceOf(SelfTypedEnum::class, $enum);
-        $this->assertSame('foo', $enum->getEnumValue());
-        $this->assertSame('foo', (string)$enum);
-    }
-
 }

@@ -3,7 +3,7 @@ namespace Doctrineum\Generic;
 
 use Doctrineum\Tests\Generic\EnumTestTrait;
 
-class EnumTest extends \PHPUnit_Framework_TestCase
+class SelfTypedEnumTest extends EnumTypeTest
 {
     use EnumTestTrait;
 }
