@@ -37,10 +37,12 @@ class SelfTypedEnum extends EnumType implements EnumInterface
      */
     protected static function createByValue($enumValue)
     {
-        $checkedValue = static::convertToScalarOrNull($enumValue);
+        if (!is_scalar($enumValue) && !is_null($enumValue)) {
+            throw new Exceptions\UnexpectedValueToEnum('Expected scalar or null, got ' . gettype($enumValue));
+        }
 
         $selfTypedEnum = static::getType(static::getTypeName());
-        $selfTypedEnum->enumValue = $checkedValue;
+        $selfTypedEnum->enumValue = $enumValue;
 
         return $selfTypedEnum;
     }
