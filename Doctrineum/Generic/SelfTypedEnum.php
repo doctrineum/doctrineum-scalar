@@ -18,6 +18,8 @@ class SelfTypedEnum extends EnumType implements EnumInterface
      */
     use EnumTrait;
 
+    const SELF_TYPED_ENUM = 'self_typed_enum';
+
     /**
      * @throws \Doctrine\DBAL\DBALException
      */
@@ -62,6 +64,6 @@ class SelfTypedEnum extends EnumType implements EnumInterface
      */
     public static function getTypeName()
     {
-        return 'self-typed-enum';
+        return self::SELF_TYPED_ENUM;
     }
 }
