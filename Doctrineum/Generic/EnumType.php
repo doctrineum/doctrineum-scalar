@@ -15,6 +15,8 @@ class EnumType extends Type
 {
     use StrictObjectTrait;
 
+    const ENUM = 'enum';
+
     /**
      * Gets the SQL declaration snippet for a field of this type.
      *
@@ -121,7 +123,7 @@ class EnumType extends Type
      */
     public static function getTypeName()
     {
-        return 'enum';
+        return self::ENUM;
     }
 
     /**
