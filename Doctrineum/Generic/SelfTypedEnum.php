@@ -59,6 +59,7 @@ class SelfTypedEnum extends EnumType implements EnumInterface
     }
 
     /**
+     * The name is auto-generated from this class base name
      * Gets the strongly recommended name of this type.
      * Its used at @see \Doctrine\DBAL\Platforms\AbstractPlatform::getDoctrineTypeComment
      *
@@ -66,6 +67,9 @@ class SelfTypedEnum extends EnumType implements EnumInterface
      */
     public static function getTypeName()
     {
-        return self::SELF_TYPED_ENUM;
+        // Doctrineum\Generic\SelfTypedEnum = SelfTypedEnum
+        $baseClassName = preg_replace('~(\w+\\\)*(\w+)~', '$2', static::class);
+        // SelfTypedEnum = Self_Typed_Enum = self_typed_enum
+        return strtolower(preg_replace('~(\w)([A-Z])~', '$1_$2', $baseClassName));
     }
 }

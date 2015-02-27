@@ -44,6 +44,17 @@ trait EnumTypeTestTrait
     }
 
     /** @test */
+    public function type_name_is_as_expected()
+    {
+        $enumTypeClass = $this->getEnumTypeClass();
+        /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
+        $this->assertSame('enum', $enumTypeClass::getTypeName());
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumType = $enumTypeClass::getType($enumTypeClass::getTypeName());
+        $this->assertSame($enumType::getTypeName(), $enumTypeClass::getTypeName());
+    }
+
+    /** @test */
     public function instance_can_be_obtained()
     {
         $enumTypeClass = $this->getEnumTypeClass();
