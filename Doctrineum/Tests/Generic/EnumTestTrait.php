@@ -93,6 +93,6 @@ trait EnumTestTrait
         $this->assertSame('foo', (string)$enum);
         $inDifferentNamespace = $enumClass::getEnum($value, $namespace . 'baz');
         $this->assertInstanceOf($enumClass, $inDifferentNamespace);
-        var_dump($enum === $inDifferentNamespace);
+        $this->assertNotSame($enum, $inDifferentNamespace);
     }
 }
