@@ -1,5 +1,6 @@
 <?php
 namespace Doctrineum\Generic;
+
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
@@ -19,6 +20,9 @@ class SelfTypedEnum extends EnumType implements EnumInterface
     use EnumTrait;
 
     const SELF_TYPED_ENUM = 'self_typed_enum';
+    const CANNOT_BE_CHANGED_NAMESPACE = __CLASS__;
+
+    private static $_currentEnumNamespace;
 
     /**
      * @throws \Doctrine\DBAL\DBALException
@@ -26,6 +30,25 @@ class SelfTypedEnum extends EnumType implements EnumInterface
     public static function registerSelf()
     {
         static::addType(static::getTypeName(), static::class);
+    }
+
+    /**
+     * @param string|float|int|bool|null $enumValue
+     * @param string $namespace
+     * @return Enum
+     */
+    public static function getEnum($enumValue, $namespace = self::CANNOT_BE_CHANGED_NAMESPACE)
+    {
+        if ($namespace !== self::CANNOT_BE_CHANGED_NAMESPACE) {
+            throw new Exceptions\SelfTypedEnumConstantNamespaceChanged(
+                'The self-typed enum namespace must not be changed. Expected '
+                . self::CANNOT_BE_CHANGED_NAMESPACE . ', got ' . var_export($namespace, true)
+            );
+        }
+
+        self::$_currentEnumNamespace = $namespace;
+
+        return static::getEnumFromNamespace($enumValue, $namespace);
     }
 
     /**
@@ -37,6 +60,16 @@ class SelfTypedEnum extends EnumType implements EnumInterface
      */
     protected static function createByValue($enumValue)
     {
+        if (!isset(self::$_currentEnumNamespace)) {
+            throw new Exceptions\MissingCurrentlyBuiltEnumNamespace('The currently created enum namespace is missing.');
+        }
+        if (self::$_currentEnumNamespace !== self::CANNOT_BE_CHANGED_NAMESPACE) {
+            throw new Exceptions\SelfTypedEnumConstantNamespaceChanged(
+                'The self-typed enum namespace must not be changed. Expected '
+                . self::CANNOT_BE_CHANGED_NAMESPACE . ', got ' . var_export(self::$_currentEnumNamespace, true)
+            );
+        }
+
         if (!is_scalar($enumValue) && !is_null($enumValue)) {
             throw new Exceptions\UnexpectedValueToEnum('Expected scalar or null, got ' . gettype($enumValue));
         }

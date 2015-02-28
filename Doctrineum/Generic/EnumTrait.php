@@ -54,6 +54,11 @@ trait EnumTrait
      */
     public static function getEnum($enumValue, $namespace = __CLASS__)
     {
+        return static::getEnumFromNamespace($enumValue, $namespace);
+    }
+
+    protected static function getEnumFromNamespace($enumValue, $namespace)
+    {
         $checkedValue = static::convertToScalarOrNull($enumValue);
 
         if (!isset(self::$builtEnums[$namespace])) {

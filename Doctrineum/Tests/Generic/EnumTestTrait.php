@@ -86,10 +86,13 @@ trait EnumTestTrait
     public function any_enum_namespace_is_accepted()
     {
         $enumClass = $this->getEnumClass();
-        $enum = $enumClass::getEnum('foo', 'bar');
+        $enum = $enumClass::getEnum($value = 'foo', $namespace = 'bar');
         /** @var \PHPUnit_Framework_TestCase $this */
         $this->assertInstanceOf($enumClass, $enum);
         $this->assertSame('foo', $enum->getEnumValue());
         $this->assertSame('foo', (string)$enum);
+        $inDifferentNamespace = $enumClass::getEnum($value, $namespace . 'baz');
+        $this->assertInstanceOf($enumClass, $inDifferentNamespace);
+        var_dump($enum === $inDifferentNamespace);
     }
 }

@@ -2,8 +2,9 @@
 namespace Doctrineum\Generic;
 
 use Doctrineum\Tests\Generic\EnumTestTrait;
+use Doctrineum\Tests\Generic\EnumTypeTestTrait;
 
-class SelfTypedEnumTest extends EnumTypeTest
+class SelfTypedEnumTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * Combining both enum type tests
@@ -12,6 +13,7 @@ class SelfTypedEnumTest extends EnumTypeTest
      * @see EnumTestTrait
      */
     use EnumTestTrait;
+    use EnumTypeTestTrait;
 
     /**
      * Overloaded test to compare new type name
@@ -25,5 +27,20 @@ class SelfTypedEnumTest extends EnumTypeTest
         $enumTypeClass = $this->getEnumTypeClass();
         $enumType = $enumTypeClass::getType($enumTypeClass::getTypeName());
         $this->assertSame($enumType::getTypeName(), $enumTypeClass::getTypeName());
+    }
+
+    /** @test */
+    public function any_enum_namespace_is_accepted()
+    {
+        $this->markTestSkipped('Self-typed enum does not support different namespaces yet');
+    }
+
+    /**
+     * @test
+     * @expectedException \Doctrineum\Generic\Exceptions\SelfTypedEnumConstantNamespaceChanged
+     */
+    public function non_default_enum_namespace_is_prohibited()
+    {
+        SelfTypedEnum::getEnum('foo', SelfTypedEnum::CANNOT_BE_CHANGED_NAMESPACE . 'bar');
     }
 }
