@@ -123,7 +123,12 @@ class EnumType extends Type
      */
     public static function getTypeName()
     {
-        return self::ENUM;
+        // Doctrineum\Generic\EnumType = EnumType
+        $baseClassName = preg_replace('~(\w+\\\)*(\w+)~', '$2', static::class);
+        // EnumType = Enum
+        $baseTypeName = preg_replace('~Type$~', '', $baseClassName);
+        // FooBarEnum = Foo_Bar_Enum = foo_bar_enum
+        return strtolower(preg_replace('~(\w)([A-Z])~', '$1_$2', $baseTypeName));
     }
 
     /**

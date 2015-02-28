@@ -49,6 +49,7 @@ trait EnumTypeTestTrait
         $enumTypeClass = $this->getEnumTypeClass();
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
         $this->assertSame('enum', $enumTypeClass::getTypeName());
+        $this->assertSame($enumTypeClass::ENUM, $enumTypeClass::getTypeName());
         $enumTypeClass = $this->getEnumTypeClass();
         $enumType = $enumTypeClass::getType($enumTypeClass::getTypeName());
         $this->assertSame($enumType::getTypeName(), $enumTypeClass::getTypeName());
