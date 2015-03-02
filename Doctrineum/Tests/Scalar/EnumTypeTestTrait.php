@@ -15,6 +15,15 @@ trait EnumTypeTestTrait
         return preg_replace('~Test$~', '', static::class);
     }
 
+    /**
+     * @return \Doctrineum\Scalar\Enum|\Doctrineum\Scalar\SelfTypedEnum
+     */
+    protected function getRegisteredEnumClass()
+    {
+        return preg_replace('~(Type)?Test$~', '', static::class);
+    }
+
+
     protected function setUp()
     {
         $enumTypeClass = $this->getEnumTypeClass();
@@ -124,8 +133,8 @@ trait EnumTypeTestTrait
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue(null, $platform);
-        /** @var \PHPUnit_Framework_TestCase $this */
-        $this->assertInstanceOf(EnumInterface::class, $enum);
+        /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
+        $this->assertInstanceOf($this->getRegisteredEnumClass(),  $enum);
         $this->assertNull($enum->getEnumValue());
     }
 
@@ -139,8 +148,8 @@ trait EnumTypeTestTrait
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($string = 'foo', $platform);
-        /** @var \PHPUnit_Framework_TestCase $this */
-        $this->assertInstanceOf(EnumInterface::class, $enum);
+        /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
+        $this->assertInstanceOf($this->getRegisteredEnumClass(),  $enum);
         $this->assertSame($string, $enum->getEnumValue());
     }
 
@@ -154,8 +163,8 @@ trait EnumTypeTestTrait
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($emptyString = '', $platform);
-        /** @var \PHPUnit_Framework_TestCase $this */
-        $this->assertInstanceOf(EnumInterface::class, $enum);
+        /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
+        $this->assertInstanceOf($this->getRegisteredEnumClass(),  $enum);
         $this->assertSame($emptyString, $enum->getEnumValue());
     }
 
@@ -172,8 +181,8 @@ trait EnumTypeTestTrait
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($integer = 12345, $platform);
-        /** @var \PHPUnit_Framework_TestCase $this */
-        $this->assertInstanceOf(EnumInterface::class, $enum);
+        /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
+        $this->assertInstanceOf($this->getRegisteredEnumClass(),  $enum);
         $this->assertSame($integer, $enum->getEnumValue());
     }
 
@@ -190,8 +199,8 @@ trait EnumTypeTestTrait
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($zeroInteger = 0, $platform);
-        /** @var \PHPUnit_Framework_TestCase $this */
-        $this->assertInstanceOf(EnumInterface::class, $enum);
+        /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
+        $this->assertInstanceOf($this->getRegisteredEnumClass(),  $enum);
         $this->assertSame($zeroInteger, $enum->getEnumValue());
     }
 
@@ -208,8 +217,8 @@ trait EnumTypeTestTrait
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($float = 12345.6789, $platform);
-        /** @var \PHPUnit_Framework_TestCase $this */
-        $this->assertInstanceOf(EnumInterface::class, $enum);
+        /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
+        $this->assertInstanceOf($this->getRegisteredEnumClass(),  $enum);
         $this->assertSame($float, $enum->getEnumValue());
     }
 
@@ -226,8 +235,8 @@ trait EnumTypeTestTrait
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($zeroFloat = 0.0, $platform);
-        /** @var \PHPUnit_Framework_TestCase $this */
-        $this->assertInstanceOf(EnumInterface::class, $enum);
+        /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
+        $this->assertInstanceOf($this->getRegisteredEnumClass(),  $enum);
         $this->assertSame($zeroFloat, $enum->getEnumValue());
     }
 
@@ -244,8 +253,8 @@ trait EnumTypeTestTrait
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($false = false, $platform);
-        /** @var \PHPUnit_Framework_TestCase $this */
-        $this->assertInstanceOf(EnumInterface::class, $enum);
+        /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
+        $this->assertInstanceOf($this->getRegisteredEnumClass(),  $enum);
         $this->assertSame($false, $enum->getEnumValue());
     }
 
@@ -262,8 +271,8 @@ trait EnumTypeTestTrait
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue($true = true, $platform);
-        /** @var \PHPUnit_Framework_TestCase $this */
-        $this->assertInstanceOf(EnumInterface::class, $enum);
+        /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
+        $this->assertInstanceOf($this->getRegisteredEnumClass(),  $enum);
         $this->assertSame($true, $enum->getEnumValue());
     }
 
@@ -316,8 +325,8 @@ trait EnumTypeTestTrait
         /** @var AbstractPlatform $platform */
         $platform = \Mockery::mock(AbstractPlatform::class);
         $enum = $enumType->convertToPHPValue(new WithToStringTestObject($value = 'foo'), $platform);
-        /** @var \PHPUnit_Framework_TestCase $this */
-        $this->assertInstanceOf(EnumInterface::class, $enum);
+        /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
+        $this->assertInstanceOf($this->getRegisteredEnumClass(),  $enum);
         $this->assertSame($value, $enum->getEnumValue());
         $this->assertSame($value, (string)$enum);
     }

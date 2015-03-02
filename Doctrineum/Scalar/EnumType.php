@@ -15,6 +15,12 @@ class EnumType extends Type
 {
     use StrictObjectTrait;
 
+    /**
+     * Its not directly used this library - the exactly same value is generated and used by
+     * @see \Doctrineum\Scalar\SelfTypedEnum::getTypeName
+     *
+     * This constant exists to follow Doctrine type conventions.
+     */
     const ENUM = 'enum';
 
     /**
