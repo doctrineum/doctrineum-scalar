@@ -1,5 +1,5 @@
 {
-    "name": "jaroslavtyc/doctrineum-generic",
+    "name": "doctrineum/scalar",
     "type": "library",
     "description": "Enumeration type for Doctrine",
     "license": "MIT",
