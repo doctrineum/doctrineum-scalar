@@ -25,11 +25,31 @@ class SelfTypedEnum extends EnumType implements EnumInterface
     private static $_currentEnumNamespace;
 
     /**
+     * @return bool If enum has not been registered before and was registered now
      * @throws \Doctrine\DBAL\DBALException
      */
     public static function registerSelf()
     {
+        if (static::hasType(static::getTypeName())) {
+            static::checkRegisteredType();
+
+            return false;
+        }
+
         static::addType(static::getTypeName(), static::class);
+
+        return true;
+    }
+
+    protected static function checkRegisteredType()
+    {
+        $alreadyRegisteredType = static::getType(static::getTypeName());
+        if (get_class($alreadyRegisteredType) !== static::class) {
+            throw new Exceptions\TypeNameOccupied(
+                'Under type name ' . static::getTypeName() .
+                ' is already registered different class ' . get_class($alreadyRegisteredType)
+            );
+        }
     }
 
     /**
@@ -48,6 +68,10 @@ class SelfTypedEnum extends EnumType implements EnumInterface
 
         self::$_currentEnumNamespace = $namespace;
 
+        /**
+         * For enum creation uses see local
+         * @see SelfTypedEnum::createByValue
+         */
         return static::getEnumFromNamespace($enumValue, $namespace);
     }
 
@@ -75,9 +99,15 @@ class SelfTypedEnum extends EnumType implements EnumInterface
         }
 
         $selfTypedEnum = static::getType(static::getTypeName());
-        $selfTypedEnum->enumValue = $enumValue;
+        if ($selfTypedEnum->enumValue === $enumValue) {
+            return $selfTypedEnum;
+        }
 
-        return $selfTypedEnum;
+        $selfTypedEnum->allowSingleClone();
+        $newSelfTypedEnum = clone $selfTypedEnum;
+        $newSelfTypedEnum->enumValue = $enumValue;
+
+        return $newSelfTypedEnum;
     }
 
     /**

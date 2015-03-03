@@ -15,6 +15,28 @@ class SelfTypedEnumTest extends \PHPUnit_Framework_TestCase
     use EnumTestTrait;
     use EnumTypeTestTrait;
 
+    protected function setUp()
+    {
+        // overloaded type registration from the trait to test it later
+    }
+
+    /**
+     * @test
+     */
+    public function can_register_self()
+    {
+        SelfTypedEnum::registerSelf();
+    }
+
+    /**
+     * @test
+     * @depends can_register_self
+     */
+    public function repeated_self_registration_returns_false()
+    {
+        $this->assertFalse(SelfTypedEnum::registerSelf());
+    }
+
     /**
      * Overloaded test to compare new type name
      * @test
@@ -29,7 +51,10 @@ class SelfTypedEnumTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($enumType::getTypeName(), $enumTypeClass::getTypeName());
     }
 
-    /** @test */
+    /**
+     * @test
+     * @depends can_register_self
+     */
     public function any_enum_namespace_is_accepted()
     {
         $this->markTestSkipped('Self-typed enum does not support different namespaces yet');
@@ -37,6 +62,7 @@ class SelfTypedEnumTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @depends can_register_self
      * @expectedException \Doctrineum\Scalar\Exceptions\SelfTypedEnumConstantNamespaceChanged
      */
     public function non_default_enum_namespace_is_prohibited()

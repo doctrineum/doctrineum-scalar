@@ -24,11 +24,15 @@ trait EnumTestTrait
     public function same_instance_for_same_name_is_returned()
     {
         $enumClass = $this->getEnumClass();
-        $firstInstance = $enumClass::getEnum('foo');
-        $secondInstance = $enumClass::getEnum('bar');
-        $thirdInstance = $enumClass::getEnum('foo');
+        $firstInstance = $enumClass::getEnum($firstValue = 'foo');
+        $secondInstance = $enumClass::getEnum($secondValue = 'bar');
+        $thirdInstance = $enumClass::getEnum($firstValue);
         /** @var \PHPUnit_Framework_TestCase $this */
-        $this->assertNotSame($firstInstance, $secondInstance);
+        $this->assertNotSame(
+            $firstInstance,
+            $secondInstance,
+            "Instance of enum $enumClass with value $firstValue should not be same as instance with value $secondValue"
+        );
         $this->assertSame($firstInstance, $thirdInstance);
     }
 
