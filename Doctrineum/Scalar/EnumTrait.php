@@ -72,12 +72,21 @@ trait EnumTrait
 
     protected static function getEnumFromNamespace($enumValue, $namespace)
     {
-        $checkedValue = static::convertToScalarOrNull($enumValue);
-        if (!static::hasBuiltEnum($checkedValue, $namespace)) {
-            static::addBuiltEnum(static::createByValue($checkedValue), $namespace);
+        $finalValue = static::convertToEnumFinalValue($enumValue);
+        if (!static::hasBuiltEnum($finalValue, $namespace)) {
+            static::addBuiltEnum(static::createByValue($finalValue), $namespace);
         }
 
-        return static::getBuiltEnum($checkedValue, $namespace);
+        return static::getBuiltEnum($finalValue, $namespace);
+    }
+
+    /**
+     * @param mixed $enumValue
+     * @return string|float|int|null
+     */
+    protected static function convertToEnumFinalValue($enumValue)
+    {
+        return static::convertToScalarOrNull($enumValue);
     }
 
     /**
