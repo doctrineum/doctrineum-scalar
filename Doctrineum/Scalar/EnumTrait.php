@@ -62,12 +62,19 @@ trait EnumTrait
 
     /**
      * @param string|float|int|bool|null $enumValue
-     * @param string $namespace
      * @return Enum
      */
-    public static function getEnum($enumValue, $namespace = __CLASS__)
+    public static function getEnum($enumValue)
     {
-        return static::getEnumFromNamespace($enumValue, $namespace);
+        return static::getEnumFromNamespace($enumValue, static::getInnerNamespace());
+    }
+
+    /**
+     * @return string
+     */
+    protected static function getInnerNamespace()
+    {
+        return static::class;
     }
 
     protected static function getEnumFromNamespace($enumValue, $namespace)

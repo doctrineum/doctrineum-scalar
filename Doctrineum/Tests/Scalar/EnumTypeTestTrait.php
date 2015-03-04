@@ -4,6 +4,7 @@ namespace Doctrineum\Tests\Scalar;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrineum\Scalar\EnumInterface;
+use Doctrineum\Scalar\EnumType;
 
 trait EnumTypeTestTrait
 {
@@ -55,13 +56,15 @@ trait EnumTypeTestTrait
     /** @test */
     public function type_name_is_as_expected()
     {
-        $enumTypeClass = $this->getEnumTypeClass();
+        if ($this->getEnumTypeClass() !== EnumType::class) {
+            throw new \LogicException('You have to overload this test using the enum class ' . $this->getEnumTypeClass());
+        }
+
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
-        $this->assertSame('enum', $enumTypeClass::getTypeName());
-        $this->assertSame($enumTypeClass::ENUM, $enumTypeClass::getTypeName());
-        $enumTypeClass = $this->getEnumTypeClass();
-        $enumType = $enumTypeClass::getType($enumTypeClass::getTypeName());
-        $this->assertSame($enumType::getTypeName(), $enumTypeClass::getTypeName());
+        $this->assertSame('enum', EnumType::getTypeName());
+        $this->assertSame('enum', EnumType::ENUM);
+        $enumType = EnumType::getType(EnumType::getTypeName());
+        $this->assertSame($enumType::getTypeName(), EnumType::getTypeName());
     }
 
     /** @test */
