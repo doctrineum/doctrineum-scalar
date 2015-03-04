@@ -5,9 +5,9 @@ For default custom types see the [official documentation as well](http://doctrin
 
 ## <span id="usage">Usage</span>
 1. [Installation](#installation)
-2. [Custom type registration](#custom_type_registration)
-3. [Map property as an enum](#map_property_as_an_enum)
-4. [Understand the basics](#understand_the_basics)
+2. [Custom type registration](#custom-type-registration)
+3. [Map property as an enum](#map-property-as-an-enum)
+4. [Understand the basics](#understand-the-basics)
 
 ### <span id="installation">Installation</span>
 Edit composer.json at your project, add
@@ -15,14 +15,14 @@ Edit composer.json at your project, add
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/jaroslavtyc/doctrineum.git"
+            "url": "https://github.com/jaroslavtyc/doctrineum-scalar.git"
         }
     ],
 ```
 then extend in the same composer.json file the field require by doctrineum
 ```json
     "require": {
-        "jaroslavtyc/doctrineum": "dev-master"
+        "doctrineum/scalar": "dev-master"
     }
 ```
 
@@ -33,7 +33,7 @@ then extend in the same composer.json file the field require by doctrineum
 // in bootstrapping code
 // ...
 use Doctrine\DBAL\Types\Type;
-use Doctrineum\EnumType;
+use Doctrineum\Scalar\EnumType;
 // ...
 // Register type
 Type::addType(EnumType::getTypeName(), '\Doctrineum\EnumType');
@@ -55,7 +55,7 @@ doctrine:
     dbal:
         # ...
         types:
-            enum: Doctrineum\EnumType
+            enum: Doctrineum\Scalar\EnumType
             baz: Foo\BarEnumType
             #...
 ```
@@ -65,14 +65,14 @@ doctrine:
 <?php
 class Foo
 {
-    /** @Column(type="\Doctrineum\Enum") */
+    /** @Column(type="\Doctrineum\Scalar\Enum") */
     protected $field;
 }
 ```
 
-*note: the type has the same name as the Enum class itself, but its just a string; you can change it at child class anytime; see EnumType::getTypeName()*
+*note: the type has the same name as the Enum class itself, but its just a string; you can change it at child class anytime; see \Doctrineum\Scalar\EnumType::getTypeName()*
 
 #### <span id="understand_the_basics">Understand the basics</span>
 There are two roles - the factory and the value.
  - EnumType is the factory (as part of the Doctrine\DBAL\Types\Type family), building an Enum following rules.
- - Enum is the value holder, de facto singleton, represented by a class (and class, as you know, can do a lot of things).
+ - Enum is the value holder, de facto singleton, represented by a class (and class, as you know, can do a lot of things, which is reason why enum is more sexy then whole scalar value).
