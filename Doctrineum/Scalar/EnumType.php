@@ -23,6 +23,8 @@ class EnumType extends Type
      */
     const ENUM = 'enum';
 
+    private static $subtypes = [];
+
     /**
      * Gets the SQL declaration snippet for a field of this type.
      *
@@ -97,17 +99,77 @@ class EnumType extends Type
             );
         }
 
-        $enumClass = static::getEnumClass();
+        $enumClass = static::getEnumClass($enumValue);
         /** @var Enum $enumClass */
         return $enumClass::getEnum($enumValue);
     }
 
     /**
+     * @param int|float|string|null $enumValue
      * @return string Enum class absolute name
      */
-    protected static function getEnumClass()
+    protected static function getEnumClass($enumValue)
+    {
+        // no subtype is registered
+        if (!count(self::$subtypes)) {
+            return static::getDefaultEnumClass();
+        }
+
+        foreach (self::$subtypes as $subtypeClassName => $subtypeValueRegexp) {
+            if (preg_match($subtypeValueRegexp, $enumValue)) {
+                return $subtypeClassName;
+            }
+        }
+
+        // no subtype matched
+        return static::getDefaultEnumClass();
+    }
+
+    /**
+     * @return string
+     */
+    protected static function getDefaultEnumClass()
     {
         return Enum::class;
+    }
+
+    /**
+     * @param string $subtypeClassName
+     * @param string $subtypeValueRegexp
+     */
+    public static function registerSubtype($subtypeClassName, $subtypeValueRegexp)
+    {
+        if (isset(self::$subtypes[$subtypeClassName])) {
+            throw new \LogicException(
+                'Subtype of class ' . var_export($subtypeClassName, true) . ' is already registered.'
+            );
+        }
+
+        if (!is_callable("{$subtypeClassName}::getEnum")) {
+            if (!class_exists($subtypeClassName)) {
+                throw new \LogicException('Subtype class ' . var_export($subtypeClassName, true) . ' has not been found.');
+            }
+
+            throw new \LogicException(
+                'Subtype class ' . var_export($subtypeClassName, true) . ' lacks required method "getEnum".'
+            );
+        }
+
+        static::checkRegexp($subtypeValueRegexp);
+        self::$subtypes[$subtypeClassName] = $subtypeValueRegexp;
+    }
+
+    /**
+     * @param string $regexp
+     */
+    protected static function checkRegexp($regexp)
+    {
+        // the regexp does not start and end with same characters
+        if (!preg_match('~^(.).*\1$~', $regexp)) {
+            throw new \LogicException(
+                'The given regexp is not enclosed by delimiters and therefore is not valid: '. var_export($regexp, true)
+            );
+        }
     }
 
     /**

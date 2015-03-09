@@ -1,6 +1,7 @@
 <?php
 namespace Doctrineum\Scalar;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrineum\Tests\Scalar\EnumTestTrait;
 use Doctrineum\Tests\Scalar\EnumTypeTestTrait;
 
@@ -15,22 +16,21 @@ class SelfTypedEnumTest extends \PHPUnit_Framework_TestCase
     use EnumTestTrait;
     use EnumTypeTestTrait;
 
-    protected function setUp()
-    {
-        // overloaded type registration from the trait to test it later
-    }
-
     /**
+     * Overloaded parent test to test self-registration
+     *
      * @test
      */
-    public function can_register_self()
+    public function can_be_registered()
     {
-        SelfTypedEnum::registerSelf();
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumTypeClass::registerSelf();
+        $this->assertTrue(Type::hasType($enumTypeClass::getTypeName()));
     }
 
     /**
      * @test
-     * @depends can_register_self
+     * @depends can_be_registered
      */
     public function repeated_self_registration_returns_false()
     {
