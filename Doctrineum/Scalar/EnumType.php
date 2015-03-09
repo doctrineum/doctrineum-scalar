@@ -136,27 +136,34 @@ class EnumType extends Type
     /**
      * @param string $subtypeClassName
      * @param string $subtypeValueRegexp
+     * @return bool
      */
-    public static function registerSubtype($subtypeClassName, $subtypeValueRegexp)
+    public static function addSubtype($subtypeClassName, $subtypeValueRegexp)
     {
         if (isset(self::$subtypes[$subtypeClassName])) {
             throw new \LogicException(
-                'Subtype of class ' . var_export($subtypeClassName, true) . ' is already registered.'
+                'Subtype of class ' . var_export($subtypeClassName, true) . ' is already registered'
             );
         }
 
+        static::checkIfSubtypeClassIsCallable($subtypeClassName);
+        static::checkRegexp($subtypeValueRegexp);
+        self::$subtypes[$subtypeClassName] = $subtypeValueRegexp;
+
+        return static::hasSubtype($subtypeClassName);
+    }
+
+    protected static function checkIfSubtypeClassIsCallable($subtypeClassName)
+    {
         if (!is_callable("{$subtypeClassName}::getEnum")) {
             if (!class_exists($subtypeClassName)) {
-                throw new \LogicException('Subtype class ' . var_export($subtypeClassName, true) . ' has not been found.');
+                throw new \LogicException('Subtype class ' . var_export($subtypeClassName, true) . ' has not been found');
             }
 
             throw new \LogicException(
-                'Subtype class ' . var_export($subtypeClassName, true) . ' lacks required method "getEnum".'
+                'Subtype class ' . var_export($subtypeClassName, true) . ' lacks required method "getEnum"'
             );
         }
-
-        static::checkRegexp($subtypeValueRegexp);
-        self::$subtypes[$subtypeClassName] = $subtypeValueRegexp;
     }
 
     /**
@@ -167,9 +174,33 @@ class EnumType extends Type
         // the regexp does not start and end with same characters
         if (!preg_match('~^(.).*\1$~', $regexp)) {
             throw new \LogicException(
-                'The given regexp is not enclosed by delimiters and therefore is not valid: '. var_export($regexp, true)
+                'The given regexp is not enclosed by same delimiters and therefore is not valid: ' . var_export($regexp, true)
             );
         }
+    }
+
+    /**
+     * @param $subtypeClassName
+     * @return bool
+     */
+    public static function hasSubtype($subtypeClassName)
+    {
+        return isset(self::$subtypes[$subtypeClassName]);
+    }
+
+    /**
+     * @param $subtypeClassName
+     * @return bool
+     */
+    public static function removeSubtype($subtypeClassName)
+    {
+        if (!static::hasSubtype($subtypeClassName)) {
+            throw new \LogicException('Subtype of class ' . var_export($subtypeClassName, true) . ' is not registered');
+        }
+
+        unset(self::$subtypes[$subtypeClassName]);
+
+        return !static::hasSubtype($subtypeClassName);
     }
 
     /**
