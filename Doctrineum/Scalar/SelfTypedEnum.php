@@ -66,7 +66,10 @@ class SelfTypedEnum extends EnumType implements EnumInterface
             throw new Exceptions\UnexpectedValueToEnum('Expected scalar or null, got ' . gettype($enumValue));
         }
 
-        $selfTypedEnum = static::getType(static::getTypeName());
+        /** @var SelfTypedEnum $enumClass */
+        // determining of enum class by getEnumClass is important for subtypes
+        $enumClass = static::getEnumClass($enumValue);
+        $selfTypedEnum = $enumClass::getType($enumClass::getTypeName());
         if ($selfTypedEnum->enumValue === $enumValue) {
             return $selfTypedEnum;
         }
@@ -76,17 +79,6 @@ class SelfTypedEnum extends EnumType implements EnumInterface
         $newSelfTypedEnum->enumValue = $enumValue;
 
         return $newSelfTypedEnum;
-    }
-
-    /**
-     * Core idea of self-typed enum.
-     * As an enum class returns itself.
-     *
-     * @return string
-     */
-    protected function getDefaultEnumClass()
-    {
-        return static::class;
     }
 
     /**

@@ -29,11 +29,6 @@ class EnumType extends Type
     private static $subtypes = [];
 
     /**
-     * @var string
-     */
-    private static $defaultEnumClass;
-
-    /**
      * Gets the SQL declaration snippet for a field of this type.
      *
      * @param array $fieldDeclaration The field declaration.
@@ -107,7 +102,7 @@ class EnumType extends Type
             );
         }
 
-        $enumClass = $this->getEnumClass($enumValue);
+        $enumClass = static::getEnumClass($enumValue);
         /** @var Enum $enumClass */
         return $enumClass::getEnum($enumValue);
     }
@@ -116,11 +111,11 @@ class EnumType extends Type
      * @param int|float|string|null $enumValue
      * @return string Enum class absolute name
      */
-    protected function getEnumClass($enumValue)
+    protected static function getEnumClass($enumValue)
     {
         // no subtype is registered
         if (!count(self::$subtypes)) {
-            return $this->getDefaultEnumClass();
+            return static::getDefaultEnumClass();
         }
 
         foreach (self::$subtypes as $subtypeClassName => $subtypeValueRegexp) {
@@ -130,19 +125,15 @@ class EnumType extends Type
         }
 
         // no subtype matched
-        return $this->getDefaultEnumClass();
+        return static::getDefaultEnumClass();
     }
 
     /**
      * @return string
      */
-    protected function getDefaultEnumClass()
+    protected static function getDefaultEnumClass()
     {
-        if (!isset(self::$defaultEnumClass)) {
-            self::$defaultEnumClass = preg_replace('~Type$~', '', static::class);
-        }
-
-        return self::$defaultEnumClass;
+        return preg_replace('~Type$~', '', static::class);
     }
 
     /**
