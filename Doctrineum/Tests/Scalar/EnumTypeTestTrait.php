@@ -65,7 +65,6 @@ trait EnumTypeTestTrait
         return $instance;
     }
 
-
     /**
      * @param EnumType $enumType
      *
