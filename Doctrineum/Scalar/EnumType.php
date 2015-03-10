@@ -23,7 +23,15 @@ class EnumType extends Type
      */
     const ENUM = 'enum';
 
+    /**
+     * @var string[]
+     */
     private static $subtypes = [];
+
+    /**
+     * @var string
+     */
+    private static $defaultEnumClass;
 
     /**
      * Gets the SQL declaration snippet for a field of this type.
@@ -130,7 +138,11 @@ class EnumType extends Type
      */
     protected static function getDefaultEnumClass()
     {
-        return Enum::class;
+        if (!isset(self::$defaultEnumClass)) {
+            self::$defaultEnumClass = preg_replace('~Type$~', '', static::class);
+        }
+
+        return self::$defaultEnumClass;
     }
 
     /**
