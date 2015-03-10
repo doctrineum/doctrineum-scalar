@@ -84,7 +84,7 @@ class SelfTypedEnum extends EnumType implements EnumInterface
      *
      * @return string
      */
-    protected static function getDefaultEnumClass()
+    protected function getDefaultEnumClass()
     {
         return static::class;
     }

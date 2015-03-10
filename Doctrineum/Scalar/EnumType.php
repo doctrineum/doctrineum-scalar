@@ -107,7 +107,7 @@ class EnumType extends Type
             );
         }
 
-        $enumClass = static::getEnumClass($enumValue);
+        $enumClass = $this->getEnumClass($enumValue);
         /** @var Enum $enumClass */
         return $enumClass::getEnum($enumValue);
     }
@@ -116,11 +116,11 @@ class EnumType extends Type
      * @param int|float|string|null $enumValue
      * @return string Enum class absolute name
      */
-    protected static function getEnumClass($enumValue)
+    protected function getEnumClass($enumValue)
     {
         // no subtype is registered
         if (!count(self::$subtypes)) {
-            return static::getDefaultEnumClass();
+            return $this->getDefaultEnumClass();
         }
 
         foreach (self::$subtypes as $subtypeClassName => $subtypeValueRegexp) {
@@ -130,13 +130,13 @@ class EnumType extends Type
         }
 
         // no subtype matched
-        return static::getDefaultEnumClass();
+        return $this->getDefaultEnumClass();
     }
 
     /**
      * @return string
      */
-    protected static function getDefaultEnumClass()
+    protected function getDefaultEnumClass()
     {
         if (!isset(self::$defaultEnumClass)) {
             self::$defaultEnumClass = preg_replace('~Type$~', '', static::class);
