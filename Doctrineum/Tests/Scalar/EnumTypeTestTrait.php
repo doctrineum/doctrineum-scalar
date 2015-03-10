@@ -65,6 +65,7 @@ trait EnumTypeTestTrait
         return $instance;
     }
 
+
     /**
      * @param EnumType $enumType
      *
@@ -73,14 +74,31 @@ trait EnumTypeTestTrait
      */
     public function type_name_is_as_expected(EnumType $enumType)
     {
-        if ($this->getEnumTypeClass() !== EnumType::class) {
-            throw new \LogicException('You have to overload this test using the enum class ' . $this->getEnumTypeClass());
-        }
-
+        $enumTypeClass = $this->getEnumTypeClass();
+        // like self_typed_enum
+        $typeName = $this->convertToTypeName($enumTypeClass);
+        // like SELF_TYPED_ENUM
+        $constantName = strtoupper($typeName);
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
-        $this->assertSame('enum', EnumType::getTypeName());
-        $this->assertSame('enum', EnumType::ENUM);
-        $this->assertSame($enumType::getTypeName(), EnumType::getTypeName());
+        $this->assertTrue(defined("$enumTypeClass::$constantName"));
+        $this->assertSame($enumTypeClass::getTypeName(), $typeName);
+        $this->assertSame($typeName, constant("$enumTypeClass::$constantName"));
+        $this->assertSame($enumType::getTypeName(), $enumTypeClass::getTypeName());
+    }
+
+    /**
+     * @param string $className
+     * @return string
+     */
+    private function convertToTypeName($className)
+    {
+        $withoutType = preg_replace('~Type$~', '', $className);
+        $parts = explode('\\', $withoutType);
+        $baseClassName = $parts[count($parts) -1];
+        preg_match_all('~(?<words>[A-Z][^A-Z]+)~', $baseClassName, $matches);
+        $concatenated = implode('_', $matches['words']);
+
+        return strtolower($concatenated);
     }
 
     /**
