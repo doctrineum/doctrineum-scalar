@@ -23,9 +23,8 @@ class SelfTypedEnumTest extends \PHPUnit_Framework_TestCase
      */
     public function can_be_registered()
     {
-        $enumTypeClass = $this->getEnumTypeClass();
-        $enumTypeClass::registerSelf();
-        $this->assertTrue(Type::hasType($enumTypeClass::getTypeName()));
+        SelfTypedEnum::registerSelf();
+        $this->assertTrue(Type::hasType(SelfTypedEnum::getTypeName()));
     }
 
     /**

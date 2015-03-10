@@ -14,7 +14,9 @@ trait EnumTestTrait
         return preg_replace('~Test$~', '', static::class);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function can_create_instance()
     {
         $enumClass = $this->getEnumClass();
@@ -23,7 +25,9 @@ trait EnumTestTrait
         $this->assertInstanceOf($enumClass, $instance);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function same_instance_for_same_name_is_returned()
     {
         $enumClass = $this->getEnumClass();
