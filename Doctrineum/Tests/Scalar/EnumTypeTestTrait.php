@@ -137,6 +137,10 @@ trait EnumTypeTestTrait
     }
 
     /**
+     * conversion to PHP tests
+     */
+
+    /**
      * @param EnumType $enumType
      *
      * @test
@@ -371,6 +375,10 @@ trait EnumTypeTestTrait
         $enumType->convertToPHPValue(function () {
         }, $platform);
     }
+
+    /**
+     * subtype tests
+     */
 
     /**
      * @param EnumType $enumType

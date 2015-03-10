@@ -49,4 +49,20 @@ class SelfTypedEnumTest extends \PHPUnit_Framework_TestCase
         $enumType = SelfTypedEnum::getType(SelfTypedEnum::getTypeName());
         $this->assertSame($enumType::getTypeName(), SelfTypedEnum::getTypeName());
     }
+
+    protected function getInheritedEnum($value)
+    {
+        if (!Type::hasType(TestInheritedSelfTypedEnum::getTypeName())) {
+            TestInheritedSelfTypedEnum::registerSelf();
+        }
+        $enum = TestInheritedSelfTypedEnum::getEnum($value);
+
+        return $enum;
+    }
+}
+
+/** inner */
+class TestInheritedSelfTypedEnum extends SelfTypedEnum
+{
+
 }

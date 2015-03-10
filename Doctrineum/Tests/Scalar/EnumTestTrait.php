@@ -1,6 +1,9 @@
 <?php
 namespace Doctrineum\Tests\Scalar;
 
+use Doctrineum\Scalar\Enum;
+use Doctrineum\Scalar\SelfTypedEnum;
+
 trait EnumTestTrait
 {
     /**
@@ -85,5 +88,32 @@ trait EnumTestTrait
         $enumClass = $this->getEnumClass();
         $enumClass::getEnum(new \stdClass());
     }
+
+    /**
+     * inner namespace test
+     */
+
+    /** @test */
+    public function inherited_enum_with_same_value_lives_in_own_inner_namespace()
+    {
+        $enumClass = $this->getEnumClass();
+
+        $enum = $enumClass::getEnum($value = 'foo');
+        /** @var \PHPUnit_Framework_TestCase|EnumTestTrait $this */
+        $this->assertInstanceOf($enumClass, $enum);
+        $this->assertSame($value, $enum->getEnumValue());
+        $this->assertSame($value, (string)$enum);
+
+        $inDifferentNamespace = $this->getInheritedEnum($value);
+        $this->assertInstanceOf($enumClass, $inDifferentNamespace);
+        $this->assertSame($enum->getEnumValue(), $inDifferentNamespace->getEnumValue());
+        $this->assertNotSame($enum, $inDifferentNamespace);
+    }
+
+    /**
+     * @param $value
+     * @return Enum|SelfTypedEnum
+     */
+    abstract protected function getInheritedEnum($value);
 }
 
