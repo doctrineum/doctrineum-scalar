@@ -24,7 +24,7 @@ class EnumType extends Type
     const ENUM = 'enum';
 
     /**
-     * @var string[]
+     * @var string[][]
      */
     private static $subTypeEnums = [];
 
@@ -122,11 +122,11 @@ class EnumType extends Type
     protected static function getEnumClass($enumValue)
     {
         // no subtype is registered
-        if (!count(self::$subTypeEnums)) {
+        if (!isset(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()]) || !count(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()])) {
             return static::getDefaultEnumClass();
         }
 
-        foreach (self::$subTypeEnums as $subTypeEnumClass => $subTypeEnumValueRegexp) {
+        foreach (self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()] as $subTypeEnumClass => $subTypeEnumValueRegexp) {
             if (preg_match($subTypeEnumValueRegexp, $enumValue)) {
                 return $subTypeEnumClass;
             }
@@ -152,7 +152,7 @@ class EnumType extends Type
      */
     public static function addSubTypeEnum($subTypeEnumClass, $subTypeEnumValueRegexp)
     {
-        if (isset(self::$subTypeEnums[$subTypeEnumClass])) {
+        if (static::hasSubTypeEnum($subTypeEnumClass)) {
             throw new Exceptions\SubTypeEnumIsAlreadyRegistered(
                 'SubType enum class ' . var_export($subTypeEnumClass, true) . ' is already registered'
             );
@@ -160,9 +160,17 @@ class EnumType extends Type
 
         static::checkSubTypeEnumClass($subTypeEnumClass);
         static::checkRegexp($subTypeEnumValueRegexp);
-        self::$subTypeEnums[$subTypeEnumClass] = $subTypeEnumValueRegexp;
+        self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeEnumClass] = $subTypeEnumValueRegexp;
 
         return static::hasSubTypeEnum($subTypeEnumClass);
+    }
+
+    /**
+     * @return string
+     */
+    protected static function getSubTypeEnumInnerNamespace()
+    {
+        return static::class;
     }
 
     protected static function checkSubTypeEnumClass($subtypeClassName)
@@ -188,13 +196,48 @@ class EnumType extends Type
     }
 
     /**
-     * @param $subtypeClassName
+     * @return EnumType
+     */
+    public static function getIt()
+    {
+        return static::getType(static::getTypeName());
+    }
+
+    /**
+     * Add current type to registry
+     *
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public static function registerSelf()
+    {
+        if (static::isRegistered()) {
+            return false;
+        }
+
+        static::addType(static::getTypeName(), static::class);
+
+        return static::hasType(static::getTypeName());
+    }
+
+    /**
+     * Finds out if current type is already in registry
+     *
+     * @return bool
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public static function isRegistered()
+    {
+        return static::hasType(static::getTypeName());
+    }
+
+    /**
+     * @param $subTypeClassName
      *
      * @return bool
      */
-    public static function hasSubTypeEnum($subtypeClassName)
+    public static function hasSubTypeEnum($subTypeClassName)
     {
-        return isset(self::$subTypeEnums[$subtypeClassName]);
+        return isset(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeClassName]);
     }
 
     /**
@@ -208,7 +251,7 @@ class EnumType extends Type
             throw new \LogicException('Sub-type of class ' . var_export($subTypeEnumClass, true) . ' is not registered');
         }
 
-        unset(self::$subTypeEnums[$subTypeEnumClass]);
+        unset(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeEnumClass]);
 
         return !static::hasSubTypeEnum($subTypeEnumClass);
     }

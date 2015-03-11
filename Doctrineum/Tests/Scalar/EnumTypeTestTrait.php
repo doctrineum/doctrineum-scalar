@@ -47,9 +47,24 @@ trait EnumTypeTestTrait
     public function can_be_registered()
     {
         $enumTypeClass = $this->getEnumTypeClass();
-        Type::addType($enumTypeClass::getTypeName(), $enumTypeClass);
-        /** @var \PHPUnit_Framework_TestCase $this */
+        /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
+        $this->assertFalse(Type::hasType($enumTypeClass::getTypeName()));
+        $this->assertTrue($enumTypeClass::registerSelf());
+        $this->assertTrue($enumTypeClass::isRegistered());
         $this->assertTrue(Type::hasType($enumTypeClass::getTypeName()));
+    }
+
+    /**
+     * @test
+     * @depends can_be_registered
+     */
+    public function self_registering_again_returns_false()
+    {
+        $enumTypeClass = $this->getEnumTypeClass();
+        /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
+        $this->assertTrue(Type::hasType($enumTypeClass::getTypeName()));
+        $this->assertTrue($enumTypeClass::isRegistered());
+        $this->assertFalse($enumTypeClass::registerSelf());
     }
 
     /**
@@ -62,6 +77,8 @@ trait EnumTypeTestTrait
         $instance = Type::getType($enumTypeClass::getTypeName());
         /** @var \PHPUnit_Framework_TestCase $this */
         $this->assertInstanceOf($enumTypeClass, $instance);
+        $sameInstance = $enumTypeClass::getIt();
+        $this->assertSame($instance, $sameInstance);
 
         return $instance;
     }
@@ -110,8 +127,8 @@ trait EnumTypeTestTrait
      */
     public function sql_declaration_is_valid(EnumType $enumType)
     {
-        /** @var AbstractPlatform $platform */
-        $platform = \Mockery::mock(AbstractPlatform::class);
+
+        $platform = $this->getPlatform();
         $sql = $enumType->getSQLDeclaration([], $platform);
         /** @var \PHPUnit_Framework_TestCase $this */
         $this->assertSame('VARCHAR(64)', $sql);
@@ -130,8 +147,8 @@ trait EnumTypeTestTrait
             ->once()
             ->andReturn(null);
         /** @var EnumInterface $nullEnum */
-        /** @var AbstractPlatform $platform */
-        $platform = \Mockery::mock(AbstractPlatform::class);
+
+        $platform = $this->getPlatform();
         /** @var \PHPUnit_Framework_TestCase $this */
         $this->assertNull($enumType->convertToDatabaseValue($nullEnum, $platform));
     }
@@ -148,8 +165,8 @@ trait EnumTypeTestTrait
         $enum->shouldReceive('getEnumValue')
             ->once()
             ->andReturn($value = 'foo');
-        /** @var AbstractPlatform $platform */
-        $platform = \Mockery::mock(AbstractPlatform::class);
+
+        $platform = $this->getPlatform();
         /** @var EnumInterface $enum */
         /** @var \PHPUnit_Framework_TestCase $this */
         $this->assertSame($value, $enumType->convertToDatabaseValue($enum, $platform));
@@ -167,8 +184,8 @@ trait EnumTypeTestTrait
      */
     public function null_to_php_value_creates_enum(EnumType $enumType)
     {
-        /** @var AbstractPlatform $platform */
-        $platform = \Mockery::mock(AbstractPlatform::class);
+
+        $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue(null, $platform);
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
         $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
@@ -183,8 +200,8 @@ trait EnumTypeTestTrait
      */
     public function string_to_php_value_is_enum_with_that_string(EnumType $enumType)
     {
-        /** @var AbstractPlatform $platform */
-        $platform = \Mockery::mock(AbstractPlatform::class);
+
+        $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($string = 'foo', $platform);
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
         $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
@@ -199,8 +216,8 @@ trait EnumTypeTestTrait
      */
     public function empty_string_to_php_value_is_enum_with_that_empty_string(EnumType $enumType)
     {
-        /** @var AbstractPlatform $platform */
-        $platform = \Mockery::mock(AbstractPlatform::class);
+
+        $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($emptyString = '', $platform);
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
         $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
@@ -218,8 +235,8 @@ trait EnumTypeTestTrait
      */
     public function integer_to_php_value_is_enum_with_that_integer(EnumType $enumType)
     {
-        /** @var AbstractPlatform $platform */
-        $platform = \Mockery::mock(AbstractPlatform::class);
+
+        $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($integer = 12345, $platform);
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
         $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
@@ -237,8 +254,8 @@ trait EnumTypeTestTrait
      */
     public function zero_integer_to_php_value_is_enum_with_that_zero_integer(EnumType $enumType)
     {
-        /** @var AbstractPlatform $platform */
-        $platform = \Mockery::mock(AbstractPlatform::class);
+
+        $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($zeroInteger = 0, $platform);
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
         $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
@@ -256,8 +273,7 @@ trait EnumTypeTestTrait
      */
     public function float_to_php_value_is_enum_with_that_float(EnumType $enumType)
     {
-        /** @var AbstractPlatform $platform */
-        $platform = \Mockery::mock(AbstractPlatform::class);
+        $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($float = 12345.6789, $platform);
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
         $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
@@ -275,8 +291,7 @@ trait EnumTypeTestTrait
      */
     public function zero_float_to_php_value_is_enum_with_that_zero_float(EnumType $enumType)
     {
-        /** @var AbstractPlatform $platform */
-        $platform = \Mockery::mock(AbstractPlatform::class);
+        $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($zeroFloat = 0.0, $platform);
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
         $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
@@ -294,8 +309,7 @@ trait EnumTypeTestTrait
      */
     public function false_to_php_value_is_enum_with_that_false(EnumType $enumType)
     {
-        /** @var AbstractPlatform $platform */
-        $platform = \Mockery::mock(AbstractPlatform::class);
+        $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($false = false, $platform);
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
         $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
@@ -313,8 +327,7 @@ trait EnumTypeTestTrait
      */
     public function true_to_php_value_is_enum_with_that_true(EnumType $enumType)
     {
-        /** @var AbstractPlatform $platform */
-        $platform = \Mockery::mock(AbstractPlatform::class);
+        $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($true = true, $platform);
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
         $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
@@ -329,8 +342,7 @@ trait EnumTypeTestTrait
      */
     public function object_with_to_string_to_php_value_is_enum_with_that_string(EnumType $enumType)
     {
-        /** @var AbstractPlatform $platform */
-        $platform = \Mockery::mock(AbstractPlatform::class);
+        $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue(new WithToStringTestObject($value = 'foo'), $platform);
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
         $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
@@ -347,8 +359,7 @@ trait EnumTypeTestTrait
      */
     public function array_to_php_value_cause_exception(EnumType $enumType)
     {
-        /** @var AbstractPlatform $platform */
-        $platform = \Mockery::mock(AbstractPlatform::class);
+        $platform = $this->getPlatform();
         $enumType->convertToPHPValue([], $platform);
     }
 
@@ -361,8 +372,7 @@ trait EnumTypeTestTrait
      */
     public function resource_to_php_value_cause_exception(EnumType $enumType)
     {
-        /** @var AbstractPlatform $platform */
-        $platform = \Mockery::mock(AbstractPlatform::class);
+        $platform = $this->getPlatform();
         $enumType->convertToPHPValue(tmpfile(), $platform);
     }
 
@@ -375,8 +385,7 @@ trait EnumTypeTestTrait
      */
     public function object_to_php_value_cause_exception(EnumType $enumType)
     {
-        /** @var AbstractPlatform $platform */
-        $platform = \Mockery::mock(AbstractPlatform::class);
+        $platform = $this->getPlatform();
         $enumType->convertToPHPValue(new \stdClass(), $platform);
     }
 
@@ -389,8 +398,7 @@ trait EnumTypeTestTrait
      */
     public function callback_to_php_value_cause_exception(EnumType $enumType)
     {
-        /** @var AbstractPlatform $platform */
-        $platform = \Mockery::mock(AbstractPlatform::class);
+        $platform = $this->getPlatform();
         $enumType->convertToPHPValue(function () {
         }, $platform);
     }
@@ -449,7 +457,7 @@ trait EnumTypeTestTrait
          */
         $this->assertTrue($enumType::addSubTypeEnum($this->getTestSubTypeClass(), $regexp = '~some specific string~'));
         /** @var AbstractPlatform $abstractPlatform */
-        $abstractPlatform = \Mockery::mock(AbstractPlatform::class);
+        $abstractPlatform = $this->getPlatform();
         $matchingValueToConvert = 'A string with some specific string inside.';
         $this->assertRegExp($regexp, $matchingValueToConvert);
         /**
@@ -474,7 +482,7 @@ trait EnumTypeTestTrait
          */
         $this->assertTrue($enumType::addSubTypeEnum($this->getTestSubTypeClass(), $regexp = '~some specific string~'));
         /** @var AbstractPlatform $abstractPlatform */
-        $abstractPlatform = \Mockery::mock(AbstractPlatform::class);
+        $abstractPlatform = $this->getPlatform();
         $nonMatchingValueToConvert = 'A string without that specific string.';
         $this->assertNotRegExp($regexp, $nonMatchingValueToConvert);
         /**
@@ -534,6 +542,65 @@ trait EnumTypeTestTrait
     }
 
     /**
+     * @test
+     */
+    public function can_register_another_enum_type()
+    {
+        /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
+        if (!TestAnotherEnumType::isRegistered()) {
+            $this->assertTrue(TestAnotherEnumType::registerSelf());
+        } else {
+            $this->assertFalse(TestAnotherEnumType::registerSelf());
+        }
+
+        $this->assertTrue(TestAnotherEnumType::isRegistered());
+    }
+
+    /**
+     * @test
+     *
+     * @depends can_register_another_enum_type
+     */
+    public function different_types_with_same_subtype_regexp_distinguish_them()
+    {
+        /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
+        if (EnumType::hasSubTypeEnum($this->getTestSubTypeClass())) {
+            EnumType::removeSubTypeEnum($this->getTestSubTypeClass());
+        }
+        EnumType::addSubTypeEnum($this->getTestSubTypeClass(), $regexp = '~searching pattern~');
+
+        if (TestAnotherEnumType::hasSubTypeEnum($this->getTestAnotherSubTypeClass())) {
+            TestAnotherEnumType::removeSubTypeEnum($this->getTestAnotherSubTypeClass());
+        }
+        // regexp is same, sub-type is not
+        TestAnotherEnumType::addSubTypeEnum($this->getTestAnotherSubTypeClass(), $regexp);
+
+        $value = 'some string fitting to searching pattern';
+        $this->assertRegExp($regexp, $value);
+
+        $enumType = EnumType::getIt();
+        $enumSubType = $enumType->convertToPHPValue($value, $this->getPlatform());
+        $this->assertInstanceOf($this->getTestSubTypeClass(), $enumSubType);
+        $this->assertSame($value, "$enumSubType");
+
+        $anotherEnumType = TestAnotherEnumType::getIt();
+        $anotherEnumSubType = $anotherEnumType->convertToPHPValue($value, $this->getPlatform());
+        $this->assertInstanceOf($this->getTestSubTypeClass(), $enumSubType);
+        $this->assertSame($value, "$anotherEnumSubType");
+
+        // registered sub-types were different, just regexp was the same - let's test if they are kept separately
+        $this->assertNotSame($enumSubType, $anotherEnumSubType);
+    }
+
+    /**
+     * @return AbstractPlatform
+     */
+    protected function getPlatform()
+    {
+        return \Mockery::mock(AbstractPlatform::class);
+    }
+
+    /**
      * @return string
      */
     protected function getTestSubTypeClass()
@@ -541,10 +608,29 @@ trait EnumTypeTestTrait
         return TestSubType::class;
     }
 
+    /**
+     * @return string
+     */
+    protected function getTestAnotherSubTypeClass()
+    {
+        return TestAnotherSubType::class;
+    }
+
 }
 
 /** inner */
 class TestSubType extends Enum
+{
+
+}
+
+class TestAnotherEnumType extends EnumType
+{
+
+}
+
+/** inner */
+class TestAnotherSubType extends Enum
 {
 
 }
