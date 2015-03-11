@@ -1,7 +1,7 @@
 <?php
 namespace Doctrineum\Scalar\Exceptions;
 
-class MissingCurrentlyBuiltEnumNamespaceTest extends \PHPUnit_Framework_TestCase
+class InvalidClassForSubTypeEnumTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -10,7 +10,7 @@ class MissingCurrentlyBuiltEnumNamespaceTest extends \PHPUnit_Framework_TestCase
      */
     public function is_logic_exception()
     {
-        throw new MissingCurrentlyBuiltEnumNamespace();
+        throw new InvalidClassForSubTypeEnum();
     }
 
     /**
@@ -19,7 +19,7 @@ class MissingCurrentlyBuiltEnumNamespaceTest extends \PHPUnit_Framework_TestCase
      */
     public function is_local_logic_exception()
     {
-        throw new MissingCurrentlyBuiltEnumNamespace();
+        throw new InvalidClassForSubTypeEnum();
     }
 
 }
