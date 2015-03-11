@@ -42,6 +42,36 @@ class SelfTypedEnum extends EnumType implements EnumInterface
         return true;
     }
 
+    /**
+     * @param string $subTypeClassName
+     * @param string $subTypeValueRegexp
+     * @return bool
+     */
+    public static function addSubtypeEnum($subTypeClassName, $subTypeValueRegexp) {
+        /**
+         * The class has to be self-registering to by-pass enum and enum type bindings,
+         * @see SelfTypedEnum::createByValue
+         */
+        static::checkIfSelfRegistering($subTypeClassName);
+        $result = parent::addSubtypeEnum($subTypeClassName, $subTypeValueRegexp);
+        /** @var SelfTypedEnum $subTypeClassName */
+        $subTypeClassName::registerSelf();
+
+        return $result;
+    }
+
+    /**
+     * @param string $subTypeClassName
+     */
+    protected static function checkIfSelfRegistering($subTypeClassName)
+    {
+        if (!is_a($subTypeClassName, __CLASS__, true /* allow tested class as a string */)) {
+            throw new Exceptions\SubTypeEnumHasToBeSelfRegistering(
+                'Subtype class ' . var_export($subTypeClassName, true) . ' has to be child of self-typed ' . __CLASS__
+            );
+        }
+    }
+
     protected static function checkRegisteredType()
     {
         $alreadyRegisteredType = static::getType(static::getTypeName());
@@ -69,6 +99,7 @@ class SelfTypedEnum extends EnumType implements EnumInterface
         /** @var SelfTypedEnum $enumClass */
         // determining of enum class by getEnumClass is important for subtypes
         $enumClass = static::getEnumClass($enumValue);
+        // Type has private constructor, the only way how to create an Enum, which is also Type, is by Type factory method getType
         $selfTypedEnum = $enumClass::getType($enumClass::getTypeName());
         if ($selfTypedEnum->enumValue === $enumValue) {
             return $selfTypedEnum;

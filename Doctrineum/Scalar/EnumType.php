@@ -43,6 +43,7 @@ class EnumType extends Type
 
     /**
      * @param AbstractPlatform $platform
+     *
      * @return int
      */
     public function getDefaultLength(AbstractPlatform $platform)
@@ -55,6 +56,7 @@ class EnumType extends Type
      *
      * @param EnumInterface $value
      * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
+     *
      * @throws Exceptions\UnexpectedValueToDatabaseValue
      * @return string|null
      */
@@ -68,6 +70,7 @@ class EnumType extends Type
         }
 
         /** @var Enum $value probably */
+
         return $value->getEnumValue();
     }
 
@@ -80,6 +83,7 @@ class EnumType extends Type
      *
      * @param string|int|float|bool|null $value
      * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
+     *
      * @throws Exceptions\InvalidArgument
      * @return Enum
      */
@@ -90,6 +94,7 @@ class EnumType extends Type
 
     /**
      * @param $enumValue
+     *
      * @return Enum
      */
     protected function convertToEnum($enumValue)
@@ -103,12 +108,15 @@ class EnumType extends Type
         }
 
         $enumClass = static::getEnumClass($enumValue);
+
         /** @var Enum $enumClass */
+
         return $enumClass::getEnum($enumValue);
     }
 
     /**
      * @param int|float|string|null $enumValue
+     *
      * @return string Enum class absolute name
      */
     protected static function getEnumClass($enumValue)
@@ -137,34 +145,31 @@ class EnumType extends Type
     }
 
     /**
-     * @param string $subtypeClassName
-     * @param string $subtypeValueRegexp
+     * @param string $subTypeEnum
+     * @param string $subTypeValueRegexp
+     *
      * @return bool
      */
-    public static function addSubtype($subtypeClassName, $subtypeValueRegexp)
+    public static function addSubtypeEnum($subTypeEnum, $subTypeValueRegexp)
     {
-        if (isset(self::$subtypes[$subtypeClassName])) {
-            throw new \LogicException(
-                'Subtype of class ' . var_export($subtypeClassName, true) . ' is already registered'
+        if (isset(self::$subtypes[$subTypeEnum])) {
+            throw new Exceptions\SubTypeEnumIsAlreadyRegistered(
+                'SubType enum class ' . var_export($subTypeEnum, true) . ' is already registered'
             );
         }
 
-        static::checkIfSubtypeClassIsCallable($subtypeClassName);
-        static::checkRegexp($subtypeValueRegexp);
-        self::$subtypes[$subtypeClassName] = $subtypeValueRegexp;
+        static::checkSubTypeEnumClass($subTypeEnum);
+        static::checkRegexp($subTypeValueRegexp);
+        self::$subtypes[$subTypeEnum] = $subTypeValueRegexp;
 
-        return static::hasSubtype($subtypeClassName);
+        return static::hasSubtype($subTypeEnum);
     }
 
-    protected static function checkIfSubtypeClassIsCallable($subtypeClassName)
+    protected static function checkSubTypeEnumClass($subtypeClassName)
     {
-        if (!is_callable("{$subtypeClassName}::getEnum")) {
-            if (!class_exists($subtypeClassName)) {
-                throw new \LogicException('Subtype class ' . var_export($subtypeClassName, true) . ' has not been found');
-            }
-
-            throw new \LogicException(
-                'Subtype class ' . var_export($subtypeClassName, true) . ' lacks required method "getEnum"'
+        if (!is_a($subtypeClassName, EnumInterface::class, true /* allow tested class as a string */)) {
+            throw new Exceptions\InvalidClassForSubTypeEnum(
+                'SubType enum class ' . var_export($subtypeClassName, true) . ' has to be ' . EnumInterface::class
             );
         }
     }
@@ -176,7 +181,7 @@ class EnumType extends Type
     {
         // the regexp does not start and end with same characters
         if (!preg_match('~^(.).*\1$~', $regexp)) {
-            throw new \LogicException(
+            throw new Exceptions\InvalidRegexpFormat(
                 'The given regexp is not enclosed by same delimiters and therefore is not valid: ' . var_export($regexp, true)
             );
         }
@@ -184,6 +189,7 @@ class EnumType extends Type
 
     /**
      * @param $subtypeClassName
+     *
      * @return bool
      */
     public static function hasSubtype($subtypeClassName)
@@ -193,6 +199,7 @@ class EnumType extends Type
 
     /**
      * @param $subtypeClassName
+     *
      * @return bool
      */
     public static function removeSubtype($subtypeClassName)
@@ -229,6 +236,7 @@ class EnumType extends Type
         $baseClassName = preg_replace('~(\w+\\\)*(\w+)~', '$2', static::class);
         // EnumType = Enum
         $baseTypeName = preg_replace('~Type$~', '', $baseClassName);
+
         // FooBarEnum = Foo_Bar_Enum = foo_bar_enum
         return strtolower(preg_replace('~(\w)([A-Z])~', '$1_$2', $baseTypeName));
     }
@@ -240,6 +248,7 @@ class EnumType extends Type
      * comment to type-hint the actual Doctrine Type.
      *
      * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
+     *
      * @return boolean
      */
     public function requiresSQLCommentHint(AbstractPlatform $platform)
