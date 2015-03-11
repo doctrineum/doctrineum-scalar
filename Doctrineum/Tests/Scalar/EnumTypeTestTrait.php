@@ -35,9 +35,9 @@ trait EnumTypeTestTrait
         $enumTypeClass = $this->getEnumTypeClass();
         $enumType = Type::getType($enumTypeClass::getTypeName(), $enumTypeClass);
         /** @var EnumType $enumType */
-        if ($enumType::hasSubtype($this->getTestSubTypeClass())) {
+        if ($enumType::hasSubTypeEnum($this->getTestSubTypeClass())) {
             /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
-            $this->assertTrue($enumType::removeSubtype($this->getTestSubTypeClass()));
+            $this->assertTrue($enumType::removeSubTypeEnum($this->getTestSubTypeClass()));
         }
     }
 
@@ -411,7 +411,7 @@ trait EnumTypeTestTrait
     {
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
         $this->assertTrue($enumType::addSubtypeEnum($this->getTestSubTypeClass(), '~foo~'));
-        $this->assertTrue($enumType::hasSubtype($this->getTestSubTypeClass()));
+        $this->assertTrue($enumType::hasSubTypeEnum($this->getTestSubTypeClass()));
 
         return $enumType;
     }
@@ -430,10 +430,10 @@ trait EnumTypeTestTrait
          * The subtype is unregistered because of tearDown clean up
          * @see EnumTypeTestTrait::tearDown
          */
-        $this->assertFalse($enumType::hasSubtype($this->getTestSubTypeClass()));
+        $this->assertFalse($enumType::hasSubTypeEnum($this->getTestSubTypeClass()));
         $this->assertTrue($enumType::addSubtypeEnum($this->getTestSubTypeClass(), '~foo~'));
-        $this->assertTrue($enumType::removeSubtype($this->getTestSubTypeClass()));
-        $this->assertFalse($enumType::hasSubtype($this->getTestSubTypeClass()));
+        $this->assertTrue($enumType::removeSubTypeEnum($this->getTestSubTypeClass()));
+        $this->assertFalse($enumType::hasSubTypeEnum($this->getTestSubTypeClass()));
     }
 
     /**
@@ -497,7 +497,7 @@ trait EnumTypeTestTrait
     public function registering_same_subtype_again_throws_exception(EnumType $enumType)
     {
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
-        $this->assertFalse($enumType::hasSubtype($this->getTestSubTypeClass()));
+        $this->assertFalse($enumType::hasSubTypeEnum($this->getTestSubTypeClass()));
         $this->assertTrue($enumType::addSubtypeEnum($this->getTestSubTypeClass(), '~foo~'));
         // registering twice - should thrown an exception
         $enumType::addSubtypeEnum($this->getTestSubTypeClass(), '~foo~');
