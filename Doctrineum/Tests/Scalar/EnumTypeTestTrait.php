@@ -410,7 +410,7 @@ trait EnumTypeTestTrait
     public function can_register_subtype(EnumType $enumType)
     {
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
-        $this->assertTrue($enumType::addSubtypeEnum($this->getTestSubTypeClass(), '~foo~'));
+        $this->assertTrue($enumType::addSubTypeEnum($this->getTestSubTypeClass(), '~foo~'));
         $this->assertTrue($enumType::hasSubTypeEnum($this->getTestSubTypeClass()));
 
         return $enumType;
@@ -431,7 +431,7 @@ trait EnumTypeTestTrait
          * @see EnumTypeTestTrait::tearDown
          */
         $this->assertFalse($enumType::hasSubTypeEnum($this->getTestSubTypeClass()));
-        $this->assertTrue($enumType::addSubtypeEnum($this->getTestSubTypeClass(), '~foo~'));
+        $this->assertTrue($enumType::addSubTypeEnum($this->getTestSubTypeClass(), '~foo~'));
         $this->assertTrue($enumType::removeSubTypeEnum($this->getTestSubTypeClass()));
         $this->assertFalse($enumType::hasSubTypeEnum($this->getTestSubTypeClass()));
     }
@@ -447,14 +447,14 @@ trait EnumTypeTestTrait
         /**
          * @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this
          */
-        $this->assertTrue($enumType::addSubtypeEnum($this->getTestSubTypeClass(), $regexp = '~some specific string~'));
+        $this->assertTrue($enumType::addSubTypeEnum($this->getTestSubTypeClass(), $regexp = '~some specific string~'));
         /** @var AbstractPlatform $abstractPlatform */
         $abstractPlatform = \Mockery::mock(AbstractPlatform::class);
         $matchingValueToConvert = 'A string with some specific string inside.';
         $this->assertRegExp($regexp, $matchingValueToConvert);
         /**
-         * Used TestSubtype returns as an "enum" the given value, which is $valueToConvert in this case,
-         * @see \Doctrineum\Tests\Scalar\TestSubtype::getEnum
+         * Used TestSubType returns as an "enum" the given value, which is $valueToConvert in this case,
+         * @see \Doctrineum\Tests\Scalar\TestSubType::getEnum
          */
         $enumFromSubType = $enumType->convertToPHPValue($matchingValueToConvert, $abstractPlatform);
         $this->assertInstanceOf($this->getTestSubTypeClass(), $enumFromSubType);
@@ -472,14 +472,14 @@ trait EnumTypeTestTrait
         /**
          * @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this
          */
-        $this->assertTrue($enumType::addSubtypeEnum($this->getTestSubTypeClass(), $regexp = '~some specific string~'));
+        $this->assertTrue($enumType::addSubTypeEnum($this->getTestSubTypeClass(), $regexp = '~some specific string~'));
         /** @var AbstractPlatform $abstractPlatform */
         $abstractPlatform = \Mockery::mock(AbstractPlatform::class);
         $nonMatchingValueToConvert = 'A string without that specific string.';
         $this->assertNotRegExp($regexp, $nonMatchingValueToConvert);
         /**
-         * Used TestSubtype returns as an "enum" the given value, which is $valueToConvert in this case,
-         * @see \Doctrineum\Tests\Scalar\TestSubtype::getEnum
+         * Used TestSubType returns as an "enum" the given value, which is $valueToConvert in this case,
+         * @see \Doctrineum\Tests\Scalar\TestSubType::getEnum
          */
         $enum = $enumType->convertToPHPValue($nonMatchingValueToConvert, $abstractPlatform);
         $this->assertNotSame($nonMatchingValueToConvert, $enum);
@@ -498,9 +498,9 @@ trait EnumTypeTestTrait
     {
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
         $this->assertFalse($enumType::hasSubTypeEnum($this->getTestSubTypeClass()));
-        $this->assertTrue($enumType::addSubtypeEnum($this->getTestSubTypeClass(), '~foo~'));
+        $this->assertTrue($enumType::addSubTypeEnum($this->getTestSubTypeClass(), '~foo~'));
         // registering twice - should thrown an exception
-        $enumType::addSubtypeEnum($this->getTestSubTypeClass(), '~foo~');
+        $enumType::addSubTypeEnum($this->getTestSubTypeClass(), '~foo~');
     }
 
     /**
@@ -513,7 +513,7 @@ trait EnumTypeTestTrait
     public function registering_invalid_subtype_class_throws_exception(EnumType $enumType)
     {
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
-        $enumType::addSubtypeEnum(\stdClass::class, '~foo~');
+        $enumType::addSubTypeEnum(\stdClass::class, '~foo~');
     }
 
     /**
@@ -527,7 +527,7 @@ trait EnumTypeTestTrait
     public function registering_subtype_with_invalid_regexp_throws_exception(EnumType $enumType)
     {
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
-        $enumType::addSubtypeEnum(
+        $enumType::addSubTypeEnum(
             $this->getTestSubTypeClass(),
             'foo~' // missing opening delimiter
         );
@@ -538,13 +538,13 @@ trait EnumTypeTestTrait
      */
     protected function getTestSubTypeClass()
     {
-        return TestSubtype::class;
+        return TestSubType::class;
     }
 
 }
 
 /** inner */
-class TestSubtype extends Enum
+class TestSubType extends Enum
 {
 
 }

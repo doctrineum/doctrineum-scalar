@@ -47,13 +47,13 @@ class SelfTypedEnum extends EnumType implements EnumInterface
      * @param string $subTypeValueRegexp
      * @return bool
      */
-    public static function addSubtypeEnum($subTypeClassName, $subTypeValueRegexp) {
+    public static function addSubTypeEnum($subTypeClassName, $subTypeValueRegexp) {
         /**
          * The class has to be self-registering to by-pass enum and enum type bindings,
          * @see SelfTypedEnum::createByValue
          */
         static::checkIfSelfRegistering($subTypeClassName);
-        $result = parent::addSubtypeEnum($subTypeClassName, $subTypeValueRegexp);
+        $result = parent::addSubTypeEnum($subTypeClassName, $subTypeValueRegexp);
         /** @var SelfTypedEnum $subTypeClassName */
         $subTypeClassName::registerSelf();
 
@@ -67,7 +67,7 @@ class SelfTypedEnum extends EnumType implements EnumInterface
     {
         if (!is_a($subTypeClassName, __CLASS__, true /* allow tested class as a string */)) {
             throw new Exceptions\SubTypeEnumHasToBeSelfRegistering(
-                'Subtype class ' . var_export($subTypeClassName, true) . ' has to be child of self-typed ' . __CLASS__
+                'Sub-type class ' . var_export($subTypeClassName, true) . ' has to be child of self-typed ' . __CLASS__
             );
         }
     }

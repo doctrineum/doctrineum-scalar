@@ -150,7 +150,7 @@ class EnumType extends Type
      *
      * @return bool
      */
-    public static function addSubtypeEnum($subTypeEnumClass, $subTypeEnumValueRegexp)
+    public static function addSubTypeEnum($subTypeEnumClass, $subTypeEnumValueRegexp)
     {
         if (isset(self::$subTypeEnums[$subTypeEnumClass])) {
             throw new Exceptions\SubTypeEnumIsAlreadyRegistered(
@@ -205,7 +205,7 @@ class EnumType extends Type
     public static function removeSubTypeEnum($subTypeEnumClass)
     {
         if (!static::hasSubTypeEnum($subTypeEnumClass)) {
-            throw new \LogicException('Subtype of class ' . var_export($subTypeEnumClass, true) . ' is not registered');
+            throw new \LogicException('Sub-type of class ' . var_export($subTypeEnumClass, true) . ' is not registered');
         }
 
         unset(self::$subTypeEnums[$subTypeEnumClass]);
