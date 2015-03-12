@@ -35,9 +35,9 @@ trait EnumTypeTestTrait
         $enumTypeClass = $this->getEnumTypeClass();
         $enumType = Type::getType($enumTypeClass::getTypeName(), $enumTypeClass);
         /** @var EnumType $enumType */
-        if ($enumType::hasSubTypeEnum($this->getTestSubTypeEnumClass())) {
+        if ($enumType::hasSubTypeEnum($this->getSubTypeEnumClass())) {
             /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
-            $this->assertTrue($enumType::removeSubTypeEnum($this->getTestSubTypeEnumClass()));
+            $this->assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass()));
         }
     }
 
@@ -418,8 +418,8 @@ trait EnumTypeTestTrait
     public function can_register_subtype(EnumType $enumType)
     {
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
-        $this->assertTrue($enumType::addSubTypeEnum($this->getTestSubTypeEnumClass(), '~foo~'));
-        $this->assertTrue($enumType::hasSubTypeEnum($this->getTestSubTypeEnumClass()));
+        $this->assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), '~foo~'));
+        $this->assertTrue($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
 
         return $enumType;
     }
@@ -438,10 +438,10 @@ trait EnumTypeTestTrait
          * The subtype is unregistered because of tearDown clean up
          * @see EnumTypeTestTrait::tearDown
          */
-        $this->assertFalse($enumType::hasSubTypeEnum($this->getTestSubTypeEnumClass()));
-        $this->assertTrue($enumType::addSubTypeEnum($this->getTestSubTypeEnumClass(), '~foo~'));
-        $this->assertTrue($enumType::removeSubTypeEnum($this->getTestSubTypeEnumClass()));
-        $this->assertFalse($enumType::hasSubTypeEnum($this->getTestSubTypeEnumClass()));
+        $this->assertFalse($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
+        $this->assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), '~foo~'));
+        $this->assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass()));
+        $this->assertFalse($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
     }
 
     /**
@@ -455,7 +455,7 @@ trait EnumTypeTestTrait
         /**
          * @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this
          */
-        $this->assertTrue($enumType::addSubTypeEnum($this->getTestSubTypeEnumClass(), $regexp = '~some specific string~'));
+        $this->assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), $regexp = '~some specific string~'));
         /** @var AbstractPlatform $abstractPlatform */
         $abstractPlatform = $this->getPlatform();
         $matchingValueToConvert = 'A string with some specific string inside.';
@@ -465,7 +465,7 @@ trait EnumTypeTestTrait
          * @see \Doctrineum\Tests\Scalar\TestSubTypeEnum::getEnum
          */
         $enumFromSubType = $enumType->convertToPHPValue($matchingValueToConvert, $abstractPlatform);
-        $this->assertInstanceOf($this->getTestSubTypeEnumClass(), $enumFromSubType);
+        $this->assertInstanceOf($this->getSubTypeEnumClass(), $enumFromSubType);
         $this->assertSame($matchingValueToConvert, (string)$enumFromSubType);
     }
 
@@ -480,7 +480,7 @@ trait EnumTypeTestTrait
         /**
          * @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this
          */
-        $this->assertTrue($enumType::addSubTypeEnum($this->getTestSubTypeEnumClass(), $regexp = '~some specific string~'));
+        $this->assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), $regexp = '~some specific string~'));
         /** @var AbstractPlatform $abstractPlatform */
         $abstractPlatform = $this->getPlatform();
         $nonMatchingValueToConvert = 'A string without that specific string.';
@@ -505,10 +505,10 @@ trait EnumTypeTestTrait
     public function registering_same_subtype_again_throws_exception(EnumType $enumType)
     {
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
-        $this->assertFalse($enumType::hasSubTypeEnum($this->getTestSubTypeEnumClass()));
-        $this->assertTrue($enumType::addSubTypeEnum($this->getTestSubTypeEnumClass(), '~foo~'));
+        $this->assertFalse($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
+        $this->assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), '~foo~'));
         // registering twice - should thrown an exception
-        $enumType::addSubTypeEnum($this->getTestSubTypeEnumClass(), '~foo~');
+        $enumType::addSubTypeEnum($this->getSubTypeEnumClass(), '~foo~');
     }
 
     /**
@@ -536,7 +536,7 @@ trait EnumTypeTestTrait
     {
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
         $enumType::addSubTypeEnum(
-            $this->getTestSubTypeEnumClass(),
+            $this->getSubTypeEnumClass(),
             'foo~' // missing opening delimiter
         );
     }
@@ -567,29 +567,29 @@ trait EnumTypeTestTrait
         /** @var EnumType $enumTypeClass */
         $enumTypeClass = $this->getEnumTypeClass();
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
-        if ($enumTypeClass::hasSubTypeEnum($this->getTestSubTypeEnumClass())) {
-            $enumTypeClass::removeSubTypeEnum($this->getTestSubTypeEnumClass());
+        if ($enumTypeClass::hasSubTypeEnum($this->getSubTypeEnumClass())) {
+            $enumTypeClass::removeSubTypeEnum($this->getSubTypeEnumClass());
         }
-        $enumTypeClass::addSubTypeEnum($this->getTestSubTypeEnumClass(), $regexp = '~searching pattern~');
+        $enumTypeClass::addSubTypeEnum($this->getSubTypeEnumClass(), $regexp = '~searching pattern~');
 
         $anotherEnumTypeClass = $this->getAnotherEnumTypeClass();
-        if ($anotherEnumTypeClass::hasSubTypeEnum($this->getTestAnotherSubTypeEnumClass())) {
-            $anotherEnumTypeClass::removeSubTypeEnum($this->getTestAnotherSubTypeEnumClass());
+        if ($anotherEnumTypeClass::hasSubTypeEnum($this->getAnotherSubTypeEnumClass())) {
+            $anotherEnumTypeClass::removeSubTypeEnum($this->getAnotherSubTypeEnumClass());
         }
         // regexp is same, sub-type is not
-        $anotherEnumTypeClass::addSubTypeEnum($this->getTestAnotherSubTypeEnumClass(), $regexp);
+        $anotherEnumTypeClass::addSubTypeEnum($this->getAnotherSubTypeEnumClass(), $regexp);
 
         $value = 'some string fitting to searching pattern';
         $this->assertRegExp($regexp, $value);
 
         $enumType = $enumTypeClass::getIt();
         $enumSubType = $enumType->convertToPHPValue($value, $this->getPlatform());
-        $this->assertInstanceOf($this->getTestSubTypeEnumClass(), $enumSubType);
+        $this->assertInstanceOf($this->getSubTypeEnumClass(), $enumSubType);
         $this->assertSame($value, "$enumSubType");
 
         $anotherEnumType = $anotherEnumTypeClass::getIt();
         $anotherEnumSubType = $anotherEnumType->convertToPHPValue($value, $this->getPlatform());
-        $this->assertInstanceOf($this->getTestSubTypeEnumClass(), $enumSubType);
+        $this->assertInstanceOf($this->getSubTypeEnumClass(), $enumSubType);
         $this->assertSame($value, "$anotherEnumSubType");
 
         // registered sub-types were different, just regexp was the same - let's test if they are kept separately
@@ -615,7 +615,7 @@ trait EnumTypeTestTrait
     /**
      * @return string|TestSubTypeEnum
      */
-    protected function getTestSubTypeEnumClass()
+    protected function getSubTypeEnumClass()
     {
         return TestSubTypeEnum::class;
     }
@@ -623,7 +623,7 @@ trait EnumTypeTestTrait
     /**
      * @return string|TestAnotherSubTypeEnum
      */
-    protected function getTestAnotherSubTypeEnumClass()
+    protected function getAnotherSubTypeEnumClass()
     {
         return TestAnotherSubTypeEnum::class;
     }

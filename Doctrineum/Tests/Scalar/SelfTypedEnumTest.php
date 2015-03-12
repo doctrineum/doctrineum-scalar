@@ -39,10 +39,10 @@ class SelfTypedEnumTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function can_use_subtype()
     {
-        SelfTypedEnum::addSubTypeEnum(TestSelfTypedSubTypeEnum::class, $pattern = '~foo~');
+        SelfTypedEnum::addSubTypeEnum(TestSubTypeSelfTypedEnum::class, $pattern = '~foo~');
         $this->assertRegExp($pattern, $enumValue = 'foo bar baz');
         $enumBySubType = SelfTypedEnum::getEnum($enumValue);
-        $this->assertInstanceOf(TestSelfTypedSubTypeEnum::class, $enumBySubType);
+        $this->assertInstanceOf(TestSubTypeSelfTypedEnum::class, $enumBySubType);
     }
 
     /**
@@ -68,19 +68,19 @@ class SelfTypedEnumTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return string|TestSelfTypedSubTypeEnum
+     * @return string|TestSubTypeSelfTypedEnum
      */
-    protected function getTestSubTypeEnumClass()
+    protected function getSubTypeEnumClass()
     {
-        return TestSelfTypedSubTypeEnum::class;
+        return TestSubTypeSelfTypedEnum::class;
     }
 
     /**
-     * @return string|TestAnotherSelfTypedSubTypeEnum
+     * @return string|TestAnotherSubTypeSelfTypedEnum
      */
-    protected function getTestAnotherSubTypeEnumClass()
+    protected function getAnotherSubTypeEnumClass()
     {
-        return TestAnotherSelfTypedSubTypeEnum::class;
+        return TestAnotherSubTypeSelfTypedEnum::class;
     }
 
 }
@@ -96,12 +96,12 @@ class TestAnotherSelfTypedEnumType extends SelfTypedEnum
 
 }
 
-class TestSelfTypedSubTypeEnum extends SelfTypedEnum
+class TestSubTypeSelfTypedEnum extends SelfTypedEnum
 {
 
 }
 
-class TestAnotherSelfTypedSubTypeEnum extends SelfTypedEnum
+class TestAnotherSubTypeSelfTypedEnum extends SelfTypedEnum
 {
 
 }
