@@ -5,6 +5,10 @@ use Doctrine\DBAL\Types\Type;
 use Doctrineum\Tests\Scalar\EnumTestTrait;
 use Doctrineum\Tests\Scalar\EnumTypeTestTrait;
 
+/**
+ * Class SelfTypedEnumTest
+ * @package Doctrineum\Scalar
+ */
 class SelfTypedEnumTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -44,6 +48,50 @@ class SelfTypedEnumTest extends \PHPUnit_Framework_TestCase
         $enumBySubType = SelfTypedEnum::getEnum($enumValue);
         $this->assertInstanceOf(TestSubTypeSelfTypedEnum::class, $enumBySubType);
     }
+
+    /**
+     * @test
+     * @depends can_be_registered
+     * @return SelfTypedEnum
+     */
+    public function can_create_enum_from_itself()
+    {
+        $selfTypedEnum = SelfTypedEnum::getIt();
+        // enum from self typed enum is created by cloning (because of Doctrine type, as the parent, limitations)
+        $enum = $selfTypedEnum::getEnum('foo');
+        $this->assertInstanceOf(SelfTypedEnum::class, $enum);
+
+        return $enum;
+    }
+
+    /**
+     * @param SelfTypedEnum $enum
+     *
+     * @test
+     * @depends can_create_enum_from_itself
+     * @expectedException \Doctrineum\Scalar\Exceptions\CanNotBeCloned
+     */
+    public function can_not_clone_created_enum(SelfTypedEnum $enum)
+    {
+        /** @noinspection PhpExpressionResultUnusedInspection */
+        clone $enum;
+    }
+
+    /**
+     * @test
+     * @depends can_be_registered
+     * @expectedException \Doctrineum\Scalar\Exceptions\CanNotBeCloned
+     */
+    public function can_not_clone_self_typed_enum_type_after_enum_creation()
+    {
+        $selfTypedEnum = SelfTypedEnum::getIt();
+        // creates an enum from self typed enum by cloning (because of Doctrine type, as the parent, limitations)
+        $selfTypedEnum::getEnum('foo');
+        /** @noinspection PhpExpressionResultUnusedInspection */
+        clone $selfTypedEnum;
+    }
+
+    // inner providers
 
     /**
      * @param $value

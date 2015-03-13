@@ -12,6 +12,9 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
  *
  * @method static SelfTypedEnum getEnum(mixed $value)
  * @see EnumTrait::getEnum
+ *
+ * @method static SelfTypedEnum getIt
+ * @see EnumType::getIt
  */
 class SelfTypedEnum extends EnumType implements EnumInterface
 {
@@ -107,6 +110,7 @@ class SelfTypedEnum extends EnumType implements EnumInterface
 
         $selfTypedEnum->allowSingleClone();
         $newSelfTypedEnum = clone $selfTypedEnum;
+        $selfTypedEnum->prohibitSingleClone();
         $newSelfTypedEnum->enumValue = $enumValue;
 
         return $newSelfTypedEnum;

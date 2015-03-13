@@ -36,12 +36,18 @@ trait EnumTrait
         if (!$this->allowSingleClone) {
             throw new Exceptions\CanNotBeCloned('Enum as a singleton can not be cloned. Use same instance everywhere.');
         }
+        // disabling cloning on clone itself
         $this->allowSingleClone = false;
     }
 
     protected function allowSingleClone()
     {
         $this->allowSingleClone = true;
+    }
+
+    protected function prohibitSingleClone()
+    {
+        $this->allowSingleClone = false;
     }
 
     /**
