@@ -115,9 +115,80 @@ trait EnumTestTrait
     }
 
     /**
+     * @test
+     * @expectedException \Doctrineum\Scalar\Exceptions\EnumIsAlreadyBuilt
+     */
+    public function adding_an_existing_enum_cause_exception()
+    {
+        TestInvalidExistingEnumUsage::forceGetting(false);
+        TestInvalidExistingEnumUsage::forceAdding(true);
+        // getting twice to internally add twice
+        TestInvalidExistingEnumUsage::getEnum('foo');
+        TestInvalidExistingEnumUsage::getEnum('foo');
+    }
+
+    /**
+     * @test
+     * @expectedException \Doctrineum\Scalar\Exceptions\EnumIsNotBuilt
+     */
+    public function getting_an_non_existing_enum_cause_exception()
+    {
+        TestInvalidExistingEnumUsage::forceAdding(false);
+        TestInvalidExistingEnumUsage::forceGetting(true);
+        TestInvalidExistingEnumUsage::getEnum('bar');
+    }
+
+    /**
+     * @test
+     * @expectedException \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
+     */
+    public function using_invalid_value_without_casting_cause_exception(){
+        TestInvalidEnumValueTest::getEnum(new \stdClass());
+    }
+
+    /**
      * @param $value
      * @return Enum|SelfTypedEnum
      */
     abstract protected function getInheritedEnum($value);
 }
 
+/** inner */
+class TestInvalidExistingEnumUsage extends Enum
+{
+    private static $forceAdding = false;
+    private static $forceGetting = false;
+
+    public static function forceAdding($force = true)
+    {
+        self::$forceAdding = $force;
+    }
+
+    public static function forceGetting($force = true)
+    {
+        self::$forceGetting = $force;
+    }
+
+    protected static function getEnumFromNamespace($enumValue, $namespace)
+    {
+        $finalValue = static::convertToEnumFinalValue($enumValue);
+        if (self::$forceAdding) {
+            static::addBuiltEnum(static::createByValue($finalValue), $namespace);
+        }
+
+        if (self::$forceGetting) {
+            return static::getBuiltEnum($finalValue, $namespace);
+        }
+
+        return null;
+    }
+}
+
+class TestInvalidEnumValueTest extends Enum {
+
+    protected static function convertToEnumFinalValue($value)
+    {
+        // intentionally no conversion at all
+        return $value;
+    }
+}

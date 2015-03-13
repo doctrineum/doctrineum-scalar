@@ -59,14 +59,6 @@ trait EnumTrait
     }
 
     /**
-     * @return Enum[]
-     */
-    protected static function getBuiltEnums()
-    {
-        return self::$builtEnums;
-    }
-
-    /**
      * @param string|float|int|bool|null $enumValue
      * @return Enum
      */
@@ -123,6 +115,10 @@ trait EnumTrait
      */
     protected static function createByValue($enumValue)
     {
+        if (!is_scalar($enumValue) && !is_null($enumValue)) {
+            throw new Exceptions\UnexpectedValueToEnum('Expected scalar or null, got ' . gettype($enumValue));
+        }
+
         return new static($enumValue);
     }
 

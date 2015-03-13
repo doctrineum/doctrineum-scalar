@@ -1,7 +1,7 @@
 <?php
 namespace Doctrineum\Scalar\Exceptions;
 
-class TypeNameOccupiedTest extends \PHPUnit_Framework_TestCase
+class EnumIsAlreadyBuiltTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -10,7 +10,7 @@ class TypeNameOccupiedTest extends \PHPUnit_Framework_TestCase
      */
     public function is_logic_exception()
     {
-        throw new TypeNameOccupied();
+        throw new EnumIsAlreadyBuilt();
     }
 
     /**
@@ -19,7 +19,7 @@ class TypeNameOccupiedTest extends \PHPUnit_Framework_TestCase
      */
     public function is_local_logic_exception()
     {
-        throw new TypeNameOccupied();
+        throw new EnumIsAlreadyBuilt();
     }
 
 }

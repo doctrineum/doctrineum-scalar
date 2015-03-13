@@ -404,7 +404,43 @@ trait EnumTypeTestTrait
     }
 
     /**
-     * subtype tests
+     * @test
+     * @depends instance_can_be_obtained
+     * @expectedException \Doctrineum\Scalar\Exceptions\UnexpectedValueToDatabaseValue
+     */
+    public function conversion_of_non_object_to_database_cause_exception()
+    {
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumType = Type::getType($enumTypeClass::getTypeName());
+        $enumType->convertToDatabaseValue(new \stdClass(), $this->getPlatform());
+    }
+
+    /**
+     * @test
+     * @depends instance_can_be_obtained
+     */
+    public function enum_type_name_is_same_as_name()
+    {
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumType = Type::getType($enumTypeClass::getTypeName());
+        /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
+        $this->assertSame($enumTypeClass::getTypeName(), $enumType->getName());
+    }
+
+    /**
+     * @test
+     * @depends instance_can_be_obtained
+     */
+    public function requires_sql_comment_hint()
+    {
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumType = Type::getType($enumTypeClass::getTypeName());
+        /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
+        $this->assertTrue($enumType->requiresSQLCommentHint($this->getPlatform()));
+    }
+
+    /**
+     * SUBTYPE TESTS
      */
 
     /**
