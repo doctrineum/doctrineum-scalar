@@ -68,7 +68,7 @@ doctrine:
 <?php
 class Foo
 {
-    /** @Column(type="\Doctrineum\Scalar\Enum") */
+    /** @Column(type="enum") */
     protected $field;
 }
 ```
@@ -79,7 +79,7 @@ class Foo
 $enum = \Doctrineum\Scalar\Enum::getEnum('foo bar');
 ```
 
-*note: the type has the same name as the Enum class itself, but its just a string; you can change it at child class anytime; see \Doctrineum\Scalar\EnumType::getTypeName()*
+*note: the type has the same (lowercased) name as the Enum class itself, but its just a string; you can change it at child class anytime; see \Doctrineum\Scalar\EnumType::getTypeName()*
 
 #### Understand the basics
 There are two roles - the factory and the value.
