@@ -10,6 +10,7 @@ For default custom types see the [official documentation as well](http://doctrin
 1. [Installation](#installation)
 2. [Custom type registration](#custom-type-registration)
 3. [Map property as an enum](#map-property-as-an-enum)
+3. [Create enum](#create-enum)
 4. [Understand the basics](#understand-the-basics)
 
 ### <span id="installation">Installation</span>
@@ -29,7 +30,7 @@ then extend in the same composer.json file the field require by doctrineum
     }
 ```
 
-### <span id="custom_type_registration">Custom type registration</span>
+### Custom type registration
 
 ```php
 <?php
@@ -63,7 +64,7 @@ doctrine:
             #...
 ```
 
-### <span id="map_property_as_an_enum">Map property as an enum</span>
+### Map property as an enum
 ```php
 <?php
 class Foo
@@ -73,9 +74,15 @@ class Foo
 }
 ```
 
+### Create enum
+```php
+<?php
+$enum = \Doctrineum\Scalar\Enum::getEnum('foo bar');
+```
+
 *note: the type has the same name as the Enum class itself, but its just a string; you can change it at child class anytime; see \Doctrineum\Scalar\EnumType::getTypeName()*
 
-#### <span id="understand_the_basics">Understand the basics</span>
+#### Understand the basics
 There are two roles - the factory and the value.
  - EnumType is the factory (as part of the Doctrine\DBAL\Types\Type family), building an Enum following rules.
  - Enum is the value holder, de facto singleton, represented by a class (and class, as you know, can do a lot of things, which is reason why enum is more sexy then whole scalar value).
