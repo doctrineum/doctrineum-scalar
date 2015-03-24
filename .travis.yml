@@ -11,6 +11,7 @@ matrix:
   allow_failures:
     - php: nightly
     - php: hhvm-nightly
+    - php: 7.0
 
 before_script:
   - composer update --no-interaction --prefer-dist
