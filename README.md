@@ -1,8 +1,5 @@
 [![Build Status](https://travis-ci.org/jaroslavtyc/doctrineum-scalar.svg?branch=master)](https://travis-ci.org/jaroslavtyc/doctrineum-scalar)
 
-### HHVM
-[HHVM](http://hhvm.com/) is currently falling on tests, does **NOT** use this library for HHVM projects.
-
 ##### Customizable enumeration type for Doctrine 2.4+
 
 About custom Doctrine types, see the [official documentation](http://doctrine-orm.readthedocs.org/en/latest/cookbook/custom-mapping-types.html).
