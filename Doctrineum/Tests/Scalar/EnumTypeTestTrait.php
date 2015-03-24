@@ -33,11 +33,13 @@ trait EnumTypeTestTrait
         \Mockery::close();
 
         $enumTypeClass = $this->getEnumTypeClass();
-        $enumType = Type::getType($enumTypeClass::getTypeName(), $enumTypeClass);
-        /** @var EnumType $enumType */
-        if ($enumType::hasSubTypeEnum($this->getSubTypeEnumClass())) {
-            /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
-            $this->assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass()));
+        if (Type::hasType($enumTypeClass::getTypeName())) {
+            $enumType = Type::getType($enumTypeClass::getTypeName(), $enumTypeClass);
+            /** @var EnumType $enumType */
+            if ($enumType::hasSubTypeEnum($this->getSubTypeEnumClass())) {
+                /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
+                $this->assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass()));
+            }
         }
     }
 
