@@ -581,6 +581,8 @@ trait EnumTypeTestTrait
 
     /**
      * @test
+     *
+     * @depends can_be_registered
      */
     public function can_register_another_enum_type()
     {
@@ -593,6 +595,7 @@ trait EnumTypeTestTrait
         }
 
         $this->assertTrue($anotherEnumType::isRegistered());
+        $this->assertTrue(Type::hasType($anotherEnumType::getTypeName()));
     }
 
     /**
