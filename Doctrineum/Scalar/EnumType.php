@@ -63,10 +63,14 @@ class EnumType extends Type
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
         if (!is_object($value)) {
-            throw new Exceptions\UnexpectedValueToDatabaseValue('Expected object of class ' . EnumInterface::class . ', got ' . gettype($value));
+            throw new Exceptions\UnexpectedValueToDatabaseValue(
+                'Expected object of class ' . EnumInterface::class . ', got ' . gettype($value)
+            );
         }
         if (!is_a($value, EnumInterface::class)) {
-            throw new Exceptions\UnexpectedValueToDatabaseValue('Expected ' . EnumInterface::class . ', got ' . get_class($value));
+            throw new Exceptions\UnexpectedValueToDatabaseValue(
+                'Expected ' . EnumInterface::class . ', got ' . get_class($value)
+            );
         }
 
         /** @var Enum $value probably */
@@ -187,10 +191,11 @@ class EnumType extends Type
      */
     protected static function checkRegexp($regexp)
     {
-        // the regexp does not start and end with same characters
         if (!preg_match('~^(.).*\1$~', $regexp)) {
+            // the regexp does not start and end with same characters
             throw new Exceptions\InvalidRegexpFormat(
-                'The given regexp is not enclosed by same delimiters and therefore is not valid: ' . var_export($regexp, true)
+                'The given regexp is not enclosed by same delimiters and therefore is not valid: '
+                . var_export($regexp, true)
             );
         }
     }

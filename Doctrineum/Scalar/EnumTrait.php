@@ -105,7 +105,10 @@ trait EnumTrait
         } elseif (is_object($enumValue) && method_exists($enumValue, '__toString')) {
             return $enumValue->__toString();
         } else {
-            throw new Exceptions\UnexpectedValueToEnum('Expected scalar or null or to string object, got ' . gettype($enumValue));
+            throw new Exceptions\UnexpectedValueToEnum(
+                'Expected scalar or null or to string object, got '
+                . gettype($enumValue)
+            );
         }
     }
 

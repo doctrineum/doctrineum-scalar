@@ -1,6 +1,7 @@
 <?php
 namespace Doctrineum\Scalar\Exceptions;
 
-class UnexpectedValueToConvert extends InvalidArgument {
+class UnexpectedValueToConvert extends InvalidArgument
+{
 
 }

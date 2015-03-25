@@ -47,7 +47,8 @@ class SelfTypedEnum extends EnumType implements EnumInterface
      * @param string $subTypeValueRegexp
      * @return bool
      */
-    public static function addSubTypeEnum($subTypeClassName, $subTypeValueRegexp) {
+    public static function addSubTypeEnum($subTypeClassName, $subTypeValueRegexp)
+    {
         /**
          * The class has to be self-registering to by-pass enum and enum type bindings,
          * @see SelfTypedEnum::createByValue
@@ -65,7 +66,7 @@ class SelfTypedEnum extends EnumType implements EnumInterface
      */
     protected static function checkIfSelfRegistering($subTypeClassName)
     {
-        if (!is_a($subTypeClassName, __CLASS__, true /* allow tested class as a string */)) {
+        if (!is_a($subTypeClassName, __CLASS__, true /* allow tested class to be just its name and can be searched by auto-loader */)) {
             throw new Exceptions\SubTypeEnumHasToBeSelfRegistering(
                 'Sub-type class ' . var_export($subTypeClassName, true) . ' has to be child of self-typed ' . __CLASS__
             );
@@ -77,7 +78,7 @@ class SelfTypedEnum extends EnumType implements EnumInterface
         $alreadyRegisteredType = static::getType(static::getTypeName());
         if (get_class($alreadyRegisteredType) !== static::class) {
             throw new Exceptions\TypeNameOccupied(
-                'Under type name ' . static::getTypeName() .
+                'Under type of name ' . var_export(static::getTypeName(), true) .
                 ' is already registered different class ' . get_class($alreadyRegisteredType)
             );
         }
