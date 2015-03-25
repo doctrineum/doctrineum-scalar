@@ -56,7 +56,8 @@ class SelfTypedEnumTest extends \PHPUnit_Framework_TestCase
      */
     public function can_create_enum_from_itself()
     {
-        $selfTypedEnum = SelfTypedEnum::getIt();
+        /** @var SelfTypedEnum $selfTypedEnum */
+        $selfTypedEnum = Type::getType(SelfTypedEnum::getTypeName());
         // enum from self typed enum is created by cloning (because of Doctrine type, as the parent, limitations)
         $enum = $selfTypedEnum::getEnum('foo');
         $this->assertInstanceOf(SelfTypedEnum::class, $enum);
@@ -84,7 +85,8 @@ class SelfTypedEnumTest extends \PHPUnit_Framework_TestCase
      */
     public function can_not_clone_self_typed_enum_type_after_enum_creation()
     {
-        $selfTypedEnum = SelfTypedEnum::getIt();
+        /** @var SelfTypedEnum $selfTypedEnum */
+        $selfTypedEnum = Type::getType(SelfTypedEnum::getTypeName());
         // creates an enum from self typed enum by cloning (because of Doctrine type, as the parent, limitations)
         $selfTypedEnum::getEnum('foo');
         /** @noinspection PhpExpressionResultUnusedInspection */

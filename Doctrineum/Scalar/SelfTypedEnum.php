@@ -12,9 +12,6 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
  *
  * @method static SelfTypedEnum getEnum(mixed $value)
  * @see EnumTrait::getEnum
- *
- * @method static SelfTypedEnum getIt
- * @see EnumType::getIt
  */
 class SelfTypedEnum extends EnumType implements EnumInterface
 {

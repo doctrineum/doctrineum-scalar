@@ -196,14 +196,6 @@ class EnumType extends Type
     }
 
     /**
-     * @return EnumType
-     */
-    public static function getIt()
-    {
-        return static::getType(static::getTypeName());
-    }
-
-    /**
      * Add current type to registry
      *
      * @throws \Doctrine\DBAL\DBALException
