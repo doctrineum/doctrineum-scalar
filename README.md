@@ -76,12 +76,30 @@ class Foo
 ### Create enum
 ```php
 <?php
+use Doctrineum\Scalar\Enum;
+
 $enum = \Doctrineum\Scalar\Enum::getEnum('foo bar');
 ```
 
-*note: the type has the same (lowercased) name as the Enum class itself, but its just a string; you can change it at child class anytime; see \Doctrineum\Scalar\EnumType::getTypeName()*
+### Register subtype enum
+You can register infinite number of enums, which are used according to a regexp of your choice.
+```php
+<?php
+use Doctrineum\Scalar\EnumType;
+
+EnumType::addSubTypeEnum('\Foo\Bar\YourEnum', '~get me different enum for this value~');
+// ...
+$enum = $enumType->convertToPHPValue('foo');
+get_class($enum) === '\Doctrineum\Scalar\Enum'; // true
+get_class($enum) === '\Foo\Bar\YourEnum'; // false
+$byRegexpDeterminedEnum = $enumType->convertToPHPValue('And now get me different enum for this value.');
+get_class($byRegexpDeterminedEnum) === '\Foo\Bar\YourEnum'; // true
+```
+
+*note: the type has the same (lowercased) name as the Enum class itself ("enum"), but its just a string; you can change it at child class anytime; see \Doctrineum\Scalar\EnumType::getTypeName()*
 
 #### Understand the basics
 There are two roles - the factory and the value.
- - EnumType is the factory (as part of the Doctrine\DBAL\Types\Type family), building an Enum following rules.
- - Enum is the value holder, de facto singleton, represented by a class (and class, as you know, can do a lot of things, which is reason why enum is more sexy then whole scalar value).
+ - EnumType is the factory (as part of the Doctrine\DBAL\Types\Type family), building an Enum by following EnumType rules.
+ - Enum is the value holder, de facto singleton, represented by a class. And class, as you know, can do a lot of things, which makes enum more sexy then whole scalar value.
+ - Subtype is an EnumType, but ruled not just by type, but also by current value itself. One type can has any number of subtypes, in dependence on your imagination and used enum values.
