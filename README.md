@@ -118,3 +118,7 @@ There are two roles - the factory and the value.
  - EnumType is the factory (as part of the Doctrine\DBAL\Types\Type family), building an Enum by following EnumType rules.
  - Enum is the value holder, de facto singleton, represented by a class. And class, as you know, can do a lot of things, which makes enum more sexy then whole scalar value.
  - Subtype is an EnumType, but ruled not just by type, but also by current value itself. One type can has any number of subtypes, in dependence on your imagination and used enum values.
+
+##### Exceptions philosophy
+Doctrineum adopts [Granam exception hierarchy ideas](https://github.com/jaroslavtyc/granam-exception-hierarchy).
+That means every exceptionable state is probably by a **logic** mistake, rather than a runtime situation.
