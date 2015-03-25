@@ -1,6 +1,7 @@
 <?php
 namespace Doctrineum\Scalar\Exceptions;
 
-class UnexpectedValueToEnum extends UnexpectedValueToConvert {
+class UnexpectedValueToEnum extends UnexpectedValueToConvert
+{
 
 }

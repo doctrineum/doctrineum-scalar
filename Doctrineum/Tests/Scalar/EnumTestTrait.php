@@ -142,7 +142,8 @@ trait EnumTestTrait
      * @test
      * @expectedException \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
      */
-    public function using_invalid_value_without_casting_cause_exception(){
+    public function using_invalid_value_without_casting_cause_exception()
+    {
         TestInvalidEnumValueTest::getEnum(new \stdClass());
     }
 
@@ -184,7 +185,8 @@ class TestInvalidExistingEnumUsage extends Enum
     }
 }
 
-class TestInvalidEnumValueTest extends Enum {
+class TestInvalidEnumValueTest extends Enum
+{
 
     protected static function convertToEnumFinalValue($value)
     {
