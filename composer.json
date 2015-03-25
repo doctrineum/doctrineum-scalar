@@ -1,7 +1,7 @@
 {
   "name": "doctrineum/scalar",
   "type": "library",
-  "description": "Enumeration type for Doctrine",
+  "description": "Enumeration type and value dependent sub-type for Doctrine",
   "license": "MIT",
   "autoload": {
     "psr-4": {"Doctrineum\\": "Doctrineum/"}
