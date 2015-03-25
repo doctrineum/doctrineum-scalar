@@ -9,8 +9,10 @@ For default custom types see the [official documentation as well](http://doctrin
 1. [Installation](#installation)
 2. [Custom type registration](#custom-type-registration)
 3. [Map property as an enum](#map-property-as-an-enum)
-3. [Create enum](#create-enum)
-4. [Understand the basics](#understand-the-basics)
+4. [Create enum](#create-enum)
+5. [Register subtype enum](#register-subtype-enum)
+6. [Be lazy, use self-typed enum](#be-lazy-use-self-typed-enum)
+7. [Understand the basics](#understand-the-basics)
 
 ### <span id="installation">Installation</span>
 Edit composer.json at your project, add
@@ -77,7 +79,6 @@ class Foo
 ```php
 <?php
 use Doctrineum\Scalar\Enum;
-
 $enum = \Doctrineum\Scalar\Enum::getEnum('foo bar');
 ```
 
@@ -86,7 +87,6 @@ You can register infinite number of enums, which are used according to a regexp 
 ```php
 <?php
 use Doctrineum\Scalar\EnumType;
-
 EnumType::addSubTypeEnum('\Foo\Bar\YourEnum', '~get me different enum for this value~');
 // ...
 $enum = $enumType->convertToPHPValue('foo');
@@ -94,6 +94,21 @@ get_class($enum) === '\Doctrineum\Scalar\Enum'; // true
 get_class($enum) === '\Foo\Bar\YourEnum'; // false
 $byRegexpDeterminedEnum = $enumType->convertToPHPValue('And now get me different enum for this value.');
 get_class($byRegexpDeterminedEnum) === '\Foo\Bar\YourEnum'; // true
+```
+
+### Be lazy, use self-typed enum
+Registering an enum type as a factory and use of different enum in entities can be confusing and boring sometimes. 
+You can use SelfTypedEnum, which is 2in1 class.
+```php
+<?php
+use Doctrineum\Scalar\SelfTypedEnum;
+SelfTypedEnum::registerSelf(); // quick self-registration
+class Foo
+{
+    // this column will use SelfTypedEnum class as an enum
+    /** @Column(type="self_typed_enum") */
+    protected $field;
+}
 ```
 
 *note: the type has the same (lowercased) name as the Enum class itself ("enum"), but its just a string; you can change it at child class anytime; see \Doctrineum\Scalar\EnumType::getTypeName()*
