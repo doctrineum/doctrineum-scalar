@@ -123,12 +123,14 @@ class SelfTypedEnum extends EnumType implements EnumInterface
      */
     public static function getTypeName()
     {
-        // Doctrineum\Scalar\SelfTypedEnum = SelfTypedEnum
+        // Doctrineum\Scalar\SelfTypedEnum1a2b3Foo = SelfTypedEnum1a2b3Foo
         $baseClassName = preg_replace('~(\w+\\\)*(\w+)~', '$2', static::class);
-        // SelfTypedEnum = Self_Typed_Enum
+        // SelfTypedEnum123Foo = Self_Typed_Enum1a2b3_Foo
         $underScoredClassName = preg_replace('~(\w)([A-Z])~', '$1_$2', $baseClassName);
+        // SelfTypedEnum123Foo = Self_Typed_Enum_1a2b3_Foo
+        $underScoredDigitsClassName = preg_replace('~(\w)(\d[^A-Z]*)~', '$1_$2', $underScoredClassName);
 
-        // Self_Typed_Enum = self_typed_enum
-        return strtolower($underScoredClassName);
+        // Self_Typed_Enum_1a2b3_Foo = self_typed_enum_1a2b3_foo
+        return strtolower($underScoredDigitsClassName);
     }
 }
