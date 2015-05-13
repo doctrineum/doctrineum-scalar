@@ -245,7 +245,7 @@ class EnumType extends Type
     public static function removeSubTypeEnum($subTypeEnumClass)
     {
         if (!static::hasSubTypeEnum($subTypeEnumClass)) {
-            throw new \LogicException('Sub-type of class ' . var_export($subTypeEnumClass, true) . ' is not registered');
+            throw new Exceptions\SubTypeEnumIsNotRegistered('Sub-type of class ' . var_export($subTypeEnumClass, true) . ' is not registered');
         }
 
         unset(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeEnumClass]);
