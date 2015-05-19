@@ -88,28 +88,28 @@ class SelfTypedEnum extends EnumType implements EnumInterface
      * Type has private constructor, the only way how to create an Enum, which is also Type, is by Type factory method,
      * @see Type::getType
      *
-     * @param string|int|float|bool|null $enumValue
+     * @param string|int|float|bool|null $finalEumValue
      * @return SelfTypedEnum
      */
-    protected static function createByValue($enumValue)
+    protected static function createByValue($finalEumValue)
     {
-        if (!is_scalar($enumValue) && !is_null($enumValue)) {
-            throw new Exceptions\UnexpectedValueToEnum('Expected scalar or null, got ' . gettype($enumValue));
+        if (!is_scalar($finalEumValue) && !is_null($finalEumValue)) {
+            throw new Exceptions\UnexpectedValueToEnum('Expected scalar or null, got ' . gettype($finalEumValue));
         }
 
         /** @var SelfTypedEnum $enumClass */
         // determining of enum class by getEnumClass is important for subtypes
-        $enumClass = static::getEnumClass($enumValue);
+        $enumClass = static::getEnumClass($finalEumValue);
         // Type has private constructor, the only way how to create an Enum, which is also Type, is by Type factory method getType
         $selfTypedEnum = $enumClass::getType($enumClass::getTypeName());
-        if ($selfTypedEnum->enumValue === $enumValue) {
+        if ($selfTypedEnum->enumValue === $finalEumValue) {
             return $selfTypedEnum;
         }
 
         $selfTypedEnum->allowSingleClone();
         $newSelfTypedEnum = clone $selfTypedEnum;
         $selfTypedEnum->prohibitSingleClone();
-        $newSelfTypedEnum->enumValue = $enumValue;
+        $newSelfTypedEnum->enumValue = $finalEumValue;
 
         return $newSelfTypedEnum;
     }

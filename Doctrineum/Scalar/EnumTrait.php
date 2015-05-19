@@ -77,12 +77,12 @@ trait EnumTrait
 
     protected static function getEnumFromNamespace($enumValue, $namespace)
     {
-        $finalValue = static::convertToEnumFinalValue($enumValue);
-        if (!static::hasBuiltEnum($finalValue, $namespace)) {
-            static::addBuiltEnum(static::createByValue($finalValue), $namespace);
+        $finalEnumValue = static::convertToEnumFinalValue($enumValue);
+        if (!static::hasBuiltEnum($finalEnumValue, $namespace)) {
+            static::addBuiltEnum(static::createByValue($finalEnumValue), $namespace);
         }
 
-        return static::getBuiltEnum($finalValue, $namespace);
+        return static::getBuiltEnum($finalEnumValue, $namespace);
     }
 
     /**
@@ -113,16 +113,16 @@ trait EnumTrait
     }
 
     /**
-     * @param string|int|float|bool|null $enumValue
+     * @param string|int|float|bool|null $finalEnumValue
      * @return Enum
      */
-    protected static function createByValue($enumValue)
+    protected static function createByValue($finalEnumValue)
     {
-        if (!is_scalar($enumValue) && !is_null($enumValue)) {
-            throw new Exceptions\UnexpectedValueToEnum('Expected scalar or null, got ' . gettype($enumValue));
+        if (!is_scalar($finalEnumValue) && !is_null($finalEnumValue)) {
+            throw new Exceptions\UnexpectedValueToEnum('Expected scalar or null, got ' . gettype($finalEnumValue));
         }
 
-        return new static($enumValue);
+        return new static($finalEnumValue);
     }
 
     protected static function hasBuiltEnum($enumValue, $namespace)
