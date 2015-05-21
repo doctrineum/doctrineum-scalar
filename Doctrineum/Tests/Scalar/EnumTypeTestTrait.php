@@ -14,7 +14,7 @@ trait EnumTypeTestTrait
      */
     protected function getEnumTypeClass()
     {
-        return preg_replace('~Test$~', '', static::class);
+        return preg_replace('~Test$~', '', get_called_class());
     }
 
     /**
@@ -22,7 +22,7 @@ trait EnumTypeTestTrait
      */
     protected function getRegisteredEnumClass()
     {
-        return preg_replace('~(Type)?Test$~', '', static::class);
+        return preg_replace('~(Type)?Test$~', '', get_called_class());
     }
 
     /**
@@ -142,7 +142,7 @@ trait EnumTypeTestTrait
      */
     public function enum_with_null_to_database_value_is_null(EnumType $enumType)
     {
-        $nullEnum = \Mockery::mock(EnumInterface::class);
+        $nullEnum = \Mockery::mock('Doctrineum\Scalar\EnumInterface');
         $nullEnum->shouldReceive('getEnumValue')
             ->once()
             ->andReturn(null);
@@ -161,7 +161,7 @@ trait EnumTypeTestTrait
      */
     public function enum_as_database_value_is_string_value_of_that_enum(EnumType $enumType)
     {
-        $enum = \Mockery::mock(EnumInterface::class);
+        $enum = \Mockery::mock('Doctrineum\Scalar\EnumInterface');
         $enum->shouldReceive('getEnumValue')
             ->once()
             ->andReturn($value = 'foo');
@@ -527,7 +527,7 @@ trait EnumTypeTestTrait
          */
         $enum = $enumType->convertToPHPValue($nonMatchingValueToConvert, $abstractPlatform);
         $this->assertNotSame($nonMatchingValueToConvert, $enum);
-        $this->assertInstanceOf(EnumInterface::class, $enum);
+        $this->assertInstanceOf('Doctrineum\Scalar\EnumInterface', $enum);
         $this->assertSame($nonMatchingValueToConvert, (string)$enum);
     }
 
@@ -557,7 +557,7 @@ trait EnumTypeTestTrait
     public function registering_invalid_subtype_class_throws_exception(EnumType $enumType)
     {
         /** @var \PHPUnit_Framework_TestCase|EnumTypeTestTrait $this */
-        $enumType::addSubTypeEnum(\stdClass::class, '~foo~');
+        $enumType::addSubTypeEnum('stdClass', '~foo~');
     }
 
     /**
@@ -640,7 +640,7 @@ trait EnumTypeTestTrait
      */
     protected function getPlatform()
     {
-        return \Mockery::mock(AbstractPlatform::class);
+        return \Mockery::mock('Doctrine\DBAL\Platforms\AbstractPlatform');
     }
 
     /**
@@ -648,7 +648,7 @@ trait EnumTypeTestTrait
      */
     protected function getAnotherEnumTypeClass()
     {
-        return TestAnotherEnumType::class;
+        return 'Doctrineum\Tests\Scalar\TestAnotherEnumType';
     }
 
     /**
@@ -656,7 +656,7 @@ trait EnumTypeTestTrait
      */
     protected function getSubTypeEnumClass()
     {
-        return TestSubTypeEnum::class;
+        return 'Doctrineum\Tests\Scalar\TestSubTypeEnum';
     }
 
     /**
@@ -664,7 +664,7 @@ trait EnumTypeTestTrait
      */
     protected function getAnotherSubTypeEnumClass()
     {
-        return TestAnotherSubTypeEnum::class;
+        return 'Doctrineum\Tests\Scalar\TestAnotherSubTypeEnum';
     }
 
 }

@@ -64,12 +64,12 @@ class EnumType extends Type
     {
         if (!is_object($value)) {
             throw new Exceptions\UnexpectedValueToDatabaseValue(
-                'Expected object of class ' . EnumInterface::class . ', got ' . gettype($value)
+                'Expected object of class ' . 'Doctrineum\Scalar\EnumInterface' . ', got ' . gettype($value)
             );
         }
-        if (!is_a($value, EnumInterface::class)) {
+        if (!is_a($value, 'Doctrineum\Scalar\EnumInterface')) {
             throw new Exceptions\UnexpectedValueToDatabaseValue(
-                'Expected ' . EnumInterface::class . ', got ' . get_class($value)
+                'Expected ' . 'Doctrineum\Scalar\EnumInterface' . ', got ' . get_class($value)
             );
         }
 
@@ -145,7 +145,7 @@ class EnumType extends Type
      */
     protected static function getDefaultEnumClass()
     {
-        return preg_replace('~Type$~', '', static::class);
+        return preg_replace('~Type$~', '', get_called_class());
     }
 
     /**
@@ -174,14 +174,14 @@ class EnumType extends Type
      */
     protected static function getSubTypeEnumInnerNamespace()
     {
-        return static::class;
+        return get_called_class();
     }
 
     protected static function checkSubTypeEnumClass($subtypeClassName)
     {
-        if (!is_a($subtypeClassName, EnumInterface::class, true /* allow tested class as a string */)) {
+        if (!is_a($subtypeClassName, 'Doctrineum\Scalar\EnumInterface', true /* allow tested class as a string */)) {
             throw new Exceptions\InvalidClassForSubTypeEnum(
-                'SubType enum class ' . var_export($subtypeClassName, true) . ' has to be ' . EnumInterface::class
+                'SubType enum class ' . var_export($subtypeClassName, true) . ' has to be ' . 'Doctrineum\Scalar\EnumInterface'
             );
         }
     }
@@ -211,7 +211,7 @@ class EnumType extends Type
             return false;
         }
 
-        static::addType(static::getTypeName(), static::class);
+        static::addType(static::getTypeName(), get_called_class());
 
         return static::hasType(static::getTypeName());
     }
@@ -273,7 +273,7 @@ class EnumType extends Type
     public static function getTypeName()
     {
         // Doctrineum\Scalar\EnumType = EnumType
-        $baseClassName = preg_replace('~(\w+\\\)*(\w+)~', '$2', static::class);
+        $baseClassName = preg_replace('~(\w+\\\)*(\w+)~', '$2', get_called_class());
         // EnumType = Enum
         $baseTypeName = preg_replace('~Type$~', '', $baseClassName);
 

@@ -16,7 +16,7 @@
         "psr-4": {"Doctrineum\\": "Doctrineum/"}
     },
     "require": {
-        "php": ">=5.5",
+        "php": ">=5.4",
         "doctrine/dbal": "2.4.*",
         "granam/strict-object": "~1.0",
         "granam/exception-hierarchy": "~1.0"

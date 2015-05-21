@@ -9,7 +9,7 @@ class LogicTest extends \PHPUnit_Framework_TestCase
      */
     public function is_interface()
     {
-        $this->assertTrue(interface_exists(Logic::class));
+        $this->assertTrue(interface_exists('Doctrineum\Scalar\Exceptions\Logic'));
     }
 
     /**

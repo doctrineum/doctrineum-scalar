@@ -43,10 +43,10 @@ class SelfTypedEnumTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function can_use_subtype()
     {
-        SelfTypedEnum::addSubTypeEnum(TestSubTypeSelfTypedEnum::class, $pattern = '~foo~');
+        SelfTypedEnum::addSubTypeEnum($this->getSubTypeEnumClass(), $pattern = '~foo~');
         $this->assertRegExp($pattern, $enumValue = 'foo bar baz');
         $enumBySubType = SelfTypedEnum::getEnum($enumValue);
-        $this->assertInstanceOf(TestSubTypeSelfTypedEnum::class, $enumBySubType);
+        $this->assertInstanceOf($this->getSubTypeEnumClass(), $enumBySubType);
     }
 
     /**
@@ -60,7 +60,7 @@ class SelfTypedEnumTest extends \PHPUnit_Framework_TestCase
         $selfTypedEnum = Type::getType(SelfTypedEnum::getTypeName());
         // enum from self typed enum is created by cloning (because of Doctrine type, as the parent, limitations)
         $enum = $selfTypedEnum::getEnum('foo');
-        $this->assertInstanceOf(SelfTypedEnum::class, $enum);
+        $this->assertInstanceOf('Doctrineum\Scalar\SelfTypedEnum', $enum);
 
         return $enum;
     }
@@ -114,7 +114,7 @@ class SelfTypedEnumTest extends \PHPUnit_Framework_TestCase
      */
     protected function getAnotherEnumTypeClass()
     {
-        return TestAnotherSelfTypedEnumType::class;
+        return 'Doctrineum\Scalar\TestAnotherSelfTypedEnumType';
     }
 
     /**
@@ -122,7 +122,7 @@ class SelfTypedEnumTest extends \PHPUnit_Framework_TestCase
      */
     protected function getSubTypeEnumClass()
     {
-        return TestSubTypeSelfTypedEnum::class;
+        return 'Doctrineum\Scalar\TestSubTypeSelfTypedEnum';
     }
 
     /**
@@ -130,7 +130,7 @@ class SelfTypedEnumTest extends \PHPUnit_Framework_TestCase
      */
     protected function getAnotherSubTypeEnumClass()
     {
-        return TestAnotherSubTypeSelfTypedEnum::class;
+        return 'Doctrineum\Scalar\TestAnotherSubTypeSelfTypedEnum';
     }
 
 }

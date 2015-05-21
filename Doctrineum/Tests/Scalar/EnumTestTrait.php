@@ -11,7 +11,7 @@ trait EnumTestTrait
      */
     protected function getEnumClass()
     {
-        return preg_replace('~Test$~', '', static::class);
+        return preg_replace('~Test$~', '', get_called_class());
     }
 
     /**
