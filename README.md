@@ -7,6 +7,8 @@
 About custom Doctrine types, see the [official documentation](http://doctrine-orm.readthedocs.org/en/latest/cookbook/custom-mapping-types.html).
 For default custom types see the [official documentation as well](http://doctrine-dbal.readthedocs.org/en/latest/reference/types.html).
 
+#### Requires PHP 5.4
+
 ## <span id="usage">Usage</span>
 1. [Installation](#installation)
 2. [Custom type registration](#custom-type-registration)
@@ -19,17 +21,8 @@ For default custom types see the [official documentation as well](http://doctrin
 ### <span id="installation">Installation</span>
 Edit composer.json at your project, add
 ```json
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/jaroslavtyc/doctrineum-scalar.git"
-        }
-    ],
-```
-then extend in the same composer.json file the field require by doctrineum
-```json
     "require": {
-        "doctrineum/scalar": "dev-master"
+        "doctrineum/scalar": "~1.0"
     }
 ```
 
@@ -47,7 +40,7 @@ Type::addType(EnumType::getTypeName(), '\Doctrineum\EnumType');
 Type::addType(BarEnumType::getTypeName(), '\Foo\BarEnumType');
 ```
 
-Or better for PHP [5.5+](http://php.net/manual/en/language.oop5.basic.php#language.oop5.basic.class.class)
+Or better with PHP [5.5+](http://php.net/manual/en/language.oop5.basic.php#language.oop5.basic.class.class)
 ```php
 // ...
 Type::addType(EnumType::getTypeName(), EnumType::class);

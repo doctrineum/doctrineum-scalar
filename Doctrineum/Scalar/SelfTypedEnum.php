@@ -37,7 +37,7 @@ class SelfTypedEnum extends EnumType implements EnumInterface
             return false;
         }
 
-        static::addType(static::getTypeName(), static::class);
+        static::addType(static::getTypeName(), get_called_class());
 
         return true;
     }
@@ -76,7 +76,7 @@ class SelfTypedEnum extends EnumType implements EnumInterface
     protected static function checkRegisteredType()
     {
         $alreadyRegisteredType = static::getType(static::getTypeName());
-        if (get_class($alreadyRegisteredType) !== static::class) {
+        if (get_class($alreadyRegisteredType) !== get_called_class()) {
             throw new Exceptions\TypeNameOccupied(
                 'Under type of name ' . var_export(static::getTypeName(), true) .
                 ' is already registered different class ' . get_class($alreadyRegisteredType)
@@ -124,7 +124,7 @@ class SelfTypedEnum extends EnumType implements EnumInterface
     public static function getTypeName()
     {
         // Doctrineum\Scalar\SelfTypedEnum1a2b3Foo = SelfTypedEnum1a2b3Foo
-        $baseClassName = preg_replace('~(\w+\\\)*(\w+)~', '$2', static::class);
+        $baseClassName = preg_replace('~(\w+\\\)*(\w+)~', '$2', get_called_class());
         // SelfTypedEnum123Foo = Self_Typed_Enum1a2b3_Foo
         $underScoredClassName = preg_replace('~(\w)([A-Z])~', '$1_$2', $baseClassName);
         // SelfTypedEnum123Foo = Self_Typed_Enum_1a2b3_Foo

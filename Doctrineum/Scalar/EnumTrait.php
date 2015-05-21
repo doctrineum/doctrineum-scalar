@@ -72,7 +72,7 @@ trait EnumTrait
      */
     protected static function getInnerNamespace()
     {
-        return static::class;
+        return get_called_class();
     }
 
     protected static function getEnumFromNamespace($enumValue, $namespace)
