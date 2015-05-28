@@ -25,7 +25,7 @@ trait EnumTrait
      */
     public function __toString()
     {
-        return (string)$this->enumValue;
+        return (string)$this->getEnumValue();
     }
 
     /**
