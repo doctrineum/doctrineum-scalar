@@ -15,6 +15,6 @@ class Enum extends StrictObject implements EnumInterface
      */
     public function __construct($enumValue)
     {
-        $this->enumValue = static::convertToScalarOrNull($enumValue);
+        $this->enumValue = static::convertToEnumFinalValue($enumValue);
     }
 }
