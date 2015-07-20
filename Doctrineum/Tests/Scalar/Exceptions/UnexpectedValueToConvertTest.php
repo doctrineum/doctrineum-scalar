@@ -1,5 +1,7 @@
 <?php
-namespace Doctrineum\Scalar\Exceptions;
+namespace Doctrineum\Tests\Scalar\Exceptions;
+
+use Doctrineum\Scalar\Exceptions\UnexpectedValueToConvert;
 
 class UnexpectedValueToConvertTest extends \PHPUnit_Framework_TestCase
 {

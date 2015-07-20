@@ -1,6 +1,8 @@
 <?php
 namespace Doctrineum\Scalar;
 
+use Granam\Scalar\Tools\ToScalar;
+
 trait EnumTrait
 {
 
@@ -15,64 +17,13 @@ trait EnumTrait
     protected $enumValue;
 
     /**
-     * @var bool
-     */
-    private $allowSingleClone = false;
-
-    /**
-     * @return string (null is casted into empty string!)
-     * @see getEnumValue()
-     */
-    public function __toString()
-    {
-        return (string)$this->getEnumValue();
-    }
-
-    /**
-     * @throws Exceptions\CanNotBeCloned
-     */
-    public function __clone()
-    {
-        if (!$this->allowSingleClone) {
-            throw new Exceptions\CanNotBeCloned('Enum as a singleton can not be cloned. Use same instance everywhere.');
-        }
-        // disabling cloning on clone itself
-        $this->allowSingleClone = false;
-    }
-
-    protected function allowSingleClone()
-    {
-        $this->allowSingleClone = true;
-    }
-
-    protected function prohibitSingleClone()
-    {
-        $this->allowSingleClone = false;
-    }
-
-    /**
-     * @return string|int|float|bool|null
-     */
-    public function getEnumValue()
-    {
-        return $this->enumValue;
-    }
-
-    /**
      * @param string|float|int|bool|null $enumValue
+     *
      * @return Enum
      */
     public static function getEnum($enumValue)
     {
         return static::getEnumFromNamespace($enumValue, static::getInnerNamespace());
-    }
-
-    /**
-     * @return string
-     */
-    protected static function getInnerNamespace()
-    {
-        return get_called_class();
     }
 
     protected static function getEnumFromNamespace($enumValue, $namespace)
@@ -87,6 +38,7 @@ trait EnumTrait
 
     /**
      * @param mixed $enumValue
+     *
      * @return string|float|int|null
      */
     protected static function convertToEnumFinalValue($enumValue)
@@ -96,33 +48,16 @@ trait EnumTrait
 
     /**
      * @param mixed $enumValue
+     *
      * @return string|float|int|null
      */
     protected static function convertToScalarOrNull($enumValue)
     {
-        if (is_scalar($enumValue) || is_null($enumValue)) {
-            return $enumValue;
-        } elseif (is_object($enumValue) && method_exists($enumValue, '__toString')) {
-            return $enumValue->__toString();
-        } else {
-            throw new Exceptions\UnexpectedValueToEnum(
-                'Expected scalar or null or to string object, got '
-                . gettype($enumValue)
-            );
+        try {
+            return ToScalar::toScalar($enumValue);
+        } catch (\Granam\Scalar\Tools\Exceptions\WrongParameterType $exception) {
+            throw new Exceptions\UnexpectedValueToEnum($exception->getMessage(), $exception->getCode(), $exception);
         }
-    }
-
-    /**
-     * @param string|int|float|bool|null $finalEnumValue
-     * @return Enum
-     */
-    protected static function createByValue($finalEnumValue)
-    {
-        if (!is_scalar($finalEnumValue) && !is_null($finalEnumValue)) {
-            throw new Exceptions\UnexpectedValueToEnum('Expected scalar or null, got ' . gettype($finalEnumValue));
-        }
-
-        return new static($finalEnumValue);
     }
 
     protected static function hasBuiltEnum($enumValue, $namespace)
@@ -131,8 +66,19 @@ trait EnumTrait
     }
 
     /**
+     * @param mixed $key
+     *
+     * @return string
+     */
+    protected static function createKey($key)
+    {
+        return serialize($key);
+    }
+
+    /**
      * @param EnumInterface $enum
      * @param mixed $namespace
+     *
      * @throws Exceptions\EnumIsAlreadyBuilt
      */
     protected static function addBuiltEnum(EnumInterface $enum, $namespace)
@@ -154,17 +100,9 @@ trait EnumTrait
     }
 
     /**
-     * @param mixed $key
-     * @return string
-     */
-    protected static function createKey($key)
-    {
-        return serialize($key);
-    }
-
-    /**
      * @param mixed $enumValue
      * @param mixed $namespace
+     *
      * @return EnumInterface
      */
     protected static function getBuiltEnum($enumValue, $namespace)
@@ -178,6 +116,53 @@ trait EnumTrait
         }
 
         return self::$builtEnums[self::createKey($namespace)][self::createKey($enumValue)];
+    }
+
+    /**
+     * @param string|int|float|bool|null $finalEnumValue
+     *
+     * @return Enum
+     */
+    protected static function createByValue($finalEnumValue)
+    {
+        if (!is_scalar($finalEnumValue) && !is_null($finalEnumValue)) {
+            throw new Exceptions\UnexpectedValueToEnum('Expected scalar or null, got ' . gettype($finalEnumValue));
+        }
+
+        return new static($finalEnumValue);
+    }
+
+    /**
+     * @return string
+     */
+    protected static function getInnerNamespace()
+    {
+        return get_called_class();
+    }
+
+    /**
+     * @return string (null is casted into empty string!)
+     * @see getEnumValue()
+     */
+    public function __toString()
+    {
+        return (string)$this->getEnumValue();
+    }
+
+    /**
+     * @return string|int|float|bool|null
+     */
+    public function getEnumValue()
+    {
+        return $this->enumValue;
+    }
+
+    /**
+     * @throws Exceptions\CanNotBeCloned
+     */
+    public function __clone()
+    {
+        throw new Exceptions\CanNotBeCloned('Enum as a singleton can not be cloned. Use same instance everywhere.');
     }
 
 }

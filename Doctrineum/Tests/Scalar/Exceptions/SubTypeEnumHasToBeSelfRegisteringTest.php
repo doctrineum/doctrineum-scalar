@@ -1,16 +1,27 @@
 <?php
-namespace Doctrineum\Scalar\Exceptions;
+namespace Doctrineum\Tests\Scalar\Exceptions;
+
+use Doctrineum\Scalar\Exceptions\SubTypeEnumHasToBeEnum;
 
 class SubTypeEnumHasToBeSelfRegisteringTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
      * @test
-     * @expectedException \Doctrineum\Scalar\Exceptions\InvalidClassForSubTypeEnum
+     * @expectedException \LogicException
      */
-    public function is_invalid_class_for_sub_type_enum_test_exception()
+    public function is_logic_exception()
     {
-        throw new SubTypeEnumHasToBeSelfRegistering();
+        throw new SubTypeEnumHasToBeEnum();
+    }
+
+    /**
+     * @test
+     * @expectedException \Doctrineum\Scalar\Exceptions\Logic
+     */
+    public function is_local_logic_exception()
+    {
+        throw new SubTypeEnumHasToBeEnum();
     }
 
 }

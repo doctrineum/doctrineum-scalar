@@ -29,6 +29,146 @@ class EnumType extends Type
     private static $subTypeEnums = [];
 
     /**
+     * @param string $subTypeEnumClass
+     * @param string $subTypeEnumValueRegexp
+     *
+     * @return bool
+     */
+    public static function addSubTypeEnum($subTypeEnumClass, $subTypeEnumValueRegexp)
+    {
+        if (static::hasSubTypeEnum($subTypeEnumClass)) {
+            throw new Exceptions\SubTypeEnumIsAlreadyRegistered(
+                'SubType enum of class ' . var_export($subTypeEnumClass, true) . ' is already registered'
+            );
+        }
+        /**
+         * The class has to be self-registering to by-pass enum and enum type bindings,
+         * @see SelfTypedEnum::createByValue
+         */
+        static::checkIfKnownEnum($subTypeEnumClass);
+        static::checkRegexp($subTypeEnumValueRegexp);
+        self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeEnumClass] = $subTypeEnumValueRegexp;
+
+        return static::hasSubTypeEnum($subTypeEnumClass);
+    }
+
+    /**
+     * @param $subTypeClassName
+     *
+     * @return bool
+     */
+    public static function hasSubTypeEnum($subTypeClassName)
+    {
+        return isset(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeClassName]);
+    }
+
+    /**
+     * @return string
+     */
+    protected static function getSubTypeEnumInnerNamespace()
+    {
+        return get_called_class();
+    }
+
+    /**
+     * @param string $subTypeClassName
+     */
+    protected static function checkIfKnownEnum($subTypeClassName)
+    {
+        if (!is_a($subTypeClassName, Enum::getClass(), true)) {
+            throw new Exceptions\SubTypeEnumHasToBeEnum(
+                'Sub-type class ' . var_export($subTypeClassName, true) . ' has to be child of ' . Enum::getClass()
+            );
+        }
+    }
+
+    /**
+     * @param string $regexp
+     */
+    protected static function checkRegexp($regexp)
+    {
+        if (!preg_match('~^(.).*\1$~', $regexp)) {
+            // the regexp does not start and end with same characters
+            throw new Exceptions\InvalidRegexpFormat(
+                'The given regexp is not enclosed by same delimiters and therefore is not valid: '
+                . var_export($regexp, true)
+            );
+        }
+    }
+
+    /**
+     * @return bool If enum has not been registered before and was registered now
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public static function registerSelf()
+    {
+        if (static::hasType(static::getTypeName())) {
+            static::checkRegisteredType();
+
+            return false;
+        }
+
+        static::addType(static::getTypeName(), get_called_class());
+
+        return true;
+    }
+
+    /**
+     * Gets the strongly recommended name of this type.
+     * Its used at @see \Doctrine\DBAL\Platforms\AbstractPlatform::getDoctrineTypeComment
+     *
+     * @return string
+     */
+    public static function getTypeName()
+    {
+        // Doctrineum\Scalar\EnumType = EnumType
+        $baseClassName = preg_replace('~(\w+\\\)*(\w+)~', '$2', get_called_class());
+        // EnumType = Enum
+        $baseTypeName = preg_replace('~Type$~', '', $baseClassName);
+
+        // FooBarEnum = Foo_Bar_Enum = foo_bar_enum
+        return strtolower(preg_replace('~(\w)([A-Z])~', '$1_$2', $baseTypeName));
+    }
+
+    protected static function checkRegisteredType()
+    {
+        $alreadyRegisteredType = static::getType(static::getTypeName());
+        if (get_class($alreadyRegisteredType) !== get_called_class()) {
+            throw new Exceptions\TypeNameOccupied(
+                'Under type of name ' . var_export(static::getTypeName(), true) .
+                ' is already registered different class ' . get_class($alreadyRegisteredType)
+            );
+        }
+    }
+
+    /**
+     * Finds out if current type is already in registry
+     *
+     * @return bool
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public static function isRegistered()
+    {
+        return static::hasType(static::getTypeName());
+    }
+
+    /**
+     * @param $subTypeEnumClass
+     *
+     * @return bool
+     */
+    public static function removeSubTypeEnum($subTypeEnumClass)
+    {
+        if (!static::hasSubTypeEnum($subTypeEnumClass)) {
+            throw new Exceptions\SubTypeEnumIsNotRegistered('Sub-type of class ' . var_export($subTypeEnumClass, true) . ' is not registered');
+        }
+
+        unset(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeEnumClass]);
+
+        return !static::hasSubTypeEnum($subTypeEnumClass);
+    }
+
+    /**
      * Gets the SQL declaration snippet for a field of this type.
      *
      * @param array $fieldDeclaration The field declaration.
@@ -88,7 +228,6 @@ class EnumType extends Type
      * @param string|int|float|bool|null $value
      * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
      *
-     * @throws Exceptions\InvalidArgument
      * @return Enum
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
@@ -125,7 +264,7 @@ class EnumType extends Type
      */
     protected static function getEnumClass($enumValue)
     {
-        // no subtype is registered
+        // no subtype is registered at all
         if (!isset(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()]) || !count(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()])) {
             return static::getDefaultEnumClass();
         }
@@ -149,111 +288,6 @@ class EnumType extends Type
     }
 
     /**
-     * @param string $subTypeEnumClass
-     * @param string $subTypeEnumValueRegexp
-     *
-     * @return bool
-     */
-    public static function addSubTypeEnum($subTypeEnumClass, $subTypeEnumValueRegexp)
-    {
-        if (static::hasSubTypeEnum($subTypeEnumClass)) {
-            throw new Exceptions\SubTypeEnumIsAlreadyRegistered(
-                'SubType enum class ' . var_export($subTypeEnumClass, true) . ' is already registered'
-            );
-        }
-
-        static::checkSubTypeEnumClass($subTypeEnumClass);
-        static::checkRegexp($subTypeEnumValueRegexp);
-        self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeEnumClass] = $subTypeEnumValueRegexp;
-
-        return static::hasSubTypeEnum($subTypeEnumClass);
-    }
-
-    /**
-     * @return string
-     */
-    protected static function getSubTypeEnumInnerNamespace()
-    {
-        return get_called_class();
-    }
-
-    protected static function checkSubTypeEnumClass($subtypeClassName)
-    {
-        if (!is_a($subtypeClassName, 'Doctrineum\Scalar\EnumInterface', true /* allow tested class as a string */)) {
-            throw new Exceptions\InvalidClassForSubTypeEnum(
-                'SubType enum class ' . var_export($subtypeClassName, true) . ' has to be ' . 'Doctrineum\Scalar\EnumInterface'
-            );
-        }
-    }
-
-    /**
-     * @param string $regexp
-     */
-    protected static function checkRegexp($regexp)
-    {
-        if (!preg_match('~^(.).*\1$~', $regexp)) {
-            // the regexp does not start and end with same characters
-            throw new Exceptions\InvalidRegexpFormat(
-                'The given regexp is not enclosed by same delimiters and therefore is not valid: '
-                . var_export($regexp, true)
-            );
-        }
-    }
-
-    /**
-     * Add current type to registry
-     *
-     * @throws \Doctrine\DBAL\DBALException
-     */
-    public static function registerSelf()
-    {
-        if (static::isRegistered()) {
-            return false;
-        }
-
-        static::addType(static::getTypeName(), get_called_class());
-
-        return static::hasType(static::getTypeName());
-    }
-
-    /**
-     * Finds out if current type is already in registry
-     *
-     * @return bool
-     * @throws \Doctrine\DBAL\DBALException
-     */
-    public static function isRegistered()
-    {
-        return static::hasType(static::getTypeName());
-    }
-
-    /**
-     * @param $subTypeClassName
-     *
-     * @return bool
-     */
-    public static function hasSubTypeEnum($subTypeClassName)
-    {
-        return isset(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeClassName]);
-    }
-
-    /**
-     * @param $subTypeEnumClass
-     *
-     * @return bool
-     */
-    public static function removeSubTypeEnum($subTypeEnumClass)
-    {
-        if (!static::hasSubTypeEnum($subTypeEnumClass)) {
-            throw new Exceptions\SubTypeEnumIsNotRegistered('Sub-type of class ' . var_export($subTypeEnumClass, true) . ' is not registered');
-        }
-
-        unset(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeEnumClass]);
-
-        return !static::hasSubTypeEnum($subTypeEnumClass);
-    }
-
-    /**
      * Gets the strongly recommended name of this type.
      * Its used at @see \Doctrine\DBAL\Platforms\AbstractPlatform::getDoctrineTypeComment
      *
@@ -262,23 +296,6 @@ class EnumType extends Type
     public function getName()
     {
         return static::getTypeName();
-    }
-
-    /**
-     * Gets the strongly recommended name of this type.
-     * Its used at @see \Doctrine\DBAL\Platforms\AbstractPlatform::getDoctrineTypeComment
-     *
-     * @return string
-     */
-    public static function getTypeName()
-    {
-        // Doctrineum\Scalar\EnumType = EnumType
-        $baseClassName = preg_replace('~(\w+\\\)*(\w+)~', '$2', get_called_class());
-        // EnumType = Enum
-        $baseTypeName = preg_replace('~Type$~', '', $baseClassName);
-
-        // FooBarEnum = Foo_Bar_Enum = foo_bar_enum
-        return strtolower(preg_replace('~(\w)([A-Z])~', '$1_$2', $baseTypeName));
     }
 
     /**
