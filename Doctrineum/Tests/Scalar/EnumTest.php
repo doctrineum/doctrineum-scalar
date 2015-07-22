@@ -1,7 +1,7 @@
 <?php
-namespace Doctrineum\Scalar;
+namespace Doctrineum\Tests\Scalar;
 
-use Doctrineum\Tests\Scalar\WithToStringTestObject;
+use Doctrineum\Scalar\Enum;
 
 class EnumTest extends \PHPUnit_Framework_TestCase
 {
@@ -21,7 +21,7 @@ class EnumTest extends \PHPUnit_Framework_TestCase
      */
     protected function getEnumClass()
     {
-        return preg_replace('~Test$~', '', get_called_class());
+        return Enum::getClass();
     }
 
     /**

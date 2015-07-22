@@ -12,6 +12,8 @@ matrix:
     - php: nightly
     - php: hhvm-nightly
 
+sudo: false
+
 before_script:
   - composer update --no-interaction --prefer-dist
 
