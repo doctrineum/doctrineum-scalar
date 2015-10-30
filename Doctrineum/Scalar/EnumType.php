@@ -75,6 +75,11 @@ class EnumType extends Type
      */
     protected static function checkIfKnownEnum($subTypeClassName)
     {
+        if (!class_exists($subTypeClassName)) {
+            throw new Exceptions\SubTypeEnumHasToBeEnum(
+                'Sub-type class ' . var_export($subTypeClassName, true) . ' has not been found'
+            );
+        }
         if (!is_a($subTypeClassName, Enum::getClass(), true)) {
             throw new Exceptions\SubTypeEnumHasToBeEnum(
                 'Sub-type class ' . var_export($subTypeClassName, true) . ' has to be child of ' . Enum::getClass()
