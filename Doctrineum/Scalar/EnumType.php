@@ -289,7 +289,17 @@ class EnumType extends Type
      */
     protected static function getDefaultEnumClass()
     {
-        return preg_replace('~Type$~', '', get_called_class());
+        $inSameNamespace = preg_replace('~Type$~', '', get_called_class());
+        if (class_exists($inSameNamespace)) {
+            return $inSameNamespace;
+        }
+
+        $inParentNamespace = preg_replace('~\\\(\w+)\\\(\w+)$~', '\\\$2', $inSameNamespace);
+        if (class_exists($inParentNamespace)) {
+            return $inParentNamespace;
+        }
+
+        throw new \LogicException('Default enum class not found for enum type ' . self::getClass());
     }
 
     /**
