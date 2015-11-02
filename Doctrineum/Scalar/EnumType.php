@@ -3,6 +3,7 @@ namespace Doctrineum\Scalar;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Granam\Scalar\Tools\ValueDescriber;
 use Granam\Strict\Object\StrictObjectTrait;
 
 /**
@@ -38,7 +39,7 @@ class EnumType extends Type
     {
         if (static::hasSubTypeEnum($subTypeEnumClass)) {
             throw new Exceptions\SubTypeEnumIsAlreadyRegistered(
-                'SubType enum of class ' . var_export($subTypeEnumClass, true) . ' is already registered'
+                'SubType enum ' . ValueDescriber::describe($subTypeEnumClass) . ' is already registered'
             );
         }
         /**
@@ -76,13 +77,13 @@ class EnumType extends Type
     protected static function checkIfKnownEnum($subTypeClassName)
     {
         if (!class_exists($subTypeClassName)) {
-            throw new Exceptions\SubTypeEnumHasToBeEnum(
-                'Sub-type class ' . var_export($subTypeClassName, true) . ' has not been found'
+            throw new Exceptions\SubTypeEnumClassNotFound(
+                'Sub-type class ' . ValueDescriber::describe($subTypeClassName) . ' has not been found'
             );
         }
         if (!is_a($subTypeClassName, Enum::getClass(), true)) {
             throw new Exceptions\SubTypeEnumHasToBeEnum(
-                'Sub-type class ' . var_export($subTypeClassName, true) . ' has to be child of ' . Enum::getClass()
+                'Sub-type class ' . ValueDescriber::describe($subTypeClassName) . ' has to be child of ' . Enum::getClass()
             );
         }
     }
@@ -96,7 +97,7 @@ class EnumType extends Type
             // the regexp does not start and end with same characters
             throw new Exceptions\InvalidRegexpFormat(
                 'The given regexp is not enclosed by same delimiters and therefore is not valid: '
-                . var_export($regexp, true)
+                . ValueDescriber::describe($regexp)
             );
         }
     }
@@ -140,8 +141,8 @@ class EnumType extends Type
         $alreadyRegisteredType = static::getType(static::getTypeName());
         if (get_class($alreadyRegisteredType) !== get_called_class()) {
             throw new Exceptions\TypeNameOccupied(
-                'Under type of name ' . var_export(static::getTypeName(), true) .
-                ' is already registered different class ' . get_class($alreadyRegisteredType)
+                'Under type of name ' . ValueDescriber::describe(static::getTypeName()) .
+                ' is already registered different type ' . get_class($alreadyRegisteredType)
             );
         }
     }
@@ -165,7 +166,9 @@ class EnumType extends Type
     public static function removeSubTypeEnum($subTypeEnumClass)
     {
         if (!static::hasSubTypeEnum($subTypeEnumClass)) {
-            throw new Exceptions\SubTypeEnumIsNotRegistered('Sub-type of class ' . var_export($subTypeEnumClass, true) . ' is not registered');
+            throw new Exceptions\SubTypeEnumIsNotRegistered(
+                'Sub-type ' . ValueDescriber::describe($subTypeEnumClass) . ' is not registered'
+            );
         }
 
         unset(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeEnumClass]);
@@ -209,12 +212,12 @@ class EnumType extends Type
     {
         if (!is_object($value)) {
             throw new Exceptions\UnexpectedValueToDatabaseValue(
-                'Expected object of class ' . 'Doctrineum\Scalar\EnumInterface' . ', got ' . gettype($value)
+                'Expected object Doctrineum\Scalar\EnumInterface, got ' . gettype($value)
             );
         }
         if (!is_a($value, 'Doctrineum\Scalar\EnumInterface')) {
             throw new Exceptions\UnexpectedValueToDatabaseValue(
-                'Expected ' . 'Doctrineum\Scalar\EnumInterface' . ', got ' . get_class($value)
+                'Expected Doctrineum\Scalar\EnumInterface, got ' . get_class($value)
             );
         }
 
@@ -289,17 +292,21 @@ class EnumType extends Type
      */
     protected static function getDefaultEnumClass()
     {
-        $inSameNamespace = preg_replace('~Type$~', '', get_called_class());
-        if (class_exists($inSameNamespace)) {
-            return $inSameNamespace;
+        $enumTypeClass = get_called_class();
+        $enumInSameNamespace = preg_replace('~Type$~', '', $enumTypeClass);
+        if ($enumInSameNamespace === $enumTypeClass) {
+            throw new Exceptions\CouldNotDetermineEnumClass('Enum class could not be parsed from enum type class ' . $enumTypeClass);
+        }
+        if (class_exists($enumInSameNamespace)) {
+            return $enumInSameNamespace;
         }
 
-        $inParentNamespace = preg_replace('~\\\(\w+)\\\(\w+)$~', '\\\$2', $inSameNamespace);
+        $inParentNamespace = preg_replace('~\\\(\w+)\\\(\w+)$~', '\\\$2', $enumInSameNamespace);
         if (class_exists($inParentNamespace)) {
             return $inParentNamespace;
         }
 
-        throw new \LogicException('Default enum class not found for enum type ' . self::getClass());
+        throw new Exceptions\EnumClassNotFound('Default enum class not found for enum type ' . self::getClass());
     }
 
     /**

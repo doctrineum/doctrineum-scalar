@@ -6,10 +6,31 @@ use Doctrine\DBAL\Types\Type;
 use Doctrineum\Scalar\Enum;
 use Doctrineum\Scalar\EnumInterface;
 use Doctrineum\Scalar\EnumType;
+use Doctrineum\Tests\Scalar\Helpers\EnumTypes\EnumWithSubNamespaceType;
+use Doctrineum\Tests\Scalar\Helpers\EnumTypes\IShouldHaveTypeWordOnEnd;
+use Doctrineum\Tests\Scalar\Helpers\EnumTypes\WithoutEnumIsThisType;
+use Doctrineum\Tests\Scalar\Helpers\EnumWithSubNamespace;
 
 class EnumTypeTest extends \PHPUnit_Framework_TestCase
-
 {
+
+    /**
+     * This is called after every test
+     */
+    protected function tearDown()
+    {
+        \Mockery::close();
+
+        $enumTypeClass = $this->getEnumTypeClass();
+        if (Type::hasType($enumTypeClass::getTypeName())) {
+            $enumType = Type::getType($enumTypeClass::getTypeName());
+            /** @var EnumType $enumType */
+            if ($enumType::hasSubTypeEnum($this->getSubTypeEnumClass())) {
+                $this->assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass()));
+            }
+        }
+    }
+
     /**
      * @test
      */
@@ -157,7 +178,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
      * @test
      * @depends instance_can_be_obtained
      */
-    public function null_to_php_value_creates_enum(EnumType $enumType)
+    public function null_to_php_value_creates_enum_with_null_value(EnumType $enumType)
     {
 
         $platform = $this->getPlatform();
@@ -389,6 +410,18 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     {
         $enumTypeClass = $this->getEnumTypeClass();
         $enumType = Type::getType($enumTypeClass::getTypeName());
+        $enumType->convertToDatabaseValue('foo', $this->getPlatform());
+    }
+
+    /**
+     * @test
+     * @depends instance_can_be_obtained
+     * @expectedException \Doctrineum\Scalar\Exceptions\UnexpectedValueToDatabaseValue
+     */
+    public function conversion_of_non_enum_to_database_cause_exception()
+    {
+        $enumTypeClass = $this->getEnumTypeClass();
+        $enumType = Type::getType($enumTypeClass::getTypeName());
         $enumType->convertToDatabaseValue(new \stdClass(), $this->getPlatform());
     }
 
@@ -448,7 +481,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
      * @test
      * @depends can_register_subtype
      */
-    public function can_unregister_subtype(EnumType $enumType)
+    public function can_remove_subtype(EnumType $enumType)
     {
         /**
          * The subtype is unregistered because of tearDown clean up
@@ -458,6 +491,25 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), '~foo~'));
         $this->assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass()));
         $this->assertFalse($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
+    }
+
+    /**
+     * @param EnumType $enumType
+     *
+     * @test
+     * @depends can_register_subtype
+     * @expectedException \Doctrineum\Scalar\Exceptions\SubTypeEnumIsNotRegistered
+     */
+    public function I_can_not_remove_not_registered_subtype(EnumType $enumType)
+    {
+        /**
+         * The subtype is unregistered because of tearDown clean up
+         * @see EnumTypeTestTrait::tearDown
+         */
+        $this->assertFalse($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
+        $this->assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), '~foo~'));
+        $this->assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass()));
+        $this->assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass())); // twice the same
     }
 
     /**
@@ -518,6 +570,18 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), '~foo~'));
         // registering twice - should thrown an exception
         $enumType::addSubTypeEnum($this->getSubTypeEnumClass(), '~foo~');
+    }
+
+    /**
+     * @param EnumType $enumType
+     *
+     * @test
+     * @depends instance_can_be_obtained
+     * @expectedException \Doctrineum\Scalar\Exceptions\SubTypeEnumClassNotFound
+     */
+    public function I_am_stopped_on_registering_of_non_existing_type(EnumType $enumType)
+    {
+        $enumType::addSubTypeEnum('whoAmI', '~foo~');
     }
 
     /**
@@ -639,20 +703,46 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * This is called after every test
+     * @test
      */
-    protected function tearDown()
+    public function I_can_use_enum_type_from_sub_namespace()
     {
-        \Mockery::close();
+        EnumWithSubNamespaceType::registerSelf();
+        $enum = EnumWithSubNamespaceType::getType(EnumWithSubNamespaceType::getTypeName())
+            ->convertToPHPValue('foo', $this->getPlatform());
+        $this->assertInstanceOf(EnumWithSubNamespace::getClass(), $enum);
+    }
 
-        $enumTypeClass = $this->getEnumTypeClass();
-        if (Type::hasType($enumTypeClass::getTypeName())) {
-            $enumType = Type::getType($enumTypeClass::getTypeName());
-            /** @var EnumType $enumType */
-            if ($enumType::hasSubTypeEnum($this->getSubTypeEnumClass())) {
-                $this->assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass()));
-            }
-        }
+    /**
+     * @test
+     * @expectedException \Doctrineum\Scalar\Exceptions\EnumClassNotFound
+     */
+    public function I_am_stopped_by_exception_on_conversion_to_unknown_enum()
+    {
+        WithoutEnumIsThisType::registerSelf();
+        $type = WithoutEnumIsThisType::getType(WithoutEnumIsThisType::getTypeName());
+        $type->convertToPHPValue('foo', $this->getPlatform());
+    }
+
+    /**
+     * @test
+     * @expectedException \Doctrineum\Scalar\Exceptions\CouldNotDetermineEnumClass
+     */
+    public function I_can_not_use_type_with_unexpected_name_structure()
+    {
+        IShouldHaveTypeWordOnEnd::registerSelf();
+        $type = IShouldHaveTypeWordOnEnd::getType(IShouldHaveTypeWordOnEnd::getTypeName());
+        $type->convertToPHPValue('foo', $this->getPlatform());
+    }
+
+    /**
+     * @test
+     * @depends can_be_registered
+     * @expectedException \Doctrineum\Scalar\Exceptions\TypeNameOccupied
+     */
+    public function I_can_not_silently_rewrite_type_by_same_name()
+    {
+        IAmUsingOccupiedName::registerSelf();
     }
 
 }
@@ -671,4 +761,18 @@ class TestAnotherSubTypeEnum extends Enum
 class TestAnotherEnumType extends EnumType
 {
 
+}
+
+class IAmUsingOccupiedName extends EnumType
+{
+    public static function getTypeName()
+    {
+        // Doctrineum\Scalar\EnumType = EnumType
+        $baseClassName = preg_replace('~(\w+\\\)*(\w+)~', '$2', 'Doctrineum\Scalar\EnumType');
+        // EnumType = Enum
+        $baseTypeName = preg_replace('~Type$~', '', $baseClassName);
+
+        // FooBarEnum = Foo_Bar_Enum = foo_bar_enum
+        return strtolower(preg_replace('~(\w)([A-Z])~', '$1_$2', $baseTypeName));
+    }
 }
