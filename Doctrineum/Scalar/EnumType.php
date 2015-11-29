@@ -223,7 +223,7 @@ class EnumType extends Type
 
         /** @var Enum $value probably */
 
-        return $value->getEnumValue();
+        return $value->getValue();
     }
 
     /**

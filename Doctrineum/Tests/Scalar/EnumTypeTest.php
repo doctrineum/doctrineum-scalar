@@ -15,23 +15,6 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
-     * This is called after every test
-     */
-    protected function tearDown()
-    {
-        \Mockery::close();
-
-        $enumTypeClass = $this->getEnumTypeClass();
-        if (Type::hasType($enumTypeClass::getTypeName())) {
-            $enumType = Type::getType($enumTypeClass::getTypeName());
-            /** @var EnumType $enumType */
-            if ($enumType::hasSubTypeEnum($this->getSubTypeEnumClass())) {
-                $this->assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass()));
-            }
-        }
-    }
-
-    /**
      * @test
      */
     public function can_be_registered()
@@ -40,14 +23,6 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         $enumTypeClass::registerSelf();
         $this->assertTrue(Type::hasType($enumTypeClass::getTypeName()));
         $this->assertTrue($enumTypeClass::isRegistered());
-    }
-
-    /**
-     * @return \Doctrineum\Scalar\EnumType
-     */
-    protected function getEnumTypeClass()
-    {
-        return '\Doctrineum\Scalar\EnumType';
     }
 
     /**
@@ -143,7 +118,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     {
         $nullEnum = \Mockery::mock('Doctrineum\Scalar\EnumInterface');
         /** @noinspection PhpMethodParametersCountMismatchInspection */
-        $nullEnum->shouldReceive('getEnumValue')
+        $nullEnum->shouldReceive('getValue')
             ->once()
             ->andReturn(null);
         /** @var EnumInterface $nullEnum */
@@ -163,7 +138,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     {
         $enum = \Mockery::mock('Doctrineum\Scalar\EnumInterface');
         /** @noinspection PhpMethodParametersCountMismatchInspection */
-        $enum->shouldReceive('getEnumValue')
+        $enum->shouldReceive('getValue')
             ->once()
             ->andReturn($value = 'foo');
 
@@ -184,12 +159,8 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue(null, $platform);
         $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
-        $this->assertNull($enum->getEnumValue());
+        $this->assertNull($enum->getValue());
     }
-
-    /**
-     * conversion to PHP tests
-     */
 
     /**
      * @return \Doctrineum\Scalar\Enum
@@ -211,8 +182,12 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($string = 'foo', $platform);
         $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
-        $this->assertSame($string, $enum->getEnumValue());
+        $this->assertSame($string, $enum->getValue());
     }
+
+    /**
+     * conversion to PHP tests
+     */
 
     /**
      * @param EnumType $enumType
@@ -226,7 +201,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($emptyString = '', $platform);
         $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
-        $this->assertSame($emptyString, $enum->getEnumValue());
+        $this->assertSame($emptyString, $enum->getValue());
     }
 
     /**
@@ -244,7 +219,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($integer = 12345, $platform);
         $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
-        $this->assertSame($integer, $enum->getEnumValue());
+        $this->assertSame($integer, $enum->getValue());
     }
 
     /**
@@ -262,7 +237,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($zeroInteger = 0, $platform);
         $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
-        $this->assertSame($zeroInteger, $enum->getEnumValue());
+        $this->assertSame($zeroInteger, $enum->getValue());
     }
 
     /**
@@ -279,7 +254,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($float = 12345.6789, $platform);
         $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
-        $this->assertSame($float, $enum->getEnumValue());
+        $this->assertSame($float, $enum->getValue());
     }
 
     /**
@@ -296,7 +271,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($zeroFloat = 0.0, $platform);
         $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
-        $this->assertSame($zeroFloat, $enum->getEnumValue());
+        $this->assertSame($zeroFloat, $enum->getValue());
     }
 
     /**
@@ -313,7 +288,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($false = false, $platform);
         $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
-        $this->assertSame($false, $enum->getEnumValue());
+        $this->assertSame($false, $enum->getValue());
     }
 
     /**
@@ -330,7 +305,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($true = true, $platform);
         $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
-        $this->assertSame($true, $enum->getEnumValue());
+        $this->assertSame($true, $enum->getValue());
     }
 
     /**
@@ -344,7 +319,7 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue(new WithToStringTestObject($value = 'foo'), $platform);
         $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
-        $this->assertSame($value, $enum->getEnumValue());
+        $this->assertSame($value, $enum->getValue());
         $this->assertSame($value, (string)$enum);
     }
 
@@ -448,10 +423,6 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * SUBTYPE TESTS
-     */
-
-    /**
      * @param EnumType $enumType
      *
      * @return EnumType
@@ -465,14 +436,6 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
 
         return $enumType;
-    }
-
-    /**
-     * @return string|TestSubTypeEnum
-     */
-    protected function getSubTypeEnumClass()
-    {
-        return TestSubTypeEnum::getClass();
     }
 
     /**
@@ -492,6 +455,10 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass()));
         $this->assertFalse($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
     }
+
+    /**
+     * SUBTYPE TESTS
+     */
 
     /**
      * @param EnumType $enumType
@@ -743,6 +710,39 @@ class EnumTypeTest extends \PHPUnit_Framework_TestCase
     public function I_can_not_silently_rewrite_type_by_same_name()
     {
         IAmUsingOccupiedName::registerSelf();
+    }
+
+    /**
+     * This is called after every test
+     */
+    protected function tearDown()
+    {
+        \Mockery::close();
+
+        $enumTypeClass = $this->getEnumTypeClass();
+        if (Type::hasType($enumTypeClass::getTypeName())) {
+            $enumType = Type::getType($enumTypeClass::getTypeName());
+            /** @var EnumType $enumType */
+            if ($enumType::hasSubTypeEnum($this->getSubTypeEnumClass())) {
+                $this->assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass()));
+            }
+        }
+    }
+
+    /**
+     * @return \Doctrineum\Scalar\EnumType
+     */
+    protected function getEnumTypeClass()
+    {
+        return '\Doctrineum\Scalar\EnumType';
+    }
+
+    /**
+     * @return string|TestSubTypeEnum
+     */
+    protected function getSubTypeEnumClass()
+    {
+        return TestSubTypeEnum::getClass();
     }
 
 }

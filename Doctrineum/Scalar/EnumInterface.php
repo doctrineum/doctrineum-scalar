@@ -1,17 +1,9 @@
 <?php
 namespace Doctrineum\Scalar;
 
-interface EnumInterface
+use Granam\Scalar\ScalarInterface;
+
+interface EnumInterface extends ScalarInterface
 {
-
-    /**
-     * @return string
-     */
-    public function __toString();
-
-    /**
-     * @return string
-     */
-    public function getEnumValue();
 
 }

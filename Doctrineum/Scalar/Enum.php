@@ -29,26 +29,6 @@ class Enum extends StrictObject implements EnumInterface
     }
 
     /**
-     * @param string|float|int|bool|null $enumValue
-     *
-     * @return Enum
-     */
-    public static function getEnum($enumValue)
-    {
-        return static::getEnumFromNamespace($enumValue, static::getInnerNamespace());
-    }
-
-    protected static function getEnumFromNamespace($enumValue, $namespace)
-    {
-        $finalEnumValue = static::convertToEnumFinalValue($enumValue);
-        if (!static::hasBuiltEnum($finalEnumValue, $namespace)) {
-            static::addBuiltEnum(static::createByValue($finalEnumValue), $namespace);
-        }
-
-        return static::getBuiltEnum($finalEnumValue, $namespace);
-    }
-
-    /**
      * @param mixed $enumValue
      *
      * @return string|float|int|null
@@ -70,6 +50,26 @@ class Enum extends StrictObject implements EnumInterface
         } catch (\Granam\Scalar\Tools\Exceptions\WrongParameterType $exception) {
             throw new Exceptions\UnexpectedValueToEnum($exception->getMessage(), $exception->getCode(), $exception);
         }
+    }
+
+    /**
+     * @param string|float|int|bool|null $enumValue
+     *
+     * @return Enum
+     */
+    public static function getEnum($enumValue)
+    {
+        return static::getEnumFromNamespace($enumValue, static::getInnerNamespace());
+    }
+
+    protected static function getEnumFromNamespace($enumValue, $namespace)
+    {
+        $finalEnumValue = static::convertToEnumFinalValue($enumValue);
+        if (!static::hasBuiltEnum($finalEnumValue, $namespace)) {
+            static::addBuiltEnum(static::createByValue($finalEnumValue), $namespace);
+        }
+
+        return static::getBuiltEnum($finalEnumValue, $namespace);
     }
 
     protected static function hasBuiltEnum($enumValue, $namespace)
@@ -96,11 +96,11 @@ class Enum extends StrictObject implements EnumInterface
     protected static function addBuiltEnum(EnumInterface $enum, $namespace)
     {
         $namespaceKey = self::createKey($namespace);
-        $enumKey = self::createKey($enum->getEnumValue());
+        $enumKey = self::createKey($enum->getValue());
         if (isset(self::$builtEnums[$namespaceKey][$enumKey])) {
             throw new Exceptions\EnumIsAlreadyBuilt(
                 'Enum of namespace key ' . var_export($namespaceKey, true) . ' and enum key ' . var_export($enumKey, true) .
-                ' is already registered with enum of class ' . get_class(static::getBuiltEnum($enum->getEnumValue(), $namespace))
+                ' is already registered with enum of class ' . get_class(static::getBuiltEnum($enum->getValue(), $namespace))
             );
         }
 
@@ -154,17 +154,17 @@ class Enum extends StrictObject implements EnumInterface
 
     /**
      * @return string (null is casted into empty string!)
-     * @see getEnumValue()
+     * @see getValue()
      */
     public function __toString()
     {
-        return (string)$this->getEnumValue();
+        return (string)$this->getValue();
     }
 
     /**
      * @return string|int|float|bool|null
      */
-    public function getEnumValue()
+    public function getValue()
     {
         return $this->enumValue;
     }

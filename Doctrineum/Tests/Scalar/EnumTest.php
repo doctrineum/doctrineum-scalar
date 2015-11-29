@@ -48,7 +48,7 @@ class EnumTest extends \PHPUnit_Framework_TestCase
         $enumClass = $this->getEnumClass();
         $enum = $enumClass::getEnum('foo');
         /** @var \PHPUnit_Framework_TestCase $this */
-        $this->assertSame('foo', $enum->getEnumValue());
+        $this->assertSame('foo', $enum->getValue());
     }
 
     /** @test */
@@ -78,7 +78,7 @@ class EnumTest extends \PHPUnit_Framework_TestCase
         $enumClass = $this->getEnumClass();
         $enum = $enumClass::getEnum(new WithToStringTestObject('foo'));
         /** @var \PHPUnit_Framework_TestCase $this */
-        $this->assertSame('foo', $enum->getEnumValue());
+        $this->assertSame('foo', $enum->getValue());
         $this->assertSame('foo', (string)$enum);
     }
 
@@ -103,12 +103,12 @@ class EnumTest extends \PHPUnit_Framework_TestCase
 
         $enum = $enumClass::getEnum($value = 'foo');
         $this->assertInstanceOf($enumClass, $enum);
-        $this->assertSame($value, $enum->getEnumValue());
+        $this->assertSame($value, $enum->getValue());
         $this->assertSame($value, (string)$enum);
 
         $inDifferentNamespace = $this->getInheritedEnum($value);
         $this->assertInstanceOf($enumClass, $inDifferentNamespace);
-        $this->assertSame($enum->getEnumValue(), $inDifferentNamespace->getEnumValue());
+        $this->assertSame($enum->getValue(), $inDifferentNamespace->getValue());
         $this->assertNotSame($enum, $inDifferentNamespace);
     }
 
