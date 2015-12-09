@@ -1,9 +1,9 @@
 <?php
 namespace Doctrineum\Tests\Scalar\Helpers\EnumTypes;
 
-use Doctrineum\Scalar\EnumType;
+use Doctrineum\Scalar\ScalarEnumType;
 
-class IShouldHaveTypeWordOnEnd extends EnumType
+class IShouldHaveTypeWordOnEnd extends ScalarEnumType
 {
 
 }

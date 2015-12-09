@@ -1,7 +1,7 @@
 <?php
 namespace Doctrineum\Tests\Scalar\Exceptions;
 
-use Doctrineum\Scalar\Exceptions\Exception;
+use Doctrineum\Scalar\Exceptions\Exception as LocalException;
 
 class ExceptionTest extends \PHPUnit_Framework_TestCase
 {
@@ -11,7 +11,7 @@ class ExceptionTest extends \PHPUnit_Framework_TestCase
      */
     public function is_interface()
     {
-        $this->assertTrue(interface_exists('Doctrineum\Scalar\Exceptions\Exception'));
+        $this->assertTrue(interface_exists(LocalException::class));
     }
 
     /**
@@ -25,7 +25,7 @@ class ExceptionTest extends \PHPUnit_Framework_TestCase
 }
 
 /** inner */
-class TestExceptionInterface extends \Exception implements Exception
+class TestExceptionInterface extends \Exception implements LocalException
 {
 
 }

@@ -1,9 +1,9 @@
 <?php
 namespace Doctrineum\Tests\Scalar\Helpers\EnumTypes;
 
-use Doctrineum\Scalar\EnumType;
+use Doctrineum\Scalar\ScalarEnumType;
 
-class IAmUsingOccupiedName extends EnumType
+class IAmUsingOccupiedName extends ScalarEnumType
 {
     public static function getTypeName()
     {

@@ -1,9 +1,9 @@
 <?php
 namespace Doctrineum\Tests\Scalar\Helpers;
 
-use Doctrineum\Scalar\Enum;
+use Doctrineum\Scalar\ScalarEnum;
 
-class EnumWithSubNamespace extends Enum
+class EnumWithSubNamespace extends ScalarEnum
 {
 
 }

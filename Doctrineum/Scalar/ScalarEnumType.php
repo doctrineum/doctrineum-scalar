@@ -9,10 +9,10 @@ use Granam\Strict\Object\StrictObjectTrait;
 /**
  * Class EnumType
  * @package Doctrineum\Scalar
- * @method static EnumType getType($name),
+ * @method static ScalarEnumType getType($name),
  * @see Type::getType
  */
-class EnumType extends Type
+class ScalarEnumType extends Type
 {
     use StrictObjectTrait;
 
@@ -22,7 +22,7 @@ class EnumType extends Type
      *
      * This constant exists to follow Doctrine type conventions.
      */
-    const ENUM = 'enum';
+    const SCALAR_ENUM = ScalarEnum::SCALAR_ENUM;
 
     /**
      * @var string[][]
@@ -81,9 +81,9 @@ class EnumType extends Type
                 'Sub-type class ' . ValueDescriber::describe($subTypeClassName) . ' has not been found'
             );
         }
-        if (!is_a($subTypeClassName, Enum::getClass(), true)) {
+        if (!is_a($subTypeClassName, ScalarEnum::getClass(), true)) {
             throw new Exceptions\SubTypeEnumHasToBeEnum(
-                'Sub-type class ' . ValueDescriber::describe($subTypeClassName) . ' has to be child of ' . Enum::getClass()
+                'Sub-type class ' . ValueDescriber::describe($subTypeClassName) . ' has to be child of ' . ScalarEnum::getClass()
             );
         }
     }
@@ -202,7 +202,7 @@ class EnumType extends Type
     /**
      * Convert enum instance to database string (or null) value
      *
-     * @param EnumInterface $value
+     * @param ScalarEnumInterface $value
      * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
      *
      * @throws Exceptions\UnexpectedValueToDatabaseValue
@@ -212,16 +212,16 @@ class EnumType extends Type
     {
         if (!is_object($value)) {
             throw new Exceptions\UnexpectedValueToDatabaseValue(
-                'Expected object Doctrineum\Scalar\EnumInterface, got ' . gettype($value)
+                'Expected object ' . ScalarEnumInterface::class . ', got ' . gettype($value)
             );
         }
-        if (!is_a($value, 'Doctrineum\Scalar\EnumInterface')) {
+        if (!is_a($value, ScalarEnumInterface::class)) {
             throw new Exceptions\UnexpectedValueToDatabaseValue(
-                'Expected Doctrineum\Scalar\EnumInterface, got ' . get_class($value)
+                'Expected ' . ScalarEnumInterface::class . ', got ' . get_class($value)
             );
         }
 
-        /** @var Enum $value probably */
+        /** @var ScalarEnum $value probably */
 
         return $value->getValue();
     }
@@ -236,7 +236,7 @@ class EnumType extends Type
      * @param string|int|float|bool|null $value
      * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
      *
-     * @return Enum
+     * @return ScalarEnum
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
@@ -246,7 +246,7 @@ class EnumType extends Type
     /**
      * @param $enumValue
      *
-     * @return Enum
+     * @return ScalarEnum
      */
     protected function convertToEnum($enumValue)
     {
@@ -260,7 +260,7 @@ class EnumType extends Type
 
         $enumClass = static::getEnumClass($enumValue);
 
-        /** @var Enum $enumClass */
+        /** @var ScalarEnum $enumClass */
 
         return $enumClass::getEnum($enumValue);
     }

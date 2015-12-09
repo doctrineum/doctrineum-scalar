@@ -1,9 +1,9 @@
 <?php
 namespace Doctrineum\Tests\Scalar\Helpers\EnumTypes;
 
-use Doctrineum\Scalar\EnumType;
+use Doctrineum\Scalar\ScalarEnumType;
 
-class WithoutEnumIsThisType extends EnumType
+class WithoutEnumIsThisType extends ScalarEnumType
 {
 
 }

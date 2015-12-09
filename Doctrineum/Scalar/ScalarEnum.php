@@ -7,11 +7,12 @@ use Granam\Strict\Object\StrictObject;
 /**
  * Inspired by @link http://github.com/marc-mabe/php-enum
  */
-class Enum extends StrictObject implements EnumInterface
+class ScalarEnum extends StrictObject implements ScalarEnumInterface
 {
+    const SCALAR_ENUM = 'scalar_enum';
 
     /**
-     * @var Enum[]
+     * @var ScalarEnum[]
      */
     private static $builtEnums = [];
 
@@ -55,7 +56,7 @@ class Enum extends StrictObject implements EnumInterface
     /**
      * @param string|float|int|bool|null $enumValue
      *
-     * @return Enum
+     * @return ScalarEnum
      */
     public static function getEnum($enumValue)
     {
@@ -88,12 +89,12 @@ class Enum extends StrictObject implements EnumInterface
     }
 
     /**
-     * @param EnumInterface $enum
+     * @param ScalarEnumInterface $enum
      * @param mixed $namespace
      *
      * @throws Exceptions\EnumIsAlreadyBuilt
      */
-    protected static function addBuiltEnum(EnumInterface $enum, $namespace)
+    protected static function addBuiltEnum(ScalarEnumInterface $enum, $namespace)
     {
         $namespaceKey = self::createKey($namespace);
         $enumKey = self::createKey($enum->getValue());
@@ -115,7 +116,7 @@ class Enum extends StrictObject implements EnumInterface
      * @param mixed $enumValue
      * @param mixed $namespace
      *
-     * @return EnumInterface
+     * @return ScalarEnumInterface
      */
     protected static function getBuiltEnum($enumValue, $namespace)
     {
@@ -133,7 +134,7 @@ class Enum extends StrictObject implements EnumInterface
     /**
      * @param string|int|float|bool|null $finalEnumValue
      *
-     * @return Enum
+     * @return ScalarEnum
      */
     protected static function createByValue($finalEnumValue)
     {

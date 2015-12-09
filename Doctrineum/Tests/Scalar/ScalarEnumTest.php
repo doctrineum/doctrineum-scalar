@@ -1,9 +1,9 @@
 <?php
 namespace Doctrineum\Tests\Scalar;
 
-use Doctrineum\Scalar\Enum;
+use Doctrineum\Scalar\ScalarEnum;
 
-class EnumTest extends \PHPUnit_Framework_TestCase
+class ScalarEnumTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
@@ -17,11 +17,11 @@ class EnumTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return \Doctrineum\Scalar\Enum
+     * @return \Doctrineum\Scalar\ScalarEnum
      */
     protected function getEnumClass()
     {
-        return Enum::getClass();
+        return ScalarEnum::getClass();
     }
 
     /**
@@ -114,7 +114,7 @@ class EnumTest extends \PHPUnit_Framework_TestCase
 
     protected function getInheritedEnum($value)
     {
-        return new TestInheritedEnum($value);
+        return new TestInheritedScalarEnum($value);
     }
 
     /**
@@ -123,11 +123,11 @@ class EnumTest extends \PHPUnit_Framework_TestCase
      */
     public function adding_an_existing_enum_cause_exception()
     {
-        TestInvalidExistingEnumUsage::forceGetting(false);
-        TestInvalidExistingEnumUsage::forceAdding(true);
+        TestInvalidExistingScalarEnumUsage::forceGetting(false);
+        TestInvalidExistingScalarEnumUsage::forceAdding(true);
         // getting twice to internally add twice
-        TestInvalidExistingEnumUsage::getEnum('foo');
-        TestInvalidExistingEnumUsage::getEnum('foo');
+        TestInvalidExistingScalarEnumUsage::getEnum('foo');
+        TestInvalidExistingScalarEnumUsage::getEnum('foo');
     }
 
     /**
@@ -136,9 +136,9 @@ class EnumTest extends \PHPUnit_Framework_TestCase
      */
     public function getting_an_non_existing_enum_cause_exception()
     {
-        TestInvalidExistingEnumUsage::forceAdding(false);
-        TestInvalidExistingEnumUsage::forceGetting(true);
-        TestInvalidExistingEnumUsage::getEnum('bar');
+        TestInvalidExistingScalarEnumUsage::forceAdding(false);
+        TestInvalidExistingScalarEnumUsage::forceGetting(true);
+        TestInvalidExistingScalarEnumUsage::getEnum('bar');
     }
 
     /**
@@ -147,12 +147,12 @@ class EnumTest extends \PHPUnit_Framework_TestCase
      */
     public function using_invalid_value_without_casting_cause_exception()
     {
-        TestInvalidEnumValueTest::getEnum(new \stdClass());
+        TestInvalidScalarEnumValueTest::getEnum(new \stdClass());
     }
 }
 
 /** inner */
-class TestInvalidExistingEnumUsage extends Enum
+class TestInvalidExistingScalarEnumUsage extends ScalarEnum
 {
     private static $forceAdding = false;
     private static $forceGetting = false;
@@ -183,17 +183,17 @@ class TestInvalidExistingEnumUsage extends Enum
 
     protected function getInheritedEnum($value)
     {
-        return new TestInheritedEnum($value);
+        return new TestInheritedScalarEnum($value);
     }
 }
 
 /** inner */
-class TestInheritedEnum extends Enum
+class TestInheritedScalarEnum extends ScalarEnum
 {
 
 }
 
-class TestInvalidEnumValueTest extends Enum
+class TestInvalidScalarEnumValueTest extends ScalarEnum
 {
 
     protected static function convertToEnumFinalValue($value)
