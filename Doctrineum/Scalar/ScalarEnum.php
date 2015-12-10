@@ -22,7 +22,7 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
     protected $enumValue;
 
     /**
-     * @param mixed $enumValue
+     * @param bool|float|int|string|null|object $enumValue
      */
     public function __construct($enumValue)
     {
@@ -30,7 +30,7 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
     }
 
     /**
-     * @param mixed $enumValue
+     * @param bool|float|int|string|null|object $enumValue
      *
      * @return string|float|int|null
      */
@@ -40,7 +40,7 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
     }
 
     /**
-     * @param mixed $enumValue
+     * @param bool|float|int|string|null|object $enumValue
      *
      * @return string|float|int|null
      */
@@ -54,7 +54,7 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
     }
 
     /**
-     * @param string|float|int|bool|null $enumValue
+     * @param bool|float|int|string|null|object $enumValue
      *
      * @return ScalarEnum
      */
