@@ -3,7 +3,7 @@ namespace Doctrineum\Scalar;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Granam\Scalar\Tools\ValueDescriber;
+use Granam\Tools\ValueDescriber;
 use Granam\Strict\Object\StrictObjectTrait;
 
 /**
