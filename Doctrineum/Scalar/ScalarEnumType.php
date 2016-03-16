@@ -202,7 +202,7 @@ class ScalarEnumType extends Type
     /**
      * Convert enum instance to database string (or null) value
      *
-     * @param ScalarEnumInterface $value
+     * @param Enum $value
      * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
      *
      * @throws Exceptions\UnexpectedValueToDatabaseValue
@@ -212,12 +212,12 @@ class ScalarEnumType extends Type
     {
         if (!is_object($value)) {
             throw new Exceptions\UnexpectedValueToDatabaseValue(
-                'Expected object ' . ScalarEnumInterface::class . ', got ' . gettype($value)
+                'Expected object ' . Enum::class . ', got ' . gettype($value)
             );
         }
-        if (!is_a($value, ScalarEnumInterface::class)) {
+        if (!is_a($value, Enum::class)) {
             throw new Exceptions\UnexpectedValueToDatabaseValue(
-                'Expected ' . ScalarEnumInterface::class . ', got ' . get_class($value)
+                'Expected ' . Enum::class . ', got ' . get_class($value)
             );
         }
 

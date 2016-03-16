@@ -4,7 +4,7 @@ namespace Doctrineum\Tests\Scalar;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrineum\Scalar\ScalarEnum;
-use Doctrineum\Scalar\ScalarEnumInterface;
+use Doctrineum\Scalar\Enum;
 use Doctrineum\Scalar\ScalarEnumType;
 use Doctrineum\Tests\Scalar\Helpers\EnumTypes\EnumWithSubNamespaceType;
 use Doctrineum\Tests\Scalar\Helpers\EnumTypes\IShouldHaveTypeWordOnEnd;
@@ -21,8 +21,16 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
     {
         $enumTypeClass = $this->getEnumTypeClass();
         $enumTypeClass::registerSelf();
-        $this->assertTrue(Type::hasType($enumTypeClass::getTypeName()));
-        $this->assertTrue($enumTypeClass::isRegistered());
+        self::assertTrue(Type::hasType($enumTypeClass::getTypeName()));
+        self::assertTrue($enumTypeClass::isRegistered());
+    }
+
+    /**
+     * @return \Doctrineum\Scalar\ScalarEnumType
+     */
+    protected function getEnumTypeClass()
+    {
+        return ScalarEnumType::class;
     }
 
     /**
@@ -32,9 +40,9 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
     public function self_registering_again_returns_false()
     {
         $enumTypeClass = $this->getEnumTypeClass();
-        $this->assertTrue(Type::hasType($enumTypeClass::getTypeName()));
-        $this->assertTrue($enumTypeClass::isRegistered());
-        $this->assertFalse($enumTypeClass::registerSelf());
+        self::assertTrue(Type::hasType($enumTypeClass::getTypeName()));
+        self::assertTrue($enumTypeClass::isRegistered());
+        self::assertFalse($enumTypeClass::registerSelf());
     }
 
     /**
@@ -45,7 +53,7 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
     {
         $enumTypeClass = $this->getEnumTypeClass();
         $instance = Type::getType($enumTypeClass::getTypeName());
-        $this->assertInstanceOf($enumTypeClass, $instance);
+        self::assertInstanceOf($enumTypeClass, $instance);
 
         return $instance;
     }
@@ -63,10 +71,10 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
         $typeName = $this->convertToTypeName($enumTypeClass);
         // like SELF_TYPED_ENUM
         $constantName = strtoupper($typeName);
-        $this->assertTrue(defined("$enumTypeClass::$constantName"));
-        $this->assertSame($enumTypeClass::getTypeName(), $typeName);
-        $this->assertSame($typeName, constant("$enumTypeClass::$constantName"));
-        $this->assertSame($enumType::getTypeName(), $enumTypeClass::getTypeName());
+        self::assertTrue(defined("$enumTypeClass::$constantName"));
+        self::assertSame($enumTypeClass::getTypeName(), $typeName);
+        self::assertSame($typeName, constant("$enumTypeClass::$constantName"));
+        self::assertSame($enumType::getTypeName(), $enumTypeClass::getTypeName());
     }
 
     /**
@@ -97,7 +105,7 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
         $platform = $this->getPlatform();
         $sql = $enumType->getSQLDeclaration([], $platform);
         /** @var \PHPUnit_Framework_TestCase $this */
-        $this->assertSame('VARCHAR(64)', $sql);
+        self::assertSame('VARCHAR(64)', $sql);
     }
 
     /**
@@ -116,16 +124,16 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function enum_with_null_to_database_value_is_null(ScalarEnumType $enumType)
     {
-        $nullEnum = \Mockery::mock(ScalarEnumInterface::class);
+        $nullEnum = \Mockery::mock(Enum::class);
         /** @noinspection PhpMethodParametersCountMismatchInspection */
         $nullEnum->shouldReceive('getValue')
             ->once()
             ->andReturn(null);
-        /** @var ScalarEnumInterface $nullEnum */
+        /** @var Enum $nullEnum */
 
         $platform = $this->getPlatform();
         /** @var \PHPUnit_Framework_TestCase $this */
-        $this->assertNull($enumType->convertToDatabaseValue($nullEnum, $platform));
+        self::assertNull($enumType->convertToDatabaseValue($nullEnum, $platform));
     }
 
     /**
@@ -136,15 +144,15 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function enum_as_database_value_is_string_value_of_that_enum(ScalarEnumType $enumType)
     {
-        $enum = \Mockery::mock(ScalarEnumInterface::class);
+        $enum = \Mockery::mock(Enum::class);
         /** @noinspection PhpMethodParametersCountMismatchInspection */
         $enum->shouldReceive('getValue')
             ->once()
             ->andReturn($value = 'foo');
 
         $platform = $this->getPlatform();
-        /** @var ScalarEnumInterface $enum */
-        $this->assertSame($value, $enumType->convertToDatabaseValue($enum, $platform));
+        /** @var Enum $enum */
+        self::assertSame($value, $enumType->convertToDatabaseValue($enum, $platform));
     }
 
     /**
@@ -158,8 +166,8 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
 
         $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue(null, $platform);
-        $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
-        $this->assertNull($enum->getValue());
+        self::assertInstanceOf($this->getRegisteredEnumClass(), $enum);
+        self::assertNull($enum->getValue());
     }
 
     /**
@@ -168,21 +176,6 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
     protected function getRegisteredEnumClass()
     {
         return ScalarEnum::class;
-    }
-
-    /**
-     * @param ScalarEnumType $enumType
-     *
-     * @test
-     * @depends instance_can_be_obtained
-     */
-    public function string_to_php_value_is_enum_with_that_string(ScalarEnumType $enumType)
-    {
-
-        $platform = $this->getPlatform();
-        $enum = $enumType->convertToPHPValue($string = 'foo', $platform);
-        $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
-        $this->assertSame($string, $enum->getValue());
     }
 
     /**
@@ -195,13 +188,28 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
      * @test
      * @depends instance_can_be_obtained
      */
+    public function string_to_php_value_is_enum_with_that_string(ScalarEnumType $enumType)
+    {
+
+        $platform = $this->getPlatform();
+        $enum = $enumType->convertToPHPValue($string = 'foo', $platform);
+        self::assertInstanceOf($this->getRegisteredEnumClass(), $enum);
+        self::assertSame($string, $enum->getValue());
+    }
+
+    /**
+     * @param ScalarEnumType $enumType
+     *
+     * @test
+     * @depends instance_can_be_obtained
+     */
     public function empty_string_to_php_value_is_enum_with_that_empty_string(ScalarEnumType $enumType)
     {
 
         $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($emptyString = '', $platform);
-        $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
-        $this->assertSame($emptyString, $enum->getValue());
+        self::assertInstanceOf($this->getRegisteredEnumClass(), $enum);
+        self::assertSame($emptyString, $enum->getValue());
     }
 
     /**
@@ -218,8 +226,8 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
 
         $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($integer = 12345, $platform);
-        $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
-        $this->assertSame($integer, $enum->getValue());
+        self::assertInstanceOf($this->getRegisteredEnumClass(), $enum);
+        self::assertSame($integer, $enum->getValue());
     }
 
     /**
@@ -236,8 +244,8 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
 
         $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($zeroInteger = 0, $platform);
-        $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
-        $this->assertSame($zeroInteger, $enum->getValue());
+        self::assertInstanceOf($this->getRegisteredEnumClass(), $enum);
+        self::assertSame($zeroInteger, $enum->getValue());
     }
 
     /**
@@ -253,8 +261,8 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
     {
         $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($float = 12345.6789, $platform);
-        $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
-        $this->assertSame($float, $enum->getValue());
+        self::assertInstanceOf($this->getRegisteredEnumClass(), $enum);
+        self::assertSame($float, $enum->getValue());
     }
 
     /**
@@ -270,8 +278,8 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
     {
         $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($zeroFloat = 0.0, $platform);
-        $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
-        $this->assertSame($zeroFloat, $enum->getValue());
+        self::assertInstanceOf($this->getRegisteredEnumClass(), $enum);
+        self::assertSame($zeroFloat, $enum->getValue());
     }
 
     /**
@@ -287,8 +295,8 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
     {
         $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($false = false, $platform);
-        $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
-        $this->assertSame($false, $enum->getValue());
+        self::assertInstanceOf($this->getRegisteredEnumClass(), $enum);
+        self::assertSame($false, $enum->getValue());
     }
 
     /**
@@ -304,8 +312,8 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
     {
         $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue($true = true, $platform);
-        $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
-        $this->assertSame($true, $enum->getValue());
+        self::assertInstanceOf($this->getRegisteredEnumClass(), $enum);
+        self::assertSame($true, $enum->getValue());
     }
 
     /**
@@ -318,9 +326,9 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
     {
         $platform = $this->getPlatform();
         $enum = $enumType->convertToPHPValue(new WithToStringTestObject($value = 'foo'), $platform);
-        $this->assertInstanceOf($this->getRegisteredEnumClass(), $enum);
-        $this->assertSame($value, $enum->getValue());
-        $this->assertSame($value, (string)$enum);
+        self::assertInstanceOf($this->getRegisteredEnumClass(), $enum);
+        self::assertSame($value, $enum->getValue());
+        self::assertSame($value, (string)$enum);
     }
 
     /**
@@ -408,7 +416,7 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
     {
         $enumTypeClass = $this->getEnumTypeClass();
         $enumType = Type::getType($enumTypeClass::getTypeName());
-        $this->assertSame($enumTypeClass::getTypeName(), $enumType->getName());
+        self::assertSame($enumTypeClass::getTypeName(), $enumType->getName());
     }
 
     /**
@@ -419,7 +427,7 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
     {
         $enumTypeClass = $this->getEnumTypeClass();
         $enumType = Type::getType($enumTypeClass::getTypeName());
-        $this->assertTrue($enumType->requiresSQLCommentHint($this->getPlatform()));
+        self::assertTrue($enumType->requiresSQLCommentHint($this->getPlatform()));
     }
 
     /**
@@ -432,10 +440,22 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function can_register_subtype(ScalarEnumType $enumType)
     {
-        $this->assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), '~foo~'));
-        $this->assertTrue($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
+        self::assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), '~foo~'));
+        self::assertTrue($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
 
         return $enumType;
+    }
+
+    /**
+     * SUBTYPE TESTS
+     */
+
+    /**
+     * @return string|TestSubTypeScalarEnum
+     */
+    protected function getSubTypeEnumClass()
+    {
+        return TestSubTypeScalarEnum::getClass();
     }
 
     /**
@@ -450,15 +470,11 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
          * The subtype is unregistered because of tearDown clean up
          * @see EnumTypeTestTrait::tearDown
          */
-        $this->assertFalse($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
-        $this->assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), '~foo~'));
-        $this->assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass()));
-        $this->assertFalse($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
+        self::assertFalse($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
+        self::assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), '~foo~'));
+        self::assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass()));
+        self::assertFalse($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
     }
-
-    /**
-     * SUBTYPE TESTS
-     */
 
     /**
      * @param ScalarEnumType $enumType
@@ -473,10 +489,10 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
          * The subtype is unregistered because of tearDown clean up
          * @see EnumTypeTestTrait::tearDown
          */
-        $this->assertFalse($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
-        $this->assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), '~foo~'));
-        $this->assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass()));
-        $this->assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass())); // twice the same
+        self::assertFalse($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
+        self::assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), '~foo~'));
+        self::assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass()));
+        self::assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass())); // twice the same
     }
 
     /**
@@ -487,18 +503,18 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function subtype_returns_proper_enum(ScalarEnumType $subType)
     {
-        $this->assertTrue($subType::addSubTypeEnum($this->getSubTypeEnumClass(), $regexp = '~some specific string~'));
+        self::assertTrue($subType::addSubTypeEnum($this->getSubTypeEnumClass(), $regexp = '~some specific string~'));
         /** @var AbstractPlatform $abstractPlatform */
         $abstractPlatform = $this->getPlatform();
         $matchingValueToConvert = 'A string with some specific string inside.';
-        $this->assertRegExp($regexp, $matchingValueToConvert);
+        self::assertRegExp($regexp, $matchingValueToConvert);
         /**
          * Used TestSubTypeEnum returns as an "enum" the given value, which is $valueToConvert in this case,
          * @see \Doctrineum\Tests\Scalar\TestSubTypeEnum::getEnum
          */
         $enumFromSubType = $subType->convertToPHPValue($matchingValueToConvert, $abstractPlatform);
-        $this->assertInstanceOf($this->getSubTypeEnumClass(), $enumFromSubType);
-        $this->assertSame($matchingValueToConvert, (string)$enumFromSubType);
+        self::assertInstanceOf($this->getSubTypeEnumClass(), $enumFromSubType);
+        self::assertSame($matchingValueToConvert, (string)$enumFromSubType);
     }
 
     /**
@@ -509,19 +525,19 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function default_enum_is_given_if_subtype_does_not_match(ScalarEnumType $enumType)
     {
-        $this->assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), $regexp = '~some specific string~'));
+        self::assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), $regexp = '~some specific string~'));
         /** @var AbstractPlatform $abstractPlatform */
         $abstractPlatform = $this->getPlatform();
         $nonMatchingValueToConvert = 'A string without that specific string.';
-        $this->assertNotRegExp($regexp, $nonMatchingValueToConvert);
+        self::assertNotRegExp($regexp, $nonMatchingValueToConvert);
         /**
          * Used TestSubTypeEnum returns as an "enum" the given value, which is $valueToConvert in this case,
          * @see \Doctrineum\Tests\Scalar\TestSubTypeEnum::getEnum
          */
         $enum = $enumType->convertToPHPValue($nonMatchingValueToConvert, $abstractPlatform);
-        $this->assertNotSame($nonMatchingValueToConvert, $enum);
-        $this->assertInstanceOf(ScalarEnumInterface::class, $enum);
-        $this->assertSame($nonMatchingValueToConvert, (string)$enum);
+        self::assertNotSame($nonMatchingValueToConvert, $enum);
+        self::assertInstanceOf(Enum::class, $enum);
+        self::assertSame($nonMatchingValueToConvert, (string)$enum);
     }
 
     /**
@@ -533,8 +549,8 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function registering_same_subtype_again_throws_exception(ScalarEnumType $enumType)
     {
-        $this->assertFalse($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
-        $this->assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), '~foo~'));
+        self::assertFalse($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
+        self::assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), '~foo~'));
         // registering twice - should thrown an exception
         $enumType::addSubTypeEnum($this->getSubTypeEnumClass(), '~foo~');
     }
@@ -588,13 +604,13 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
     {
         $anotherEnumType = $this->getAnotherEnumTypeClass();
         if (!$anotherEnumType::isRegistered()) {
-            $this->assertTrue($anotherEnumType::registerSelf());
+            self::assertTrue($anotherEnumType::registerSelf());
         } else {
-            $this->assertFalse($anotherEnumType::registerSelf());
+            self::assertFalse($anotherEnumType::registerSelf());
         }
 
-        $this->assertTrue($anotherEnumType::isRegistered());
-        $this->assertTrue(Type::hasType($anotherEnumType::getTypeName()));
+        self::assertTrue($anotherEnumType::isRegistered());
+        self::assertTrue(Type::hasType($anotherEnumType::getTypeName()));
     }
 
     /**
@@ -627,20 +643,20 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
         $anotherEnumTypeClass::addSubTypeEnum($this->getAnotherSubTypeEnumClass(), $regexp);
 
         $value = 'some string fitting to searching pattern';
-        $this->assertRegExp($regexp, $value);
+        self::assertRegExp($regexp, $value);
 
         $enumType = Type::getType($enumTypeClass::getTypeName());
         $enumSubType = $enumType->convertToPHPValue($value, $this->getPlatform());
-        $this->assertInstanceOf($this->getSubTypeEnumClass(), $enumSubType);
-        $this->assertSame($value, "$enumSubType");
+        self::assertInstanceOf($this->getSubTypeEnumClass(), $enumSubType);
+        self::assertSame($value, "$enumSubType");
 
         $anotherEnumType = Type::getType($anotherEnumTypeClass::getTypeName());
         $anotherEnumSubType = $anotherEnumType->convertToPHPValue($value, $this->getPlatform());
-        $this->assertInstanceOf($this->getSubTypeEnumClass(), $enumSubType);
-        $this->assertSame($value, "$anotherEnumSubType");
+        self::assertInstanceOf($this->getSubTypeEnumClass(), $enumSubType);
+        self::assertSame($value, "$anotherEnumSubType");
 
         // registered sub-types were different, just regexp was the same - let's test if they are kept separately
-        $this->assertNotSame($enumSubType, $anotherEnumSubType);
+        self::assertNotSame($enumSubType, $anotherEnumSubType);
     }
 
     /**
@@ -657,16 +673,16 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function repeated_self_registration_returns_false()
     {
-        $this->assertFalse(ScalarEnumType::registerSelf());
+        self::assertFalse(ScalarEnumType::registerSelf());
     }
 
     /** @test */
     public function can_use_subtype()
     {
         ScalarEnumType::addSubTypeEnum($this->getSubTypeEnumClass(), $pattern = '~foo~');
-        $this->assertRegExp($pattern, $enumValue = 'foo bar baz');
+        self::assertRegExp($pattern, $enumValue = 'foo bar baz');
         $enumBySubType = ScalarEnumType::getType(ScalarEnumType::SCALAR_ENUM)->convertToPHPValue($enumValue, $this->getPlatform());
-        $this->assertInstanceOf($this->getSubTypeEnumClass(), $enumBySubType);
+        self::assertInstanceOf($this->getSubTypeEnumClass(), $enumBySubType);
     }
 
     /**
@@ -677,7 +693,7 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
         EnumWithSubNamespaceType::registerSelf();
         $enum = EnumWithSubNamespaceType::getType(EnumWithSubNamespaceType::getTypeName())
             ->convertToPHPValue('foo', $this->getPlatform());
-        $this->assertInstanceOf(EnumWithSubNamespace::getClass(), $enum);
+        self::assertInstanceOf(EnumWithSubNamespace::getClass(), $enum);
     }
 
     /**
@@ -724,25 +740,9 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
             $enumType = Type::getType($enumTypeClass::getTypeName());
             /** @var ScalarEnumType $enumType */
             if ($enumType::hasSubTypeEnum($this->getSubTypeEnumClass())) {
-                $this->assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass()));
+                self::assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass()));
             }
         }
-    }
-
-    /**
-     * @return \Doctrineum\Scalar\ScalarEnumType
-     */
-    protected function getEnumTypeClass()
-    {
-        return ScalarEnumType::class;
-    }
-
-    /**
-     * @return string|TestSubTypeScalarEnum
-     */
-    protected function getSubTypeEnumClass()
-    {
-        return TestSubTypeScalarEnum::getClass();
     }
 
 }

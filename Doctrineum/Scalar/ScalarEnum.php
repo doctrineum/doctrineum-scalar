@@ -7,7 +7,7 @@ use Granam\Strict\Object\StrictObject;
 /**
  * Inspired by @link http://github.com/marc-mabe/php-enum
  */
-class ScalarEnum extends StrictObject implements ScalarEnumInterface
+class ScalarEnum extends StrictObject implements Enum
 {
     const SCALAR_ENUM = 'scalar_enum';
 
@@ -89,12 +89,12 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
     }
 
     /**
-     * @param ScalarEnumInterface $enum
+     * @param Enum $enum
      * @param mixed $namespace
      *
      * @throws Exceptions\EnumIsAlreadyBuilt
      */
-    protected static function addBuiltEnum(ScalarEnumInterface $enum, $namespace)
+    protected static function addBuiltEnum(Enum $enum, $namespace)
     {
         $namespaceKey = self::createKey($namespace);
         $enumKey = self::createKey($enum->getValue());
@@ -116,7 +116,7 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
      * @param mixed $enumValue
      * @param mixed $namespace
      *
-     * @return ScalarEnumInterface
+     * @return Enum
      */
     protected static function getBuiltEnum($enumValue, $namespace)
     {
@@ -168,6 +168,13 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
     public function getValue()
     {
         return $this->enumValue;
+    }
+
+    public function is(Enum $enum)
+    {
+        return
+            $this->getValue() === $enum->getValue()
+            && static::class === get_class($enum);
     }
 
     /**

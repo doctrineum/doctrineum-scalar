@@ -8,12 +8,11 @@ class ScalarEnumTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function can_create_instance()
+    public function I_can_create_it()
     {
         $enumClass = $this->getEnumClass();
         $instance = $enumClass::getEnum('foo');
-        /** @var \PHPUnit_Framework_TestCase $this */
-        $this->assertInstanceOf($enumClass, $instance);
+        self::assertInstanceOf($enumClass, $instance);
     }
 
     /**
@@ -27,44 +26,41 @@ class ScalarEnumTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function same_instance_for_same_name_is_returned()
+    public function I_got_same_instance_for_same_name()
     {
         $enumClass = $this->getEnumClass();
         $firstInstance = $enumClass::getEnum($firstValue = 'foo');
         $secondInstance = $enumClass::getEnum($secondValue = 'bar');
         $thirdInstance = $enumClass::getEnum($firstValue);
-        /** @var \PHPUnit_Framework_TestCase $this */
-        $this->assertNotSame(
+        self::assertNotSame(
             $firstInstance,
             $secondInstance,
             "Instance of enum $enumClass with value $firstValue should not be same as instance with value $secondValue"
         );
-        $this->assertSame($firstInstance, $thirdInstance);
+        self::assertSame($firstInstance, $thirdInstance);
     }
 
     /** @test */
-    public function returns_same_value_as_created_with()
+    public function I_got_same_value_as_I_created_with()
     {
         $enumClass = $this->getEnumClass();
         $enum = $enumClass::getEnum('foo');
-        /** @var \PHPUnit_Framework_TestCase $this */
-        $this->assertSame('foo', $enum->getValue());
+        self::assertSame('foo', $enum->getValue());
     }
 
     /** @test */
-    public function as_string_is_of_same_value_as_created_with()
+    public function I_got_same_value_as_string()
     {
         $enumClass = $this->getEnumClass();
         $enum = $enumClass::getEnum('foo');
-        /** @var \PHPUnit_Framework_TestCase $this */
-        $this->assertSame('foo', (string)$enum);
+        self::assertSame('foo', (string)$enum);
     }
 
     /**
      * @test
      * @expectedException \Doctrineum\Scalar\Exceptions\CanNotBeCloned
      */
-    public function can_not_be_cloned()
+    public function I_can_not_clone_it()
     {
         $enumClass = $this->getEnumClass();
         $enum = $enumClass::getEnum('foo');
@@ -73,23 +69,40 @@ class ScalarEnumTest extends \PHPUnit_Framework_TestCase
     }
 
     /** @test */
-    public function with_to_string_object_is_of_same_value_as_object()
+    public function I_can_create_it_by_to_string_object_and_got_back_that_value()
     {
         $enumClass = $this->getEnumClass();
         $enum = $enumClass::getEnum(new WithToStringTestObject('foo'));
-        /** @var \PHPUnit_Framework_TestCase $this */
-        $this->assertSame('foo', $enum->getValue());
-        $this->assertSame('foo', (string)$enum);
+        self::assertSame('foo', $enum->getValue());
+        self::assertSame('foo', (string)$enum);
     }
 
     /**
      * @test
      * @expectedException \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
      */
-    public function object_without_to_string_cause_exception()
+    public function I_can_not_create_it_by_object_without_to_string()
     {
         $enumClass = $this->getEnumClass();
         $enumClass::getEnum(new \stdClass());
+    }
+
+    /**
+     * @test
+     */
+    public function I_can_compare_enums()
+    {
+        $firstEnum = ScalarEnum::getEnum('foo');
+        self::assertTrue($firstEnum->is($firstEnum), 'Enum should recognize itself');
+
+        $secondEnum = ScalarEnum::getEnum($secondValue = 'bar');
+        self::assertFalse($firstEnum->is($secondEnum), 'Same class enums but with different values should not be equal');
+        self::assertFalse($secondEnum->is($firstEnum), 'Same class enums but with different values should not be equal');
+
+        $childEnum = TestInheritedScalarEnum::getEnum($secondValue);
+        self::assertFalse($firstEnum->is($childEnum), 'Parent class enum should not be equal to its child class');
+        self::assertFalse($secondEnum->is($childEnum), 'Parent class enum should not be equal to its child even if with same value');
+        self::assertFalse($childEnum->is($secondEnum), 'Child class enum should not be equal to its parent even if with same value');
     }
 
     /**
@@ -102,14 +115,14 @@ class ScalarEnumTest extends \PHPUnit_Framework_TestCase
         $enumClass = $this->getEnumClass();
 
         $enum = $enumClass::getEnum($value = 'foo');
-        $this->assertInstanceOf($enumClass, $enum);
-        $this->assertSame($value, $enum->getValue());
-        $this->assertSame($value, (string)$enum);
+        self::assertInstanceOf($enumClass, $enum);
+        self::assertSame($value, $enum->getValue());
+        self::assertSame($value, (string)$enum);
 
         $inDifferentNamespace = $this->getInheritedEnum($value);
-        $this->assertInstanceOf($enumClass, $inDifferentNamespace);
-        $this->assertSame($enum->getValue(), $inDifferentNamespace->getValue());
-        $this->assertNotSame($enum, $inDifferentNamespace);
+        self::assertInstanceOf($enumClass, $inDifferentNamespace);
+        self::assertSame($enum->getValue(), $inDifferentNamespace->getValue());
+        self::assertNotSame($enum, $inDifferentNamespace);
     }
 
     protected function getInheritedEnum($value)
