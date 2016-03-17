@@ -1,9 +1,9 @@
 <?php
 namespace Doctrineum\Tests\Scalar;
 
-use Granam\Exceptions\Tests\Tools\AbstractTestOfExceptionsHierarchy;
+use Granam\Tests\Exceptions\Tools\AbstractExceptionsHierarchyTest;
 
-class ExceptionsHierarchyTest extends AbstractTestOfExceptionsHierarchy
+class ExceptionsHierarchyTest extends AbstractExceptionsHierarchyTest
 {
     protected function getTestedNamespace()
     {
@@ -12,7 +12,7 @@ class ExceptionsHierarchyTest extends AbstractTestOfExceptionsHierarchy
 
     protected function getRootNamespace()
     {
-        return str_replace('\Tests\\', '\\', __NAMESPACE__);
+        return str_replace('\Tests', '', __NAMESPACE__);
     }
 
 }

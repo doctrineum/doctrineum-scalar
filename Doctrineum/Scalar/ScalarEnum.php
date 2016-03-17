@@ -170,11 +170,19 @@ class ScalarEnum extends StrictObject implements Enum
         return $this->enumValue;
     }
 
-    public function is(Enum $enum)
+    /**
+     * Doctrineum enums are intentionally not final, but should not be compared by just a value.
+     * Use $enum1 === $enum2 or $enum1->is($enum2) for equality of different instances.
+     * Think twice before suppressing $sameClassOnly condition, because ArticleTypeEnum->getValue == RoleEnum->getValue is true.
+     * @param Enum $enum
+     * @param bool $sameClassOnly = false
+     * @return bool
+     */
+    public function is(Enum $enum, $sameClassOnly = true)
     {
         return
             $this->getValue() === $enum->getValue()
-            && static::class === get_class($enum);
+            && (!$sameClassOnly || static::class === get_class($enum));
     }
 
     /**

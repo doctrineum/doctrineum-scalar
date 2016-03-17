@@ -40,7 +40,9 @@ class ScalarEnumTest extends \PHPUnit_Framework_TestCase
         self::assertSame($firstInstance, $thirdInstance);
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function I_got_same_value_as_I_created_with()
     {
         $enumClass = $this->getEnumClass();
@@ -48,7 +50,9 @@ class ScalarEnumTest extends \PHPUnit_Framework_TestCase
         self::assertSame('foo', $enum->getValue());
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function I_got_same_value_as_string()
     {
         $enumClass = $this->getEnumClass();
@@ -68,7 +72,9 @@ class ScalarEnumTest extends \PHPUnit_Framework_TestCase
         clone $enum;
     }
 
-    /** @test */
+    /**
+     * @test
+     */
     public function I_can_create_it_by_to_string_object_and_got_back_that_value()
     {
         $enumClass = $this->getEnumClass();
@@ -96,20 +102,27 @@ class ScalarEnumTest extends \PHPUnit_Framework_TestCase
         self::assertTrue($firstEnum->is($firstEnum), 'Enum should recognize itself');
 
         $secondEnum = ScalarEnum::getEnum($secondValue = 'bar');
-        self::assertFalse($firstEnum->is($secondEnum), 'Same class enums but with different values should not be equal');
-        self::assertFalse($secondEnum->is($firstEnum), 'Same class enums but with different values should not be equal');
+        self::assertFalse($firstEnum->is($secondEnum), 'Same classes with different values should not be equal');
+        self::assertFalse($firstEnum->is($secondEnum, false), 'Same classes with different values should be never equal');
+        self::assertFalse($secondEnum->is($firstEnum), 'Same classes with different values should not be equal');
+        self::assertFalse($secondEnum->is($firstEnum, false), 'Same classes with different values should be never equal');
 
         $childEnum = TestInheritedScalarEnum::getEnum($secondValue);
-        self::assertFalse($firstEnum->is($childEnum), 'Parent class enum should not be equal to its child class');
-        self::assertFalse($secondEnum->is($childEnum), 'Parent class enum should not be equal to its child even if with same value');
-        self::assertFalse($childEnum->is($secondEnum), 'Child class enum should not be equal to its parent even if with same value');
+        self::assertFalse($firstEnum->is($childEnum), 'Parent enum should not be equal to its child class');
+        self::assertFalse($firstEnum->is($childEnum, false), 'Parent enum should be never equal to child if values differ');
+        self::assertFalse($secondEnum->is($childEnum), 'Parent enum should not be equal to its child even if with same value');
+        self::assertTrue($secondEnum->is($childEnum, false), 'Enums without sibling check should reflect their values equality');
+        self::assertFalse($childEnum->is($secondEnum), 'Child enum should not be equal to its parent even if with same value');
+        self::assertTrue($childEnum->is($secondEnum, false), 'Enums without sibling check should reflect their values equality');
     }
 
     /**
      * inner namespace test
      */
 
-    /** @test */
+    /**
+     * @test
+     */
     public function inherited_enum_with_same_value_lives_in_own_inner_namespace()
     {
         $enumClass = $this->getEnumClass();
