@@ -3,6 +3,7 @@ namespace Doctrineum\Scalar;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Granam\Scalar\Tools\ToScalar;
 use Granam\Tools\ValueDescriber;
 use Granam\Strict\Object\StrictObjectTrait;
 
@@ -16,12 +17,6 @@ class ScalarEnumType extends Type
 {
     use StrictObjectTrait;
 
-    /**
-     * Its not directly used this library - the exactly same value is generated and used by
-     * @see \Doctrineum\Scalar\SelfTypedEnum::getTypeName
-     *
-     * This constant exists to follow Doctrine type conventions.
-     */
     const SCALAR_ENUM = ScalarEnum::SCALAR_ENUM;
 
     /**
@@ -44,7 +39,7 @@ class ScalarEnumType extends Type
         }
         /**
          * The class has to be self-registering to by-pass enum and enum type bindings,
-         * @see SelfTypedEnum::createByValue
+         * @see ScalarEnum::createByValue
          */
         static::checkIfKnownEnum($subTypeEnumClass);
         static::checkRegexp($subTypeEnumValueRegexp);
@@ -122,6 +117,7 @@ class ScalarEnumType extends Type
     /**
      * Gets the strongly recommended name of this type.
      * Its used at @see \Doctrine\DBAL\Platforms\AbstractPlatform::getDoctrineTypeComment
+     * @see getName
      *
      * @return string
      */
@@ -245,35 +241,38 @@ class ScalarEnumType extends Type
 
     /**
      * @param $enumValue
-     *
      * @return ScalarEnum
+     * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
      */
     protected function convertToEnum($enumValue)
     {
-        if (!is_scalar($enumValue) && !is_null($enumValue)
-            && (!is_object($enumValue) || !method_exists($enumValue, '__toString'))
-        ) {
+        try {
+            $enumValue = ToScalar::toScalar($enumValue);
+        } catch (\Granam\Scalar\Tools\Exceptions\WrongParameterType $exception) {
             throw new Exceptions\UnexpectedValueToEnum(
-                'Unexpected value to convert. Expected scalar or null, got ' . gettype($enumValue)
+                'Unexpected value to convert. Expected scalar or null, got '
+                . ValueDescriber::describe($enumValue),
+                $exception->getCode(),
+                $exception
             );
         }
 
+        // class of main enum or its registered sub-type, according to enum type and current value
         $enumClass = static::getEnumClass($enumValue);
-
-        /** @var ScalarEnum $enumClass */
 
         return $enumClass::getEnum($enumValue);
     }
 
     /**
      * @param int|float|string|null $enumValue
-     *
-     * @return string Enum class absolute name
+     * @return string|ScalarEnum Enum class absolute name
      */
     protected static function getEnumClass($enumValue)
     {
-        // no subtype is registered at all
-        if (!isset(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()]) || !count(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()])) {
+        if (!isset(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()])
+            || !count(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()])
+        ) {
+            // no subtype is registered at all
             return static::getDefaultEnumClass();
         }
 

@@ -412,7 +412,7 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
      * @test
      * @depends instance_can_be_obtained
      */
-    public function enum_type_name_is_same_as_name()
+    public function I_get_same_enum_type_name_as_enum_type_instance_name()
     {
         $enumTypeClass = $this->getEnumTypeClass();
         $enumType = Type::getType($enumTypeClass::getTypeName());
@@ -423,7 +423,7 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
      * @test
      * @depends instance_can_be_obtained
      */
-    public function requires_sql_comment_hint()
+    public function It_requires_sql_comment_hint()
     {
         $enumTypeClass = $this->getEnumTypeClass();
         $enumType = Type::getType($enumTypeClass::getTypeName());
@@ -438,7 +438,7 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
      * @test
      * @depends instance_can_be_obtained
      */
-    public function can_register_subtype(ScalarEnumType $enumType)
+    public function I_can_register_subtype(ScalarEnumType $enumType)
     {
         self::assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), '~foo~'));
         self::assertTrue($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
@@ -462,7 +462,7 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
      * @param ScalarEnumType $enumType
      *
      * @test
-     * @depends can_register_subtype
+     * @depends I_can_register_subtype
      */
     public function can_remove_subtype(ScalarEnumType $enumType)
     {
@@ -480,7 +480,7 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
      * @param ScalarEnumType $enumType
      *
      * @test
-     * @depends can_register_subtype
+     * @depends I_can_register_subtype
      * @expectedException \Doctrineum\Scalar\Exceptions\SubTypeEnumIsNotRegistered
      */
     public function I_can_not_remove_not_registered_subtype(ScalarEnumType $enumType)
@@ -499,7 +499,7 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
      * @param ScalarEnumType $subType
      *
      * @test
-     * @depends can_register_subtype
+     * @depends I_can_register_subtype
      */
     public function subtype_returns_proper_enum(ScalarEnumType $subType)
     {
@@ -521,7 +521,7 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
      * @param ScalarEnumType $enumType
      *
      * @test
-     * @depends can_register_subtype
+     * @depends I_can_register_subtype
      */
     public function default_enum_is_given_if_subtype_does_not_match(ScalarEnumType $enumType)
     {
