@@ -102,8 +102,12 @@ You can create ScalarEnum with NULL value, persist it (in database it will be si
 So again, **any** NULL value on place of ScalarEnum is converted to ScalarEnum with NULL.
 Even not-set-at-all enums are after persist-flush-fetch built as ScalarEnum with NULL inside.
 
+Note: more type-specific enums like string enum, integer enum and so have different behaviour.
+They convert null to their primitive type on enum creation, on fetch of NULL from database it remains null.
+
 #### Understand the basics
 There are two roles - the factory and the value.
+
  - ScalarEnumType is the factory (as part of the Doctrine\DBAL\Types\Type family), building an ScalarEnum by following ScalarEnumType rules.
  - ScalarEnum is the value holder, de facto singleton, represented by a class. And class, as you know, can do a lot of things, which makes enum more sexy then whole scalar value.
  - Subtype is an ScalarEnumType, but ruled not just by type, but also by current value itself. One type can has any number of subtypes, in dependence on your imagination and used enum values.
