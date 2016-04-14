@@ -15,8 +15,9 @@ For default custom types see the [official documentation as well](http://doctrin
 3. [Map property as an enum](#map-property-as-an-enum)
 4. [Create enum](#create-enum)
 5. [Register subtype enum](#register-subtype-enum)
-6. [Be lazy, let it register self](#be-lazy-let-it-register-self)
+6. [NULL is still an enum class](#null-is-still-an-enum-class)
 7. [Understand the basics](#understand-the-basics)
+8. [Exceptions philosophy](#exceptions-philosophy)
 
 ### <span id="installation">Installation</span>
 Edit composer.json at your project, add
@@ -47,8 +48,12 @@ Type::addType(ScalarEnumType::getTypeName(), ScalarEnumType::class);
 Type::addType(BarScalarEnumType::getTypeName(), BarScalarEnumType::class);
 ```
 
-For Symfony2 using the config is the best approach
+Or just by helper method
+```php
+ScalarEnum::registerSelf(); // quick self-registration
+```
 
+For Symfony2 using the config is the best approach
 ```yaml
 # app/config/config.yml
 doctrine:
@@ -91,15 +96,11 @@ $byRegexpDeterminedEnum = $ScalarEnumType->convertToPHPValue('And now get me dif
 get_class($byRegexpDeterminedEnum) === '\Foo\Bar\YourEnum'; // true
 ```
 
-### Be lazy, let it register self
-Registering an enum type as a factory and use of different enum in entities can be confusing and boring sometimes. 
-You can use registerSelf method:
-```php
-<?php
-use Doctrineum\Scalar\ScalarEnum;
-
-ScalarEnum::registerSelf(); // quick self-registration
-```
+### NULL is still an enum class
+You can create ScalarEnum with NULL value, persist it (in database it will be simple as a NULL) and fetch it again
+ and you will get ScalarEnum with NULL again. Not just NULL.
+So again, **any** NULL value on place of ScalarEnum is converted to ScalarEnum with NULL.
+Even not-set-at-all enums are after persist-flush-fetch built as ScalarEnum with NULL inside.
 
 #### Understand the basics
 There are two roles - the factory and the value.
