@@ -102,6 +102,9 @@ You can create ScalarEnum with NULL value, persist it (in database it will be si
 So again, **any** NULL value on place of ScalarEnum is converted to ScalarEnum with NULL.
 Even not-set-at-all enums are after persist-flush-fetch built as ScalarEnum with NULL inside.
 
+Beware on using subtypes only with main enum as an abstract class. You have to resolve database-NULL-to-PHP-value conversion,
+or register subtype for NULL value, otherwise fatal error by abstract class instance creation occurs.
+
 Note: more type-specific enums like string enum, integer enum and so have different behaviour.
 They convert null to their primitive type on enum creation, on fetch of NULL from database it remains null.
 
