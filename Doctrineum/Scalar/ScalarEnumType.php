@@ -206,18 +206,14 @@ class ScalarEnumType extends Type
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        if (!is_object($value)) {
+        if ($value === null) {
+            return null;
+        }
+        if (!is_object($value) || !is_a($value, Enum::class)) {
             throw new Exceptions\UnexpectedValueToDatabaseValue(
-                'Expected object ' . Enum::class . ', got ' . gettype($value)
+                'Expected NULL or instance of ' . Enum::class . ', got ' . ValueDescriber::describe($value)
             );
         }
-        if (!is_a($value, Enum::class)) {
-            throw new Exceptions\UnexpectedValueToDatabaseValue(
-                'Expected ' . Enum::class . ', got ' . get_class($value)
-            );
-        }
-
-        /** @var ScalarEnum $value probably */
 
         return $value->getValue();
     }

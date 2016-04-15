@@ -104,7 +104,6 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
 
         $platform = $this->getPlatform();
         $sql = $enumType->getSQLDeclaration([], $platform);
-        /** @var \PHPUnit_Framework_TestCase $this */
         self::assertSame('VARCHAR(64)', $sql);
     }
 
@@ -122,18 +121,10 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
      * @test
      * @depends instance_can_be_obtained
      */
-    public function enum_with_null_to_database_value_is_null(ScalarEnumType $enumType)
+    public function null_to_database_value_is_null(ScalarEnumType $enumType)
     {
-        $nullEnum = \Mockery::mock(Enum::class);
-        /** @noinspection PhpMethodParametersCountMismatchInspection */
-        $nullEnum->shouldReceive('getValue')
-            ->once()
-            ->andReturn(null);
-        /** @var Enum $nullEnum */
-
         $platform = $this->getPlatform();
-        /** @var \PHPUnit_Framework_TestCase $this */
-        self::assertNull($enumType->convertToDatabaseValue($nullEnum, $platform));
+        self::assertNull($enumType->convertToDatabaseValue(null, $platform));
     }
 
     /**
@@ -144,15 +135,9 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function enum_as_database_value_is_string_value_of_that_enum(ScalarEnumType $enumType)
     {
-        $enum = \Mockery::mock(Enum::class);
-        /** @noinspection PhpMethodParametersCountMismatchInspection */
-        $enum->shouldReceive('getValue')
-            ->once()
-            ->andReturn($value = 'foo');
-
+        $value = 'foo';
         $platform = $this->getPlatform();
-        /** @var Enum $enum */
-        self::assertSame($value, $enumType->convertToDatabaseValue($enum, $platform));
+        self::assertSame($value, $enumType->convertToDatabaseValue(ScalarEnum::getEnum($value), $platform));
     }
 
     /**
