@@ -23,6 +23,7 @@ class ScalarEnum extends StrictObject implements Enum
 
     /**
      * @param bool|float|int|string|object $enumValue
+     * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
      */
     public function __construct($enumValue)
     {
@@ -31,8 +32,8 @@ class ScalarEnum extends StrictObject implements Enum
 
     /**
      * @param bool|float|int|string|object $enumValue
-     *
      * @return string|float|int
+     * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
      */
     protected static function convertToEnumFinalValue($enumValue)
     {
@@ -105,8 +106,8 @@ class ScalarEnum extends StrictObject implements Enum
     /**
      * @param mixed $enumValue
      * @param mixed $namespace
-     *
      * @return Enum
+     * @throws \Doctrineum\Scalar\Exceptions\EnumIsNotBuilt
      */
     protected static function getBuiltEnum($enumValue, $namespace)
     {
@@ -123,13 +124,20 @@ class ScalarEnum extends StrictObject implements Enum
 
     /**
      * @param string|int|float|bool $finalEnumValue
-     *
      * @return ScalarEnum
+     * @throws \Doctrineum\Scalar\Exceptions\CanNotCreateInstanceOfAbstractEnum
+     * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
      */
     protected static function createByValue($finalEnumValue)
     {
         if (!is_scalar($finalEnumValue)) {
             throw new Exceptions\UnexpectedValueToEnum('Expected scalar, got ' . gettype($finalEnumValue));
+        }
+        $reflection = new \ReflectionClass(static::getClass());
+        if ($reflection->isAbstract()) {
+            throw new Exceptions\CanNotCreateInstanceOfAbstractEnum(
+                'Can not create instance of enum ' . self::getClass() . '. Have you forget to register a descendant or sub-type?'
+            );
         }
 
         return new static($finalEnumValue);

@@ -2,6 +2,11 @@
 namespace Doctrineum\Tests\Scalar;
 
 use Doctrineum\Scalar\ScalarEnum;
+use Doctrineum\Tests\Scalar\Helpers\TestInheritedScalarEnum;
+use Doctrineum\Tests\Scalar\Helpers\TestInvalidExistingScalarEnumUsage;
+use Doctrineum\Tests\Scalar\Helpers\TestInvalidScalarEnumValue;
+use Doctrineum\Tests\Scalar\Helpers\TestOfAbstractScalarEnum;
+use Doctrineum\Tests\Scalar\Helpers\WithToStringTestObject;
 
 class ScalarEnumTest extends \PHPUnit_Framework_TestCase
 {
@@ -173,7 +178,7 @@ class ScalarEnumTest extends \PHPUnit_Framework_TestCase
      */
     public function using_invalid_value_without_casting_cause_exception()
     {
-        TestInvalidScalarEnumValueTest::getEnum(new \stdClass());
+        TestInvalidScalarEnumValue::getEnum(new \stdClass());
     }
 
     /**
@@ -184,52 +189,13 @@ class ScalarEnumTest extends \PHPUnit_Framework_TestCase
     {
         ScalarEnum::getEnum(null);
     }
-}
 
-/** inner */
-class TestInvalidExistingScalarEnumUsage extends ScalarEnum
-{
-    private static $forceAdding = false;
-    private static $forceGetting = false;
-
-    public static function forceAdding($force = true)
+    /**
+     * @test
+     * @expectedException \Doctrineum\Scalar\Exceptions\CanNotCreateInstanceOfAbstractEnum
+     */
+    public function I_am_stopped_by_exception_if_trying_to_create_abstract_enum()
     {
-        self::$forceAdding = $force;
-    }
-
-    public static function forceGetting($force = true)
-    {
-        self::$forceGetting = $force;
-    }
-
-    protected static function getEnumFromNamespace($enumValue, $namespace)
-    {
-        $finalValue = static::convertToEnumFinalValue($enumValue);
-        if (self::$forceAdding) {
-            static::addBuiltEnum(static::createByValue($finalValue), $namespace);
-        }
-
-        if (self::$forceGetting) {
-            return static::getBuiltEnum($finalValue, $namespace);
-        }
-
-        return null;
-    }
-
-}
-
-/** inner */
-class TestInheritedScalarEnum extends ScalarEnum
-{
-
-}
-
-class TestInvalidScalarEnumValueTest extends ScalarEnum
-{
-
-    protected static function convertToEnumFinalValue($value)
-    {
-        // intentionally no conversion at all
-        return $value;
+        TestOfAbstractScalarEnum::getEnum('foo');
     }
 }

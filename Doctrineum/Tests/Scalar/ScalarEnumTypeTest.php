@@ -10,6 +10,7 @@ use Doctrineum\Tests\Scalar\Helpers\EnumTypes\EnumWithSubNamespaceType;
 use Doctrineum\Tests\Scalar\Helpers\EnumTypes\IShouldHaveTypeWordOnEnd;
 use Doctrineum\Tests\Scalar\Helpers\EnumTypes\WithoutEnumIsThisType;
 use Doctrineum\Tests\Scalar\Helpers\EnumWithSubNamespace;
+use Doctrineum\Tests\Scalar\Helpers\WithToStringTestObject;
 
 class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
 {

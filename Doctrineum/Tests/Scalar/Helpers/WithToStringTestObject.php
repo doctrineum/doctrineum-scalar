@@ -1,5 +1,5 @@
 <?php
-namespace Doctrineum\Tests\Scalar;
+namespace Doctrineum\Tests\Scalar\Helpers;
 
 class WithToStringTestObject
 {
