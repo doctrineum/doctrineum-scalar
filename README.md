@@ -15,7 +15,7 @@ For default custom types see the [official documentation as well](http://doctrin
 3. [Map property as an enum](#map-property-as-an-enum)
 4. [Create enum](#create-enum)
 5. [Register subtype enum](#register-subtype-enum)
-6. [NULL is still an enum class](#null-is-still-an-enum-class)
+6. [NULL is NULL, not Enum](#null-is-null-not-enum)
 7. [Understand the basics](#understand-the-basics)
 8. [Exceptions philosophy](#exceptions-philosophy)
 
@@ -96,11 +96,8 @@ $byRegexpDeterminedEnum = $ScalarEnumType->convertToPHPValue('And now get me dif
 get_class($byRegexpDeterminedEnum) === '\Foo\Bar\YourEnum'; // true
 ```
 
-### NULL is still an enum class
-You can create ScalarEnum with NULL value, persist it (in database it will be simple as a NULL) and fetch it again
- and you will get ScalarEnum with NULL again. Not just NULL.
-So again, **any** NULL value on place of ScalarEnum is converted to ScalarEnum with NULL.
-Even not-set-at-all enums are after persist-flush-fetch built as ScalarEnum with NULL inside.
+### NULL is NULL, not Enum
+You can not create ScalarEnum with NULL value. Just use NULL directly for such column value.
 
 Beware on using subtypes only with main enum as an abstract class. You have to resolve database-NULL-to-PHP-value conversion,
 or register subtype for NULL value, otherwise fatal error by abstract class instance creation occurs.

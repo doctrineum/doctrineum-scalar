@@ -232,11 +232,13 @@ class ScalarEnumType extends Type
      * @param string|int|float|bool|null $value
      * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
      *
-     * @return ScalarEnum
+     * @return ScalarEnum|null
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        return $this->convertToEnum($value);
+        return $value === null
+            ? null
+            : $this->convertToEnum($value);
     }
 
     /**

@@ -17,12 +17,12 @@ class ScalarEnum extends StrictObject implements Enum
     private static $builtEnums = [];
 
     /**
-     * @var string|int|float|bool|null
+     * @var string|int|float|bool
      */
     protected $enumValue;
 
     /**
-     * @param bool|float|int|string|null|object $enumValue
+     * @param bool|float|int|string|object $enumValue
      */
     public function __construct($enumValue)
     {
@@ -30,31 +30,21 @@ class ScalarEnum extends StrictObject implements Enum
     }
 
     /**
-     * @param bool|float|int|string|null|object $enumValue
+     * @param bool|float|int|string|object $enumValue
      *
-     * @return string|float|int|null
+     * @return string|float|int
      */
     protected static function convertToEnumFinalValue($enumValue)
     {
-        return static::convertToScalarOrNull($enumValue);
-    }
-
-    /**
-     * @param bool|float|int|string|null|object $enumValue
-     *
-     * @return string|float|int|null
-     */
-    protected static function convertToScalarOrNull($enumValue)
-    {
         try {
-            return ToScalar::toScalar($enumValue);
+            return ToScalar::toScalar($enumValue, true /* strict */);
         } catch (\Granam\Scalar\Tools\Exceptions\WrongParameterType $exception) {
             throw new Exceptions\UnexpectedValueToEnum($exception->getMessage(), $exception->getCode(), $exception);
         }
     }
 
     /**
-     * @param bool|float|int|string|null|object $enumValue
+     * @param bool|float|int|string|object $enumValue
      *
      * @return ScalarEnum
      */
@@ -132,14 +122,14 @@ class ScalarEnum extends StrictObject implements Enum
     }
 
     /**
-     * @param string|int|float|bool|null $finalEnumValue
+     * @param string|int|float|bool $finalEnumValue
      *
      * @return ScalarEnum
      */
     protected static function createByValue($finalEnumValue)
     {
-        if (!is_scalar($finalEnumValue) && !is_null($finalEnumValue)) {
-            throw new Exceptions\UnexpectedValueToEnum('Expected scalar or null, got ' . gettype($finalEnumValue));
+        if (!is_scalar($finalEnumValue)) {
+            throw new Exceptions\UnexpectedValueToEnum('Expected scalar, got ' . gettype($finalEnumValue));
         }
 
         return new static($finalEnumValue);
@@ -154,7 +144,7 @@ class ScalarEnum extends StrictObject implements Enum
     }
 
     /**
-     * @return string (null is casted into empty string!)
+     * @return string
      * @see getValue()
      */
     public function __toString()
@@ -163,7 +153,7 @@ class ScalarEnum extends StrictObject implements Enum
     }
 
     /**
-     * @return string|int|float|bool|null
+     * @return string|int|float|bool
      */
     public function getValue()
     {

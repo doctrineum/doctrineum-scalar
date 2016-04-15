@@ -175,6 +175,15 @@ class ScalarEnumTest extends \PHPUnit_Framework_TestCase
     {
         TestInvalidScalarEnumValueTest::getEnum(new \stdClass());
     }
+
+    /**
+     * @test
+     * @expectedException \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
+     */
+    public function I_can_not_create_it_with_null()
+    {
+        ScalarEnum::getEnum(null);
+    }
 }
 
 /** inner */
@@ -207,10 +216,6 @@ class TestInvalidExistingScalarEnumUsage extends ScalarEnum
         return null;
     }
 
-    protected function getInheritedEnum($value)
-    {
-        return new TestInheritedScalarEnum($value);
-    }
 }
 
 /** inner */

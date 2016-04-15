@@ -161,26 +161,11 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
      * @test
      * @depends instance_can_be_obtained
      */
-    public function null_to_php_value_creates_enum_with_null_value(ScalarEnumType $enumType)
+    public function Null_from_database_gives_null(ScalarEnumType $enumType)
     {
-
         $platform = $this->getPlatform();
-        $enum = $enumType->convertToPHPValue(null, $platform);
-        self::assertInstanceOf($this->getRegisteredEnumClass(), $enum);
-        self::assertNull($enum->getValue());
+        self::assertNull($enumType->convertToPHPValue(null, $platform));
     }
-
-    /**
-     * @return \Doctrineum\Scalar\ScalarEnum
-     */
-    protected function getRegisteredEnumClass()
-    {
-        return ScalarEnum::class;
-    }
-
-    /**
-     * conversion to PHP tests
-     */
 
     /**
      * @param ScalarEnumType $enumType
@@ -195,6 +180,18 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
         $enum = $enumType->convertToPHPValue($string = 'foo', $platform);
         self::assertInstanceOf($this->getRegisteredEnumClass(), $enum);
         self::assertSame($string, $enum->getValue());
+    }
+
+    /**
+     * conversion to PHP tests
+     */
+
+    /**
+     * @return \Doctrineum\Scalar\ScalarEnum
+     */
+    protected function getRegisteredEnumClass()
+    {
+        return ScalarEnum::class;
     }
 
     /**
