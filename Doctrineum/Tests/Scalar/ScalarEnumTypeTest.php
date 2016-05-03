@@ -423,8 +423,12 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
      */
     public function I_can_register_subtype(ScalarEnumType $enumType)
     {
-        self::assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), '~foo~'));
+        self::assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), $regexp = '~foo~'));
         self::assertTrue($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
+
+        self::assertFalse($enumType::registerSubTypeEnum($this->getSubTypeEnumClass(), $regexp));
+        self::assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass()));
+        self::assertTrue($enumType::registerSubTypeEnum($this->getSubTypeEnumClass(), $regexp));
 
         return $enumType;
     }
@@ -447,7 +451,7 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
      * @test
      * @depends I_can_register_subtype
      */
-    public function can_remove_subtype(ScalarEnumType $enumType)
+    public function I_can_remove_subtype(ScalarEnumType $enumType)
     {
         /**
          * The subtype is unregistered because of tearDown clean up
@@ -536,6 +540,26 @@ class ScalarEnumTypeTest extends \PHPUnit_Framework_TestCase
         self::assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), '~foo~'));
         // registering twice - should thrown an exception
         $enumType::addSubTypeEnum($this->getSubTypeEnumClass(), '~foo~');
+    }
+
+    /**
+     * @param ScalarEnumType $enumType
+     *
+     * @test
+     * @depends instance_can_be_obtained
+     * @expectedException \Doctrineum\Scalar\Exceptions\SubTypeEnumIsAlreadyRegistered
+     * @expectedExceptionMessageRegExp /~foo~.*~bar~/
+     */
+    public function I_can_not_register_same_subtype_by_easy_registrar_with_different_regexp(ScalarEnumType $enumType)
+    {
+        self::assertFalse($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
+        self::assertTrue($enumType::registerSubTypeEnum($this->getSubTypeEnumClass(), '~foo~'));
+        try {
+            self::assertFalse($enumType::registerSubTypeEnum($this->getSubTypeEnumClass(), '~foo~'));
+        } catch (\Exception $exception) {
+            self::fail('No exception expected so far: ' . $exception->getTraceAsString());
+        }
+        $enumType::registerSubTypeEnum($this->getSubTypeEnumClass(), '~bar~');
     }
 
     /**

@@ -27,14 +27,56 @@ class ScalarEnumType extends Type
     /**
      * @param string $subTypeEnumClass
      * @param string $subTypeEnumValueRegexp
+     * @return bool
+     * @throws \Doctrineum\Scalar\Exceptions\SubTypeEnumIsAlreadyRegistered
+     */
+    public static function registerSubTypeEnum($subTypeEnumClass, $subTypeEnumValueRegexp)
+    {
+        if (!static::hasSubTypeEnum($subTypeEnumClass, $subTypeEnumValueRegexp)) {
+            // registering same subtype enum class but with different regexp cause exception in following method
+            return static::addSubTypeEnum($subTypeEnumClass, $subTypeEnumValueRegexp);
+        }
+
+        return false;
+    }
+
+    /**
+     * @param $subTypeClassName
+     * @param string|null $subTypeEnumValueRegexp
      *
      * @return bool
+     */
+    public static function hasSubTypeEnum($subTypeClassName, $subTypeEnumValueRegexp = null)
+    {
+        return
+            isset(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeClassName])
+            && (
+                $subTypeEnumValueRegexp === null
+                || self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeClassName] === $subTypeEnumValueRegexp
+            );
+    }
+
+    /**
+     * @return string
+     */
+    protected static function getSubTypeEnumInnerNamespace()
+    {
+        return get_called_class();
+    }
+
+    /**
+     * @param string $subTypeEnumClass
+     * @param string $subTypeEnumValueRegexp
+     * @return bool
+     * @throws \Doctrineum\Scalar\Exceptions\SubTypeEnumIsAlreadyRegistered
      */
     public static function addSubTypeEnum($subTypeEnumClass, $subTypeEnumValueRegexp)
     {
         if (static::hasSubTypeEnum($subTypeEnumClass)) {
             throw new Exceptions\SubTypeEnumIsAlreadyRegistered(
-                'SubType enum ' . ValueDescriber::describe($subTypeEnumClass) . ' is already registered'
+                'SubType enum ' . ValueDescriber::describe($subTypeEnumClass) . ' is already registered with regexp '
+                . self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeEnumClass]
+                . ' (requested to register with regexp ' . ValueDescriber::describe($subTypeEnumValueRegexp) . ')'
             );
         }
         /**
@@ -45,25 +87,7 @@ class ScalarEnumType extends Type
         static::checkRegexp($subTypeEnumValueRegexp);
         self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeEnumClass] = $subTypeEnumValueRegexp;
 
-        return static::hasSubTypeEnum($subTypeEnumClass);
-    }
-
-    /**
-     * @param $subTypeClassName
-     *
-     * @return bool
-     */
-    public static function hasSubTypeEnum($subTypeClassName)
-    {
-        return isset(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeClassName]);
-    }
-
-    /**
-     * @return string
-     */
-    protected static function getSubTypeEnumInnerNamespace()
-    {
-        return get_called_class();
+        return true;
     }
 
     /**
