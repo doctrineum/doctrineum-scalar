@@ -1,7 +1,7 @@
 <?php
 namespace Doctrineum\Tests\Scalar;
 
-use Doctrineum\Scalar\Enum;
+use Doctrineum\Scalar\ScalarEnumInterface;
 use Granam\Scalar\ScalarInterface;
 
 class EnumTest extends \PHPUnit_Framework_TestCase
@@ -11,7 +11,7 @@ class EnumTest extends \PHPUnit_Framework_TestCase
      */
     public function I_can_use_enum_interface_as_scalar()
     {
-        self::assertTrue(is_a(Enum::class, ScalarInterface::class, true));
+        self::assertTrue(is_a(ScalarEnumInterface::class, ScalarInterface::class, true));
     }
 
     /**
@@ -19,7 +19,7 @@ class EnumTest extends \PHPUnit_Framework_TestCase
      */
     public function I_got_enums_comparison_method()
     {
-        $enumReflection = new \ReflectionClass(Enum::class);
+        $enumReflection = new \ReflectionClass(ScalarEnumInterface::class);
         $isMethod = $enumReflection->getMethod('is');
         $parameters = $isMethod->getParameters();
         self::assertCount(1, $parameters);

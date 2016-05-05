@@ -28,6 +28,9 @@ class ScalarEnumType extends Type
      * @param string $subTypeEnumValueRegexp
      * @return bool
      * @throws \Doctrineum\Scalar\Exceptions\SubTypeEnumIsAlreadyRegistered
+     * @throws \Doctrineum\Scalar\Exceptions\SubTypeEnumClassNotFound
+     * @throws \Doctrineum\Scalar\Exceptions\SubTypeEnumHasToBeEnum
+     * @throws \Doctrineum\Scalar\Exceptions\InvalidRegexpFormat
      */
     public static function registerSubTypeEnum($subTypeEnumClass, $subTypeEnumValueRegexp)
     {
@@ -68,6 +71,9 @@ class ScalarEnumType extends Type
      * @param string $subTypeEnumValueRegexp
      * @return bool
      * @throws \Doctrineum\Scalar\Exceptions\SubTypeEnumIsAlreadyRegistered
+     * @throws \Doctrineum\Scalar\Exceptions\SubTypeEnumClassNotFound
+     * @throws \Doctrineum\Scalar\Exceptions\SubTypeEnumHasToBeEnum
+     * @throws \Doctrineum\Scalar\Exceptions\InvalidRegexpFormat
      */
     public static function addSubTypeEnum($subTypeEnumClass, $subTypeEnumValueRegexp)
     {
@@ -91,6 +97,8 @@ class ScalarEnumType extends Type
 
     /**
      * @param string $subTypeClassName
+     * @throws \Doctrineum\Scalar\Exceptions\SubTypeEnumClassNotFound
+     * @throws \Doctrineum\Scalar\Exceptions\SubTypeEnumHasToBeEnum
      */
     protected static function checkIfKnownEnum($subTypeClassName)
     {
@@ -108,6 +116,7 @@ class ScalarEnumType extends Type
 
     /**
      * @param string $regexp
+     * @throws \Doctrineum\Scalar\Exceptions\InvalidRegexpFormat
      */
     protected static function checkRegexp($regexp)
     {
@@ -126,41 +135,50 @@ class ScalarEnumType extends Type
      */
     public static function registerSelf()
     {
-        if (static::hasType(static::getTypeName())) {
-            static::checkRegisteredType();
+        $name = self::getTypeName();
+        if (static::hasType($name)) {
+            static::checkRegisteredType($name);
 
             return false;
         }
 
-        static::addType(static::getTypeName(), get_called_class());
+        static::addType($name, get_called_class());
 
         return true;
     }
 
     /**
+     * @return string
+     */
+    protected static function getTypeName()
+    {
+        $reflection = new \ReflectionClass(static::class);
+        /** @var ScalarEnumType $scalarEnumType */
+        $scalarEnumType = $reflection->newInstanceWithoutConstructor();
+
+        return $scalarEnumType->getName();
+    }
+
+    /**
      * Gets the strongly recommended name of this type.
      * Its used at @see \Doctrine\DBAL\Platforms\AbstractPlatform::getDoctrineTypeComment
-     * @see getName
+     *
+     * Note: also PhpStorm use it for click-through via @Column(type="foo-bar") notation,
+     * if and only if is the value a constant (direct return of a string or constant).
      *
      * @return string
      */
-    public static function getTypeName()
+    public function getName()
     {
-        // Doctrineum\Scalar\EnumType = EnumType
-        $baseClassName = preg_replace('~(\w+\\\)*(\w+)~', '$2', get_called_class());
-        // EnumType = Enum
-        $baseTypeName = preg_replace('~Type$~', '', $baseClassName);
-
-        // FooBarEnum = Foo_Bar_Enum = foo_bar_enum
-        return strtolower(preg_replace('~(\w)([A-Z])~', '$1_$2', $baseTypeName));
+        return self::SCALAR_ENUM;
     }
 
-    protected static function checkRegisteredType()
+    protected static function checkRegisteredType($typeName)
     {
-        $alreadyRegisteredType = static::getType(static::getTypeName());
+        $alreadyRegisteredType = static::getType($typeName);
         if (get_class($alreadyRegisteredType) !== get_called_class()) {
             throw new Exceptions\TypeNameOccupied(
-                'Under type of name ' . ValueDescriber::describe(static::getTypeName()) .
+                'Under type of name ' . ValueDescriber::describe($typeName) .
                 ' is already registered different type ' . get_class($alreadyRegisteredType)
             );
         }
@@ -174,13 +192,13 @@ class ScalarEnumType extends Type
      */
     public static function isRegistered()
     {
-        return static::hasType(static::getTypeName());
+        return static::hasType(self::getTypeName());
     }
 
     /**
      * @param $subTypeEnumClass
-     *
      * @return bool
+     * @throws \Doctrineum\Scalar\Exceptions\SubTypeEnumIsNotRegistered
      */
     public static function removeSubTypeEnum($subTypeEnumClass)
     {
@@ -221,7 +239,7 @@ class ScalarEnumType extends Type
     /**
      * Convert enum instance to database string (or null) value
      *
-     * @param Enum $value
+     * @param ScalarEnumInterface $value
      * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
      *
      * @throws Exceptions\UnexpectedValueToDatabaseValue
@@ -232,9 +250,9 @@ class ScalarEnumType extends Type
         if ($value === null) {
             return null;
         }
-        if (!is_object($value) || !is_a($value, Enum::class)) {
+        if (!is_object($value) || !is_a($value, ScalarEnumInterface::class)) {
             throw new Exceptions\UnexpectedValueToDatabaseValue(
-                'Expected NULL or instance of ' . Enum::class . ', got ' . ValueDescriber::describe($value)
+                'Expected NULL or instance of ' . ScalarEnumInterface::class . ', got ' . ValueDescriber::describe($value)
             );
         }
 
@@ -246,12 +264,14 @@ class ScalarEnumType extends Type
      *
      * This does NOT cast non-string scalars into string (integers, floats etc).
      * Even null remains null in returned Enum.
-     * (But saving the value into database and pulling it back probably will.)
+     * (But saving the value into database and pulling it back probably will do the to-string conversion)
      *
      * @param string|int|float|bool|null $value
      * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
-     *
      * @return ScalarEnum|null
+     * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
+     * @throws \Doctrineum\Scalar\Exceptions\CouldNotDetermineEnumClass
+     * @throws \Doctrineum\Scalar\Exceptions\EnumClassNotFound
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
@@ -264,6 +284,8 @@ class ScalarEnumType extends Type
      * @param $enumValue
      * @return ScalarEnum
      * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
+     * @throws \Doctrineum\Scalar\Exceptions\CouldNotDetermineEnumClass
+     * @throws \Doctrineum\Scalar\Exceptions\EnumClassNotFound
      */
     protected function convertToEnum($enumValue)
     {
@@ -287,10 +309,12 @@ class ScalarEnumType extends Type
     /**
      * @param int|float|string|null $enumValue
      * @return string|ScalarEnum Enum class absolute name
+     * @throws \Doctrineum\Scalar\Exceptions\CouldNotDetermineEnumClass
+     * @throws \Doctrineum\Scalar\Exceptions\EnumClassNotFound
      */
     protected static function getEnumClass($enumValue)
     {
-        if (!isset(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()])
+        if (!array_key_exists(static::getSubTypeEnumInnerNamespace(), self::$subTypeEnums)
             || !count(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()])
         ) {
             // no subtype is registered at all
@@ -309,6 +333,8 @@ class ScalarEnumType extends Type
 
     /**
      * @return string
+     * @throws \Doctrineum\Scalar\Exceptions\CouldNotDetermineEnumClass
+     * @throws \Doctrineum\Scalar\Exceptions\EnumClassNotFound
      */
     protected static function getDefaultEnumClass()
     {
@@ -327,20 +353,6 @@ class ScalarEnumType extends Type
         }
 
         throw new Exceptions\EnumClassNotFound('Default enum class not found for enum type ' . self::getClass());
-    }
-
-    /**
-     * Gets the strongly recommended name of this type.
-     * Its used at @see \Doctrine\DBAL\Platforms\AbstractPlatform::getDoctrineTypeComment
-     *
-     * Note: also PhpStorm can use it for click-through via @Column(type="foo-bar") notation,
-     * if and only if is the name value a constant value (direct return of a string or constant).
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return self::SCALAR_ENUM;
     }
 
     /**
