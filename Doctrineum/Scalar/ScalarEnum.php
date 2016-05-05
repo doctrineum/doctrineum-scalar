@@ -7,7 +7,7 @@ use Granam\Strict\Object\StrictObject;
 /**
  * Inspired by @link http://github.com/marc-mabe/php-enum
  */
-class ScalarEnum extends StrictObject implements Enum
+class ScalarEnum extends StrictObject implements ScalarEnumInterface
 {
     /**
      * @var ScalarEnum[]
@@ -78,12 +78,12 @@ class ScalarEnum extends StrictObject implements Enum
     }
 
     /**
-     * @param Enum $enum
+     * @param ScalarEnumInterface $enum
      * @param mixed $namespace
      *
      * @throws Exceptions\EnumIsAlreadyBuilt
      */
-    protected static function addBuiltEnum(Enum $enum, $namespace)
+    protected static function addBuiltEnum(ScalarEnumInterface $enum, $namespace)
     {
         $namespaceKey = self::createKey($namespace);
         $enumKey = self::createKey($enum->getValue());
@@ -104,7 +104,7 @@ class ScalarEnum extends StrictObject implements Enum
     /**
      * @param mixed $enumValue
      * @param mixed $namespace
-     * @return Enum
+     * @return ScalarEnumInterface
      * @throws \Doctrineum\Scalar\Exceptions\EnumIsNotBuilt
      */
     protected static function getBuiltEnum($enumValue, $namespace)
@@ -170,11 +170,11 @@ class ScalarEnum extends StrictObject implements Enum
      * Doctrineum enums are intentionally not final, but should not be compared by just a value.
      * Use $enum1 === $enum2 or $enum1->is($enum2) for equality of different instances.
      * Think twice before suppressing $sameClassOnly condition, because ArticleTypeEnum->getValue == RoleEnum->getValue is true.
-     * @param Enum $enum
+     * @param ScalarEnumInterface $enum
      * @param bool $sameClassOnly = false
      * @return bool
      */
-    public function is(Enum $enum, $sameClassOnly = true)
+    public function is(ScalarEnumInterface $enum, $sameClassOnly = true)
     {
         return
             $this->getValue() === $enum->getValue()
