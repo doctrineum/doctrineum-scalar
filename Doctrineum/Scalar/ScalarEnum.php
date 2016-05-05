@@ -9,8 +9,6 @@ use Granam\Strict\Object\StrictObject;
  */
 class ScalarEnum extends StrictObject implements Enum
 {
-    const SCALAR_ENUM = 'scalar_enum';
-
     /**
      * @var ScalarEnum[]
      */

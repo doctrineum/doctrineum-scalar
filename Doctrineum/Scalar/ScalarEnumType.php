@@ -17,8 +17,7 @@ class ScalarEnumType extends Type
 {
     use StrictObjectTrait;
 
-    const SCALAR_ENUM = ScalarEnum::SCALAR_ENUM;
-
+    const SCALAR_ENUM = 'scalar_enum';
     /**
      * @var string[][]
      */
@@ -334,11 +333,14 @@ class ScalarEnumType extends Type
      * Gets the strongly recommended name of this type.
      * Its used at @see \Doctrine\DBAL\Platforms\AbstractPlatform::getDoctrineTypeComment
      *
+     * Note: also PhpStorm can use it for click-through via @Column(type="foo-bar") notation,
+     * if and only if is the name value a constant value (direct return of a string or constant).
+     *
      * @return string
      */
     public function getName()
     {
-        return static::getTypeName();
+        return self::SCALAR_ENUM;
     }
 
     /**
