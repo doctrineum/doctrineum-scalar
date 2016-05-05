@@ -7,8 +7,6 @@
 About custom Doctrine types, see the [official documentation](http://doctrine-orm.readthedocs.org/en/latest/cookbook/custom-mapping-types.html).
 For default types see the [official documentation as well](http://doctrine-dbal.readthedocs.org/en/latest/reference/types.html).
 
-#### Requires PHP 5.4
-
 ## <span id="usage">Usage</span>
 1. [Installation](#installation)
 2. [Custom type registration](#custom-type-registration)
@@ -20,7 +18,11 @@ For default types see the [official documentation as well](http://doctrine-dbal.
 8. [Exceptions philosophy](#exceptions-philosophy)
 
 ### <span id="installation">Installation</span>
-Edit composer.json at your project, add
+```bash
+composer.phar require doctrineum/scalar
+```
+
+or manually edit composer.json at your project and `"require":` block (extend existing)
 ```json
     "require": {
         "doctrineum/scalar": "dev-master"
@@ -28,6 +30,21 @@ Edit composer.json at your project, add
 ```
 
 ### Custom type registration
+
+By helper method
+```php
+ScalarEnum::registerSelf(); // quick self-registration
+```
+
+Or manually using "magic" [class::class constant](http://php.net/manual/en/language.oop5.basic.php#language.oop5.basic.class.class)
+```php
+use Doctrineum\Scalar\ScalarEnumType;
+// ...
+Type::addType(ScalarEnumType::getTypeName(), ScalarEnumType::class);
+Type::addType(BarScalarEnumType::getTypeName(), BarScalarEnumType::class);
+```
+
+Or manually by old fashion way
 
 ```php
 <?php
@@ -41,19 +58,7 @@ Type::addType(ScalarEnumType::getTypeName(), '\Doctrineum\ScalarEnumType');
 Type::addType(BarScalarEnumType::getTypeName(), '\Foo\BarScalarEnumType');
 ```
 
-Or better with PHP [5.5+](http://php.net/manual/en/language.oop5.basic.php#language.oop5.basic.class.class)
-```php
-// ...
-Type::addType(ScalarEnumType::getTypeName(), ScalarEnumType::class);
-Type::addType(BarScalarEnumType::getTypeName(), BarScalarEnumType::class);
-```
-
-Or just by helper method
-```php
-ScalarEnum::registerSelf(); // quick self-registration
-```
-
-For Symfony2 using the config is the best approach
+Or if your project uses Symfony2
 ```yaml
 # app/config/config.yml
 doctrine:
@@ -61,7 +66,7 @@ doctrine:
         # ...
         types:
             scalar_enum: Doctrineum\Scalar\ScalarEnumType
-            baz: Foo\BarScalarEnumType
+            bar: Foo\BarScalarEnumType
             #...
 ```
 
@@ -79,31 +84,28 @@ class Foo
 ```php
 <?php
 use Doctrineum\Scalar\ScalarEnum;
-$enum = \Doctrineum\Scalar\ScalarEnum::getEnum('foo bar');
+$enum = ScalarEnum::getEnum('foo bar');
 ```
 
 ### Register subtype enum
-You can register infinite number of enums, which are used according to a regexp of your choice.
+You can register infinite number of enums, which are built according to a regexp of your choice.
 ```php
 <?php
 use Doctrineum\Scalar\ScalarEnumType;
-ScalarEnumType::addSubTypeEnum('\Foo\Bar\YourEnum', '~get me different enum for this value~');
+ScalarEnumType::addSubTypeEnum('\Foo\Bar\YourSubTypeEnum', '~get me different enum for this value~');
 // ...
 $enum = $ScalarEnumType->convertToPHPValue('foo');
 get_class($enum) === '\Doctrineum\Scalar\ScalarEnum'; // true
-get_class($enum) === '\Foo\Bar\YourEnum'; // false
+get_class($enum) === '\Foo\Bar\YourSubTypeEnum'; // false
 $byRegexpDeterminedEnum = $ScalarEnumType->convertToPHPValue('And now get me different enum for this value.');
-get_class($byRegexpDeterminedEnum) === '\Foo\Bar\YourEnum'; // true
+get_class($byRegexpDeterminedEnum) === '\Foo\Bar\YourSubTypeEnum'; // true
 ```
 
-### NULL is NULL, not Enum
+### NULL is NULL, Enum can not hold it
 You can not create ScalarEnum with NULL value. Just use NULL directly for such column value.
 
-Beware on using subtypes only with main enum as an abstract class. You have to resolve database-NULL-to-PHP-value conversion,
-or register subtype for NULL value, otherwise fatal error by abstract class instance creation occurs.
-
-Note: more type-specific enums like string enum, integer enum and so have different behaviour.
-They convert null to their primitive type on enum creation, on fetch of NULL from database it remains null.
+Beware on using subtypes only when main enum is an abstract class. You have to resolve from-database-NULL->to-PHP-value conversion,
+or register subtype explicitly for NULL value (empty string respectively), otherwise fatal error by abstract class instance creation occurs.
 
 #### Understand the basics
 There are two roles - the factory and the value.
