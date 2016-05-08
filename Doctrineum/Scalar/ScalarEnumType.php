@@ -2,20 +2,15 @@
 namespace Doctrineum\Scalar;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\Type;
+use Doctrineum\SelfRegisteringType\AbstractSelfRegisteringType;
 use Granam\Scalar\Tools\ToScalar;
 use Granam\Tools\ValueDescriber;
-use Granam\Strict\Object\StrictObjectTrait;
 
 /**
- * Class EnumType
- * @package Doctrineum\Scalar
  * @method static ScalarEnumType getType($name),
- * @see Type::getType
  */
-class ScalarEnumType extends Type
+class ScalarEnumType extends AbstractSelfRegisteringType
 {
-    use StrictObjectTrait;
 
     const SCALAR_ENUM = 'scalar_enum';
     /**
@@ -130,72 +125,6 @@ class ScalarEnumType extends Type
     }
 
     /**
-     * @return bool If enum has not been registered before and was registered now
-     * @throws \Doctrine\DBAL\DBALException
-     */
-    public static function registerSelf()
-    {
-        $name = self::getTypeName();
-        if (static::hasType($name)) {
-            static::checkRegisteredType($name);
-
-            return false;
-        }
-
-        static::addType($name, get_called_class());
-
-        return true;
-    }
-
-    /**
-     * @return string
-     */
-    protected static function getTypeName()
-    {
-        $reflection = new \ReflectionClass(static::class);
-        /** @var ScalarEnumType $scalarEnumType */
-        $scalarEnumType = $reflection->newInstanceWithoutConstructor();
-
-        return $scalarEnumType->getName();
-    }
-
-    /**
-     * Gets the strongly recommended name of this type.
-     * Its used at @see \Doctrine\DBAL\Platforms\AbstractPlatform::getDoctrineTypeComment
-     *
-     * Note: also PhpStorm use it for click-through via @Column(type="foo-bar") notation,
-     * if and only if is the value a constant (direct return of a string or constant).
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return self::SCALAR_ENUM;
-    }
-
-    protected static function checkRegisteredType($typeName)
-    {
-        $alreadyRegisteredType = static::getType($typeName);
-        if (get_class($alreadyRegisteredType) !== get_called_class()) {
-            throw new Exceptions\TypeNameOccupied(
-                'Under type of name ' . ValueDescriber::describe($typeName) .
-                ' is already registered different type ' . get_class($alreadyRegisteredType)
-            );
-        }
-    }
-
-    /**
-     * Finds out if current type is already in registry
-     *
-     * @return bool
-     * @throws \Doctrine\DBAL\DBALException
-     */
-    public static function isRegistered()
-    {
-        return static::hasType(self::getTypeName());
-    }
-
-    /**
      * @param $subTypeEnumClass
      * @return bool
      * @throws \Doctrineum\Scalar\Exceptions\SubTypeEnumIsNotRegistered
@@ -211,6 +140,20 @@ class ScalarEnumType extends Type
         unset(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeEnumClass]);
 
         return !static::hasSubTypeEnum($subTypeEnumClass);
+    }
+
+    /**
+     * Gets the strongly recommended name of this type.
+     * Its used at @see \Doctrine\DBAL\Platforms\AbstractPlatform::getDoctrineTypeComment
+     *
+     * Note: also PhpStorm use it for click-through via @Column(type="foo-bar") notation,
+     * if and only if is the value a constant (direct return of a string or constant).
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return self::SCALAR_ENUM;
     }
 
     /**

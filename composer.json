@@ -28,7 +28,8 @@
     "doctrine/dbal": "~2.4",
     "granam/strict-object": "dev-master",
     "granam/scalar": "dev-master",
-    "granam/tools": "dev-master"
+    "granam/tools": "dev-master",
+    "doctrineum/self-registering-type": "dev-master"
   },
   "require-dev": {
     "phpunit/phpunit": "~4.4",

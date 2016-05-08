@@ -11,8 +11,9 @@ use Doctrineum\Tests\Scalar\Helpers\EnumTypes\IShouldHaveTypeKeywordOnEnd;
 use Doctrineum\Tests\Scalar\Helpers\EnumTypes\WithoutEnumIsThisType;
 use Doctrineum\Tests\Scalar\Helpers\EnumWithSubNamespace;
 use Doctrineum\Tests\Scalar\Helpers\WithToStringTestObject;
+use Doctrineum\Tests\SelfRegisteringType\AbstractSelfRegisteringTypeTest;
 
-class ScalarEnumTypeTest extends AbstractTypeTest
+class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 {
     /**
      * @test
@@ -39,7 +40,6 @@ class ScalarEnumTypeTest extends AbstractTypeTest
     {
         $typeClass = $this->getTypeClass();
         self::assertTrue(Type::hasType($this->getExpectedTypeName()));
-        self::assertTrue($typeClass::isRegistered());
         self::assertFalse($typeClass::registerSelf());
     }
 
@@ -370,6 +370,18 @@ class ScalarEnumTypeTest extends AbstractTypeTest
     }
 
     /**
+     * @return string|TestSubTypeScalarEnum
+     */
+    protected function getSubTypeEnumClass()
+    {
+        return TestSubTypeScalarEnum::getClass();
+    }
+
+    /**
+     * SUBTYPE TESTS
+     */
+
+    /**
      * @param ScalarEnumType $enumType
      *
      * @test
@@ -386,10 +398,6 @@ class ScalarEnumTypeTest extends AbstractTypeTest
         self::assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass()));
         self::assertFalse($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
     }
-
-    /**
-     * SUBTYPE TESTS
-     */
 
     /**
      * @param ScalarEnumType $enumType
@@ -532,34 +540,6 @@ class ScalarEnumTypeTest extends AbstractTypeTest
 
     /**
      * @test
-     *
-     * @depends I_can_register_it
-     */
-    public function I_can_register_another_enum_type()
-    {
-        $anotherEnumType = $this->getAnotherEnumTypeClass();
-        if (!$anotherEnumType::isRegistered()) {
-            self::assertTrue($anotherEnumType::registerSelf());
-        } else {
-            self::assertFalse($anotherEnumType::registerSelf());
-        }
-
-        self::assertTrue($anotherEnumType::isRegistered());
-        self::assertTrue(Type::hasType(TestAnotherScalarEnumType::DIFFERENT_NAME));
-    }
-
-    /**
-     * @return string|TestAnotherScalarEnumType
-     */
-    protected function getAnotherEnumTypeClass()
-    {
-        return TestAnotherScalarEnumType::getClass();
-    }
-
-    /**
-     * @test
-     *
-     * @depends I_can_register_another_enum_type
      */
     public function different_types_with_same_subtype_regexp_distinguish_them()
     {
@@ -585,6 +565,7 @@ class ScalarEnumTypeTest extends AbstractTypeTest
         self::assertInstanceOf($this->getSubTypeEnumClass(), $enumSubType);
         self::assertSame($value, "$enumSubType");
 
+        TestAnotherScalarEnumType::registerSelf();
         $anotherEnumType = Type::getType(TestAnotherScalarEnumType::DIFFERENT_NAME);
         $anotherEnumSubType = $anotherEnumType->convertToPHPValue($value, $this->getPlatform());
         self::assertInstanceOf($this->getSubTypeEnumClass(), $enumSubType);
@@ -592,6 +573,14 @@ class ScalarEnumTypeTest extends AbstractTypeTest
 
         // registered sub-types were different, just regexp was the same - let's test if they are kept separately
         self::assertNotSame($enumSubType, $anotherEnumSubType);
+    }
+
+    /**
+     * @return string|TestAnotherScalarEnumType
+     */
+    protected function getAnotherEnumTypeClass()
+    {
+        return TestAnotherScalarEnumType::getClass();
     }
 
     /**
@@ -657,16 +646,6 @@ class ScalarEnumTypeTest extends AbstractTypeTest
     }
 
     /**
-     * @test
-     * @depends I_can_register_it
-     * @expectedException \Doctrineum\Scalar\Exceptions\TypeNameOccupied
-     */
-    public function I_can_not_silently_rewrite_type_by_same_name()
-    {
-        IAmUsingOccupiedName::registerSelf();
-    }
-
-    /**
      * This is called after every test
      */
     protected function tearDown()
@@ -680,14 +659,6 @@ class ScalarEnumTypeTest extends AbstractTypeTest
                 self::assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass()));
             }
         }
-    }
-
-    /**
-     * @return string|TestSubTypeScalarEnum
-     */
-    protected function getSubTypeEnumClass()
-    {
-        return TestSubTypeScalarEnum::getClass();
     }
 
 }
