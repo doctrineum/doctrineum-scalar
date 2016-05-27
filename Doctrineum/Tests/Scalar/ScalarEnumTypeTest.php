@@ -614,6 +614,17 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @test
+     * @depends I_can_register_it
+     * @expectedException \Doctrineum\Scalar\Exceptions\InvalidRegexpFormat
+     * @expectedExceptionMessageRegExp ~null~i
+     */
+    public function I_can_not_add_subtype_with_invalid_regexp()
+    {
+        ScalarEnumType::addSubTypeEnum($this->getSubTypeEnumClass(), null);
+    }
+
+    /**
+     * @test
      */
     public function I_can_use_enum_type_from_sub_namespace()
     {

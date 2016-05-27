@@ -4,6 +4,7 @@ namespace Doctrineum\Scalar;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrineum\SelfRegisteringType\AbstractSelfRegisteringType;
 use Granam\Scalar\Tools\ToScalar;
+use Granam\Scalar\Tools\ToString;
 use Granam\Tools\ValueDescriber;
 
 /**
@@ -49,7 +50,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
             isset(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeClassName])
             && (
                 $subTypeEnumValueRegexp === null
-                || self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeClassName] === $subTypeEnumValueRegexp
+                || self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeClassName] === (string)$subTypeEnumValueRegexp
             );
     }
 
@@ -85,7 +86,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
          */
         static::checkIfKnownEnum($subTypeEnumClass);
         static::checkRegexp($subTypeEnumValueRegexp);
-        self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeEnumClass] = $subTypeEnumValueRegexp;
+        self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeEnumClass] = (string)$subTypeEnumValueRegexp;
 
         return true;
     }
@@ -113,13 +114,22 @@ class ScalarEnumType extends AbstractSelfRegisteringType
      * @param string $regexp
      * @throws \Doctrineum\Scalar\Exceptions\InvalidRegexpFormat
      */
-    protected static function checkRegexp($regexp)
+    private static function checkRegexp($regexp)
     {
-        if (!preg_match('~^(.).*\1$~', $regexp)) {
+        try {
+            $stringRegexp = ToString::toString($regexp);
+        } catch (\Granam\Scalar\Tools\Exceptions\WrongParameterType $invalidRegexp) {
+            throw new Exceptions\InvalidRegexpFormat(
+                'Given regexp is not safely convertible to string: ' . ValueDescriber::describe($regexp),
+                $invalidRegexp->getCode(),
+                $invalidRegexp
+            );
+        }
+        if (!preg_match('~^(.).*\1$~', $stringRegexp)) {
             // the regexp does not start and end with same characters
             throw new Exceptions\InvalidRegexpFormat(
                 'The given regexp is not enclosed by same delimiters and therefore is not valid: '
-                . ValueDescriber::describe($regexp)
+                . ValueDescriber::describe($stringRegexp)
             );
         }
     }
