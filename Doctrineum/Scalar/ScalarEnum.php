@@ -3,6 +3,7 @@ namespace Doctrineum\Scalar;
 
 use Granam\Scalar\Tools\ToScalar;
 use Granam\Strict\Object\StrictObject;
+use Granam\Tools\ValueDescriber;
 
 /**
  * Inspired by @link http://github.com/marc-mabe/php-enum
@@ -134,7 +135,9 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
         $reflection = new \ReflectionClass(static::getClass());
         if ($reflection->isAbstract()) {
             throw new Exceptions\CanNotCreateInstanceOfAbstractEnum(
-                'Can not create instance of enum ' . self::getClass() . '. Have you forget to register a descendant or sub-type?'
+                'Can not create instance of enum ' . self::getClass()
+                . ' (with value ' . ValueDescriber::describe($finalEnumValue) . ').'
+                . ' Have you forget to register a descendant or sub-type?'
             );
         }
 
