@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/jaroslavtyc/doctrineum-scalar.svg?branch=master)](https://travis-ci.org/jaroslavtyc/doctrineum-scalar)
+[![Test Coverage](https://codeclimate.com/github/jaroslavtyc/doctrineum-scalar/badges/coverage.svg)](https://codeclimate.com/github/jaroslavtyc/doctrineum-scalar/coverage)
 [![Latest Stable Version](https://poser.pugx.org/doctrineum/scalar/v/stable.svg)](https://packagist.org/packages/doctrineum/scalar)
 [![License](https://poser.pugx.org/doctrineum/scalar/license.svg)](http://en.wikipedia.org/wiki/MIT_License)
 
