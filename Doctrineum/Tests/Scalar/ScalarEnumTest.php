@@ -21,7 +21,7 @@ class ScalarEnumTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return \Doctrineum\Scalar\ScalarEnum
+     * @return string|\Doctrineum\Scalar\ScalarEnum
      */
     protected function getEnumClass()
     {
@@ -108,17 +108,12 @@ class ScalarEnumTest extends \PHPUnit_Framework_TestCase
 
         $secondEnum = ScalarEnum::getEnum($secondValue = 'bar');
         self::assertFalse($firstEnum->is($secondEnum), 'Same classes with different values should not be equal');
-        self::assertFalse($firstEnum->is($secondEnum, false), 'Same classes with different values should be never equal');
         self::assertFalse($secondEnum->is($firstEnum), 'Same classes with different values should not be equal');
-        self::assertFalse($secondEnum->is($firstEnum, false), 'Same classes with different values should be never equal');
 
         $childEnum = TestInheritedScalarEnum::getEnum($secondValue);
         self::assertFalse($firstEnum->is($childEnum), 'Parent enum should not be equal to its child class');
-        self::assertFalse($firstEnum->is($childEnum, false), 'Parent enum should be never equal to child if values differ');
         self::assertFalse($secondEnum->is($childEnum), 'Parent enum should not be equal to its child even if with same value');
-        self::assertTrue($secondEnum->is($childEnum, false), 'Enums without sibling check should reflect their values equality');
         self::assertFalse($childEnum->is($secondEnum), 'Child enum should not be equal to its parent even if with same value');
-        self::assertTrue($childEnum->is($secondEnum, false), 'Enums without sibling check should reflect their values equality');
     }
 
     /**

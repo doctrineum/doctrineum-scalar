@@ -82,7 +82,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
         }
         /**
          * The class has to be self-registering to by-pass enum and enum type bindings,
-         * @see ScalarEnum::createByValue
+         * @see ScalarEnum::createEnum
          */
         static::checkIfKnownEnum($subTypeEnumClass);
         static::checkRegexp($subTypeEnumValueRegexp);

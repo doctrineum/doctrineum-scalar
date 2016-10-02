@@ -18,15 +18,20 @@ class TestInvalidExistingScalarEnumUsage extends ScalarEnum
         self::$forceGetting = $force;
     }
 
+    /**
+     * @param float|int|string $enumValue
+     * @param string $namespace
+     * @return \Doctrineum\Scalar\ScalarEnumInterface|null
+     */
     protected static function getEnumFromNamespace($enumValue, $namespace)
     {
         $finalValue = static::convertToEnumFinalValue($enumValue);
         if (self::$forceAdding) {
-            static::addBuiltEnum(static::createByValue($finalValue), $namespace);
+            static::addCreatedEnum(static::createEnum($finalValue), $namespace);
         }
 
         if (self::$forceGetting) {
-            return static::getBuiltEnum($finalValue, $namespace);
+            return static::getCreatedEnum($finalValue, $namespace);
         }
 
         return null;

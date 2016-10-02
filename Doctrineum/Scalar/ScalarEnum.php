@@ -1,6 +1,7 @@
 <?php
 namespace Doctrineum\Scalar;
 
+use Granam\Scalar\ScalarInterface;
 use Granam\Scalar\Tools\ToScalar;
 use Granam\Strict\Object\StrictObject;
 use Granam\Tools\ValueDescriber;
@@ -13,7 +14,7 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
     /**
      * @var ScalarEnum[]
      */
-    private static $builtEnums = [];
+    private static $createdEnums = [];
 
     /**
      * @var string|int|float|bool
@@ -21,10 +22,10 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
     protected $enumValue;
 
     /**
-     * @param bool|float|int|string|object $enumValue
-     * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
+     * @param bool|float|int|string|ScalarInterface $enumValue
+     * @throws Exceptions\UnexpectedValueToEnum
      */
-    public function __construct($enumValue)
+    protected function __construct($enumValue)
     {
         $this->enumValue = static::convertToEnumFinalValue($enumValue);
     }
@@ -32,7 +33,7 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
     /**
      * @param bool|float|int|string|object $enumValue
      * @return string|float|int
-     * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
+     * @throws Exceptions\UnexpectedValueToEnum
      */
     protected static function convertToEnumFinalValue($enumValue)
     {
@@ -44,28 +45,40 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
     }
 
     /**
-     * @param bool|float|int|string|object $enumValue
-     *
-     * @return ScalarEnum
+     * @param bool|float|int|string|ScalarInterface $enumValue
+     * @return ScalarEnumInterface
+     * @throws Exceptions\UnexpectedValueToEnum
+     * @throws Exceptions\EnumIsAlreadyBuilt
+     * @throws Exceptions\EnumIsNotBuilt
+     * @throws Exceptions\CanNotCreateInstanceOfAbstractEnum
      */
     public static function getEnum($enumValue)
     {
         return static::getEnumFromNamespace($enumValue, static::getInnerNamespace());
     }
 
+    /**
+     * @param int|float|string $enumValue
+     * @param string $namespace
+     * @return ScalarEnumInterface
+     * @throws Exceptions\UnexpectedValueToEnum
+     * @throws Exceptions\CanNotCreateInstanceOfAbstractEnum
+     */
     protected static function getEnumFromNamespace($enumValue, $namespace)
     {
         $finalEnumValue = static::convertToEnumFinalValue($enumValue);
-        if (!static::hasBuiltEnum($finalEnumValue, $namespace)) {
-            static::addBuiltEnum(static::createByValue($finalEnumValue), $namespace);
+        if (!static::hasCreatedEnum($finalEnumValue, $namespace)) {
+            /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
+            static::addCreatedEnum(static::createEnum($finalEnumValue), $namespace);
         }
 
-        return static::getBuiltEnum($finalEnumValue, $namespace);
+        /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
+        return static::getCreatedEnum($finalEnumValue, $namespace);
     }
 
-    protected static function hasBuiltEnum($enumValue, $namespace)
+    protected static function hasCreatedEnum($enumValue, $namespace)
     {
-        return isset(self::$builtEnums[self::createKey($namespace)][self::createKey($enumValue)]);
+        return isset(self::$createdEnums[self::createKey($namespace)][self::createKey($enumValue)]);
     }
 
     /**
@@ -81,53 +94,53 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
     /**
      * @param ScalarEnumInterface $enum
      * @param mixed $namespace
-     *
      * @throws Exceptions\EnumIsAlreadyBuilt
      */
-    protected static function addBuiltEnum(ScalarEnumInterface $enum, $namespace)
+    protected static function addCreatedEnum(ScalarEnumInterface $enum, $namespace)
     {
         $namespaceKey = self::createKey($namespace);
         $enumKey = self::createKey($enum->getValue());
-        if (isset(self::$builtEnums[$namespaceKey][$enumKey])) {
+        if (isset(self::$createdEnums[$namespaceKey][$enumKey])) {
+            /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
             throw new Exceptions\EnumIsAlreadyBuilt(
                 'Enum of namespace key ' . var_export($namespaceKey, true) . ' and enum key ' . var_export($enumKey, true) .
-                ' is already registered with enum of class ' . get_class(static::getBuiltEnum($enum->getValue(), $namespace))
+                ' is already registered with enum of class ' . get_class(static::getCreatedEnum($enum->getValue(), $namespace))
             );
         }
 
-        if (!isset(self::$builtEnums[$namespaceKey])) {
-            self::$builtEnums[$namespaceKey] = [];
+        if (!array_key_exists($namespaceKey, self::$createdEnums)) {
+            self::$createdEnums[$namespaceKey] = [];
         }
 
-        self::$builtEnums[$namespaceKey][$enumKey] = $enum;
+        self::$createdEnums[$namespaceKey][$enumKey] = $enum;
     }
 
     /**
      * @param mixed $enumValue
      * @param mixed $namespace
      * @return ScalarEnumInterface
-     * @throws \Doctrineum\Scalar\Exceptions\EnumIsNotBuilt
+     * @throws Exceptions\EnumIsNotBuilt
      */
-    protected static function getBuiltEnum($enumValue, $namespace)
+    protected static function getCreatedEnum($enumValue, $namespace)
     {
         $namespaceKey = self::createKey($namespace);
         $enumKey = self::createKey($enumValue);
-        if (!isset(self::$builtEnums[$namespaceKey][$enumKey])) {
+        if (!isset(self::$createdEnums[$namespaceKey][$enumKey])) {
             throw new Exceptions\EnumIsNotBuilt(
                 'Enum of namespace key ' . var_export($namespaceKey, true) . ' and enum key ' . var_export($enumKey, true) . ' is not registered'
             );
         }
 
-        return self::$builtEnums[self::createKey($namespace)][self::createKey($enumValue)];
+        return self::$createdEnums[self::createKey($namespace)][self::createKey($enumValue)];
     }
 
     /**
      * @param string|int|float|bool $finalEnumValue
      * @return ScalarEnum
-     * @throws \Doctrineum\Scalar\Exceptions\CanNotCreateInstanceOfAbstractEnum
-     * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
+     * @throws Exceptions\CanNotCreateInstanceOfAbstractEnum
+     * @throws Exceptions\UnexpectedValueToEnum
      */
-    protected static function createByValue($finalEnumValue)
+    protected static function createEnum($finalEnumValue)
     {
         if (!is_scalar($finalEnumValue)) {
             throw new Exceptions\UnexpectedValueToEnum('Expected scalar, got ' . gettype($finalEnumValue));
