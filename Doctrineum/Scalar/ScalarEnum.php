@@ -31,7 +31,7 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
     }
 
     /**
-     * @param bool|float|int|string|object $enumValue
+     * @param bool|float|int|string|ScalarInterface $enumValue
      * @return string|float|int
      * @throws Exceptions\UnexpectedValueToEnum
      */
@@ -48,8 +48,6 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
      * @param bool|float|int|string|ScalarInterface $enumValue
      * @return ScalarEnumInterface
      * @throws Exceptions\UnexpectedValueToEnum
-     * @throws Exceptions\EnumIsAlreadyBuilt
-     * @throws Exceptions\EnumIsNotBuilt
      * @throws Exceptions\CanNotCreateInstanceOfAbstractEnum
      */
     public static function getEnum($enumValue)
