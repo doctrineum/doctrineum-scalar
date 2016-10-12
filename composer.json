@@ -1,7 +1,7 @@
 {
   "name": "doctrineum/scalar",
   "type": "library",
-  "description": "Enumeration type and value dependent sub-type for Doctrine",
+  "description": "Enumeration types and value dependent sub-types for Doctrine",
   "keywords": [
     "enum",
     "sub-type",
@@ -33,7 +33,8 @@
   },
   "require-dev": {
     "phpunit/phpunit": ">=4.4|>=5.0",
-    "mockery/mockery": "dev-master"
+    "mockery/mockery": "dev-master",
+    "granam/exception-hierarchy": "dev-master"
   },
   "minimum-stability": "dev",
   "prefer-stable": true

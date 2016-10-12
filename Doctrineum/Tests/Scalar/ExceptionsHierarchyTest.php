@@ -15,4 +15,9 @@ class ExceptionsHierarchyTest extends AbstractExceptionsHierarchyTest
         return str_replace('\Tests', '', __NAMESPACE__);
     }
 
+    protected function getExternalRootNamespaces()
+    {
+        return 'Granam\Scalar';
+    }
+
 }
