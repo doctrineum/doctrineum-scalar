@@ -3,6 +3,7 @@ namespace Doctrineum\Scalar;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrineum\SelfRegisteringType\AbstractSelfRegisteringType;
+use Granam\Scalar\ScalarInterface;
 use Granam\Scalar\Tools\ToScalar;
 use Granam\Scalar\Tools\ToString;
 use Granam\Tools\ValueDescriber;
@@ -20,6 +21,8 @@ class ScalarEnumType extends AbstractSelfRegisteringType
     private static $subTypeEnums = [];
 
     /**
+     * You can register a class just once.
+     *
      * @param string $subTypeEnumClass
      * @param string $subTypeEnumValueRegexp
      * @return bool
@@ -59,12 +62,14 @@ class ScalarEnumType extends AbstractSelfRegisteringType
      */
     protected static function getSubTypeEnumInnerNamespace()
     {
-        return get_called_class();
+        return static::class;
     }
 
     /**
+     * Warning: Behave of registering more classes on same regexp (or simply matching same string) is undefined.
+     *
      * @param string $subTypeEnumClass
-     * @param string $subTypeEnumValueRegexp
+     * @param string|ScalarInterface $subTypeEnumValueRegexp
      * @return bool
      * @throws \Doctrineum\Scalar\Exceptions\SubTypeEnumIsAlreadyRegistered
      * @throws \Doctrineum\Scalar\Exceptions\SubTypeEnumClassNotFound
@@ -80,12 +85,9 @@ class ScalarEnumType extends AbstractSelfRegisteringType
                 . ' (requested to register with regexp ' . ValueDescriber::describe($subTypeEnumValueRegexp) . ')'
             );
         }
-        /**
-         * The class has to be self-registering to by-pass enum and enum type bindings,
-         * @see ScalarEnum::createEnum
-         */
+        /** The class has to be self-registering to by-pass enum and enum type bindings, @see ScalarEnum::createEnum */
         static::checkIfKnownEnum($subTypeEnumClass);
-        static::checkRegexp($subTypeEnumValueRegexp);
+        static::checkRegexpValidity($subTypeEnumValueRegexp);
         self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeEnumClass] = (string)$subTypeEnumValueRegexp;
 
         return true;
@@ -114,7 +116,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
      * @param string $regexp
      * @throws \Doctrineum\Scalar\Exceptions\InvalidRegexpFormat
      */
-    private static function checkRegexp($regexp)
+    private static function checkRegexpValidity($regexp)
     {
         try {
             $stringRegexp = ToString::toString($regexp);
@@ -225,6 +227,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
      * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
      * @throws \Doctrineum\Scalar\Exceptions\CouldNotDetermineEnumClass
      * @throws \Doctrineum\Scalar\Exceptions\EnumClassNotFound
+     * @throws \Doctrineum\Scalar\Exceptions\CanNotCreateInstanceOfAbstractEnum
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
@@ -235,10 +238,11 @@ class ScalarEnumType extends AbstractSelfRegisteringType
 
     /**
      * @param $enumValue
-     * @return ScalarEnum
+     * @return ScalarEnum|ScalarEnumInterface
      * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
      * @throws \Doctrineum\Scalar\Exceptions\CouldNotDetermineEnumClass
      * @throws \Doctrineum\Scalar\Exceptions\EnumClassNotFound
+     * @throws \Doctrineum\Scalar\Exceptions\CanNotCreateInstanceOfAbstractEnum
      */
     protected function convertToEnum($enumValue)
     {
@@ -268,7 +272,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
     protected static function getEnumClass($enumValue)
     {
         if (!array_key_exists(static::getSubTypeEnumInnerNamespace(), self::$subTypeEnums)
-            || !count(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()])
+            || count(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()]) === 0
         ) {
             // no subtype is registered at all
             return static::getDefaultEnumClass();
