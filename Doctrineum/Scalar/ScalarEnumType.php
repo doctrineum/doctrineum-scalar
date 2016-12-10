@@ -44,8 +44,8 @@ class ScalarEnumType extends AbstractSelfRegisteringType
     /**
      * @param $subTypeClassName
      * @param string|null $subTypeEnumValueRegexp
-     *
      * @return bool
+     * @throws \Doctrineum\Scalar\Exceptions\InvalidRegexpFormat
      */
     public static function hasSubTypeEnum($subTypeClassName, $subTypeEnumValueRegexp = null)
     {
@@ -53,7 +53,10 @@ class ScalarEnumType extends AbstractSelfRegisteringType
             isset(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeClassName])
             && (
                 $subTypeEnumValueRegexp === null
-                || self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeClassName] === (string)$subTypeEnumValueRegexp
+                || (
+                    self::guardRegexpValid($subTypeEnumValueRegexp)
+                    && self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeClassName] === (string)$subTypeEnumValueRegexp
+                )
             );
     }
 
@@ -87,7 +90,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
         }
         /** The class has to be self-registering to by-pass enum and enum type bindings, @see ScalarEnum::createEnum */
         static::checkIfKnownEnum($subTypeEnumClass);
-        static::checkRegexpValidity($subTypeEnumValueRegexp);
+        static::guardRegexpValid($subTypeEnumValueRegexp);
         self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeEnumClass] = (string)$subTypeEnumValueRegexp;
 
         return true;
@@ -114,9 +117,10 @@ class ScalarEnumType extends AbstractSelfRegisteringType
 
     /**
      * @param string $regexp
+     * @return bool
      * @throws \Doctrineum\Scalar\Exceptions\InvalidRegexpFormat
      */
-    private static function checkRegexpValidity($regexp)
+    private static function guardRegexpValid($regexp)
     {
         try {
             $stringRegexp = ToString::toString($regexp);
@@ -134,6 +138,8 @@ class ScalarEnumType extends AbstractSelfRegisteringType
                 . ValueDescriber::describe($stringRegexp)
             );
         }
+
+        return true;
     }
 
     /**

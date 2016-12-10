@@ -15,6 +15,23 @@ use Doctrineum\Tests\SelfRegisteringType\AbstractSelfRegisteringTypeTest;
 
 class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 {
+
+    /**
+     * This is called after every test
+     */
+    protected function tearDown()
+    {
+        parent::tearDown();
+
+        if (Type::hasType($this->getExpectedTypeName())) {
+            $enumType = Type::getType($this->getExpectedTypeName());
+            /** @var ScalarEnumType $enumType */
+            if ($enumType::hasSubTypeEnum($this->getSubTypeEnumClass())) {
+                self::assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass()));
+            }
+        }
+    }
+
     /**
      * @test
      */
@@ -348,6 +365,8 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
         self::assertTrue($enumType->requiresSQLCommentHint($this->getPlatform()));
     }
 
+    // SUBTYPE TESTS
+
     /**
      * @param ScalarEnumType $enumType
      *
@@ -375,10 +394,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
     {
         return TestSubTypeScalarEnum::getClass();
     }
-
-    /**
-     * SUBTYPE TESTS
-     */
 
     /**
      * @param ScalarEnumType $enumType
@@ -699,21 +714,17 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
     }
 
     /**
-     * This is called after every test
+     * @test
+     * @depends I_can_get_instance
+     * @param ScalarEnumType $enumType
+     * @expectedException  \Doctrineum\Scalar\Exceptions\InvalidRegexpFormat
+     * @expectedExceptionMessageRegExp ~bar~
      */
-    protected function tearDown()
+    public function I_can_not_ask_for_registered_subtype_by_invalid_regexp(ScalarEnumType $enumType)
     {
-        parent::tearDown();
-
-        if (Type::hasType($this->getExpectedTypeName())) {
-            $enumType = Type::getType($this->getExpectedTypeName());
-            /** @var ScalarEnumType $enumType */
-            if ($enumType::hasSubTypeEnum($this->getSubTypeEnumClass())) {
-                self::assertTrue($enumType::removeSubTypeEnum($this->getSubTypeEnumClass()));
-            }
-        }
+        $enumType::addSubTypeEnum($this->getSubTypeEnumClass(), '~foo~');
+        $enumType::hasSubTypeEnum($this->getSubTypeEnumClass(), '~bar'); // intentionally missing trailing tilde
     }
-
 }
 
 /** inner */
