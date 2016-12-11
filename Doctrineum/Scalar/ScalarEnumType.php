@@ -252,21 +252,30 @@ class ScalarEnumType extends AbstractSelfRegisteringType
      */
     protected function convertToEnum($enumValue)
     {
-        try {
-            $enumValue = ToScalar::toScalar($enumValue);
-        } catch (\Granam\Scalar\Tools\Exceptions\WrongParameterType $exception) {
-            throw new Exceptions\UnexpectedValueToEnum(
-                'Unexpected value to convert. Expected scalar or null, got '
-                . ValueDescriber::describe($enumValue),
-                $exception->getCode(),
-                $exception
-            );
-        }
-
+        $enumValue = $this->sanitizeValueForEnum($enumValue);
         // class of main enum or its registered sub-type, according to enum type and current value
         $enumClass = static::getEnumClass($enumValue);
 
         return $enumClass::getEnum($enumValue);
+    }
+
+    /**
+     * @param $valueForEnum
+     * @return float|int|null|string
+     * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
+     */
+    protected function sanitizeValueForEnum($valueForEnum)
+    {
+        try {
+            return ToScalar::toScalar($valueForEnum);
+        } catch (\Granam\Scalar\Tools\Exceptions\WrongParameterType $exception) {
+            throw new Exceptions\UnexpectedValueToEnum(
+                'Unexpected value to convert. Expected scalar or null, got '
+                . ValueDescriber::describe($valueForEnum),
+                $exception->getCode(),
+                $exception
+            );
+        }
     }
 
     /**
