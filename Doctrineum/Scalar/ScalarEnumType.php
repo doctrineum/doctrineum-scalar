@@ -252,9 +252,10 @@ class ScalarEnumType extends AbstractSelfRegisteringType
      */
     protected function convertToEnum($enumValue)
     {
-        $enumValue = $this->sanitizeValueForEnum($enumValue);
+        $enumValue = $this->sanitizeValueForEnumClass($enumValue);
         // class of main enum or its registered sub-type, according to enum type and current value
         $enumClass = static::getEnumClass($enumValue);
+        $enumValue = $this->prepareValueForEnum($enumValue);
 
         return $enumClass::getEnum($enumValue);
     }
@@ -264,7 +265,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
      * @return float|int|null|string
      * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
      */
-    protected function sanitizeValueForEnum($valueForEnum)
+    protected function sanitizeValueForEnumClass($valueForEnum)
     {
         try {
             return ToScalar::toScalar($valueForEnum);
@@ -276,6 +277,15 @@ class ScalarEnumType extends AbstractSelfRegisteringType
                 $exception
             );
         }
+    }
+
+    /**
+     * @param float|int|string $valueForEnum
+     * @return float|int|string
+     */
+    protected function prepareValueForEnum($valueForEnum)
+    {
+        return $valueForEnum; // nothing to change here - intentioned for overload
     }
 
     /**
