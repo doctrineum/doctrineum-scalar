@@ -392,7 +392,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      */
     protected function getSubTypeEnumClass()
     {
-        return TestSubTypeScalarEnum::getClass();
+        return TestSubTypeScalarEnum::class;
     }
 
     /**
@@ -599,7 +599,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      */
     protected function getAnotherEnumTypeClass()
     {
-        return TestAnotherScalarEnumType::getClass();
+        return TestAnotherScalarEnumType::class;
     }
 
     /**
@@ -607,7 +607,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      */
     protected function getAnotherSubTypeEnumClass()
     {
-        return TestAnotherSubTypeScalarEnum::getClass();
+        return TestAnotherSubTypeScalarEnum::class;
     }
 
     /**
@@ -688,7 +688,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
         EnumWithSubNamespaceType::registerSelf();
         $enum = EnumWithSubNamespaceType::getType(EnumWithSubNamespaceType::WITH_SUB_NAMESPACE)
             ->convertToPHPValue('foo', $this->getPlatform());
-        self::assertInstanceOf(EnumWithSubNamespace::getClass(), $enum);
+        self::assertInstanceOf(EnumWithSubNamespace::class, $enum);
     }
 
     /**

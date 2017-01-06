@@ -143,10 +143,10 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
         if (!is_scalar($finalEnumValue)) {
             throw new Exceptions\UnexpectedValueToEnum('Expected scalar, got ' . gettype($finalEnumValue));
         }
-        $reflection = new \ReflectionClass(static::getClass());
+        $reflection = new \ReflectionClass(static::class);
         if ($reflection->isAbstract()) {
             throw new Exceptions\CanNotCreateInstanceOfAbstractEnum(
-                'Can not create instance of enum ' . self::getClass()
+                'Can not create instance of enum ' . self::class
                 . ' (with value ' . ValueDescriber::describe($finalEnumValue) . ').'
                 . ' Have you forget to register a descendant or sub-type?'
             );
@@ -183,7 +183,9 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
     /**
      * Doctrineum enums are intentionally not final, but should not be compared by just a value.
      * Use $enum1 === $enum2 or $enum1->is($enum2) for equality of different instances.
-     * Think twice before suppressing $sameClassOnly condition, because ArticleTypeEnum->getValue == RoleEnum->getValue is true.
+     * Think twice before suppressing $sameClassOnly condition, because ArticleTypeEnum->getValue == RoleEnum->getValue
+     * is true.
+     *
      * @param ScalarEnumInterface $enum
      * @param bool $sameClassOnly = false
      * @return bool

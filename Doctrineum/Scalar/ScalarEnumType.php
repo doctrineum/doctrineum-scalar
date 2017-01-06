@@ -108,9 +108,9 @@ class ScalarEnumType extends AbstractSelfRegisteringType
                 'Sub-type class ' . ValueDescriber::describe($subTypeClassName) . ' has not been found'
             );
         }
-        if (!is_a($subTypeClassName, ScalarEnum::getClass(), true)) {
+        if (!is_a($subTypeClassName, ScalarEnum::class, true)) {
             throw new Exceptions\SubTypeEnumHasToBeEnum(
-                'Sub-type class ' . ValueDescriber::describe($subTypeClassName) . ' has to be child of ' . ScalarEnum::getClass()
+                'Sub-type class ' . ValueDescriber::describe($subTypeClassName) . ' has to be child of ' . ScalarEnum::class
             );
         }
     }
@@ -334,7 +334,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
             return $inParentNamespace;
         }
 
-        throw new Exceptions\EnumClassNotFound('Default enum class not found for enum type ' . self::getClass());
+        throw new Exceptions\EnumClassNotFound('Default enum class not found for enum type ' . self::class);
     }
 
     /**

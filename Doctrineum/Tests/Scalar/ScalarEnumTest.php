@@ -25,7 +25,7 @@ class ScalarEnumTest extends \PHPUnit_Framework_TestCase
      */
     protected function getEnumClass()
     {
-        return ScalarEnum::getClass();
+        return ScalarEnum::class;
     }
 
     /**
