@@ -18,7 +18,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
     /**
      * @var string[][]
      */
-    private static $subTypeEnums = [];
+    private static $enumSubTypesMap = [];
 
     /**
      * You can register a class just once.
@@ -50,12 +50,12 @@ class ScalarEnumType extends AbstractSelfRegisteringType
     public static function hasSubTypeEnum($subTypeClassName, $subTypeEnumValueRegexp = null)
     {
         return
-            isset(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeClassName])
+            isset(self::$enumSubTypesMap[static::getSubTypeEnumInnerNamespace()][$subTypeClassName])
             && (
                 $subTypeEnumValueRegexp === null
                 || (
                     self::guardRegexpValid($subTypeEnumValueRegexp)
-                    && self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeClassName] === (string)$subTypeEnumValueRegexp
+                    && self::$enumSubTypesMap[static::getSubTypeEnumInnerNamespace()][$subTypeClassName] === (string)$subTypeEnumValueRegexp
                 )
             );
     }
@@ -84,14 +84,14 @@ class ScalarEnumType extends AbstractSelfRegisteringType
         if (static::hasSubTypeEnum($subTypeEnumClass)) {
             throw new Exceptions\SubTypeEnumIsAlreadyRegistered(
                 'SubType enum ' . ValueDescriber::describe($subTypeEnumClass) . ' is already registered with regexp '
-                . self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeEnumClass]
+                . self::$enumSubTypesMap[static::getSubTypeEnumInnerNamespace()][$subTypeEnumClass]
                 . ' (requested to register with regexp ' . ValueDescriber::describe($subTypeEnumValueRegexp) . ')'
             );
         }
         /** The class has to be self-registering to by-pass enum and enum type bindings, @see ScalarEnum::createEnum */
         static::checkIfKnownEnum($subTypeEnumClass);
         static::guardRegexpValid($subTypeEnumValueRegexp);
-        self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeEnumClass] = (string)$subTypeEnumValueRegexp;
+        self::$enumSubTypesMap[static::getSubTypeEnumInnerNamespace()][$subTypeEnumClass] = (string)$subTypeEnumValueRegexp;
 
         return true;
     }
@@ -155,7 +155,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
             );
         }
 
-        unset(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()][$subTypeEnumClass]);
+        unset(self::$enumSubTypesMap[static::getSubTypeEnumInnerNamespace()][$subTypeEnumClass]);
 
         return !static::hasSubTypeEnum($subTypeEnumClass);
     }
@@ -296,14 +296,14 @@ class ScalarEnumType extends AbstractSelfRegisteringType
      */
     protected static function getEnumClass($enumValue)
     {
-        if (!array_key_exists(static::getSubTypeEnumInnerNamespace(), self::$subTypeEnums)
-            || count(self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()]) === 0
+        if (!array_key_exists(static::getSubTypeEnumInnerNamespace(), self::$enumSubTypesMap)
+            || count(self::$enumSubTypesMap[static::getSubTypeEnumInnerNamespace()]) === 0
         ) {
             // no subtype is registered at all
             return static::getDefaultEnumClass();
         }
 
-        foreach (self::$subTypeEnums[static::getSubTypeEnumInnerNamespace()] as $subTypeEnumClass => $subTypeEnumValueRegexp) {
+        foreach (self::$enumSubTypesMap[static::getSubTypeEnumInnerNamespace()] as $subTypeEnumClass => $subTypeEnumValueRegexp) {
             if (preg_match($subTypeEnumValueRegexp, $enumValue)) {
                 return $subTypeEnumClass;
             }
