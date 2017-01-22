@@ -24,7 +24,7 @@
     }
   },
   "require": {
-    "php": ">=5.5",
+    "php": ">=5.6",
     "doctrine/dbal": "~2.4",
     "granam/strict-object": "dev-master",
     "granam/scalar": "dev-master",
