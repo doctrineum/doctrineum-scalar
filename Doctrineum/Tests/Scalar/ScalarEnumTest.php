@@ -7,8 +7,9 @@ use Doctrineum\Tests\Scalar\Helpers\TestInvalidExistingScalarEnumUsage;
 use Doctrineum\Tests\Scalar\Helpers\TestInvalidScalarEnumValue;
 use Doctrineum\Tests\Scalar\Helpers\TestOfAbstractScalarEnum;
 use Doctrineum\Tests\Scalar\Helpers\WithToStringTestObject;
+use PHPUnit\Framework\TestCase;
 
-class ScalarEnumTest extends \PHPUnit_Framework_TestCase
+class ScalarEnumTest extends TestCase
 {
     /**
      * @test

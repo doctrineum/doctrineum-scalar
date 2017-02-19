@@ -62,7 +62,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_get_instance
      */
@@ -83,7 +82,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_get_instance
      */
@@ -95,7 +93,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_get_instance
      */
@@ -108,7 +105,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_get_instance
      */
@@ -120,7 +116,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_get_instance
      */
@@ -134,7 +129,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_get_instance
      */
@@ -153,7 +147,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      * (But saving the value into database and pulling it back probably will.)
      *
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_get_instance
      */
@@ -171,7 +164,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      * (But saving the value into database and pulling it back probably will.)
      *
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_get_instance
      */
@@ -189,7 +181,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      * (But saving the value into database and pulling it back probably will.)
      *
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_get_instance
      */
@@ -206,7 +197,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      * (But saving the value into database and pulling it back probably will.)
      *
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_get_instance
      */
@@ -223,7 +213,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      * (But saving the value into database and pulling it back probably will.)
      *
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_get_instance
      */
@@ -240,7 +229,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      * (But saving the value into database and pulling it back probably will.)
      *
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_get_instance
      */
@@ -254,7 +242,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_get_instance
      */
@@ -269,7 +256,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_get_instance
      * @expectedException \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
@@ -282,7 +268,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_get_instance
      * @expectedException \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
@@ -295,7 +280,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_get_instance
      * @expectedException \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
@@ -308,7 +292,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_get_instance
      * @expectedException \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
@@ -369,9 +352,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @param ScalarEnumType $enumType
-     *
      * @return ScalarEnumType
-     *
      * @test
      * @depends I_can_get_instance
      */
@@ -397,7 +378,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_register_subtype
      */
@@ -416,7 +396,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_register_subtype
      * @expectedException \Doctrineum\Scalar\Exceptions\SubTypeEnumIsNotRegistered
@@ -435,7 +414,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
     }
 
     /**
-     *
      * @test
      * @depends I_can_register_subtype
      * @param ScalarEnumType $subType
@@ -481,7 +459,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_get_instance
      * @expectedException \Doctrineum\Scalar\Exceptions\SubTypeEnumIsAlreadyRegistered
@@ -496,7 +473,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_get_instance
      * @expectedException \Doctrineum\Scalar\Exceptions\SubTypeEnumIsAlreadyRegistered
@@ -516,7 +492,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_get_instance
      * @expectedException \Doctrineum\Scalar\Exceptions\SubTypeEnumClassNotFound
@@ -528,7 +503,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_get_instance
      * @expectedException \Doctrineum\Scalar\Exceptions\SubTypeEnumHasToBeEnum
@@ -540,7 +514,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @param ScalarEnumType $enumType
-     *
      * @test
      * @depends I_can_get_instance
      * @expectedException \Doctrineum\Scalar\Exceptions\InvalidRegexpFormat

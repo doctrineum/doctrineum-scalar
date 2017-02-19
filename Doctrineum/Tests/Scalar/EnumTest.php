@@ -3,8 +3,9 @@ namespace Doctrineum\Tests\Scalar;
 
 use Doctrineum\Scalar\ScalarEnumInterface;
 use Granam\Scalar\ScalarInterface;
+use PHPUnit\Framework\TestCase;
 
-class EnumTest extends \PHPUnit_Framework_TestCase
+class EnumTest extends TestCase
 {
     /**
      * @test
