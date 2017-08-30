@@ -259,6 +259,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      * @test
      * @depends I_can_get_instance
      * @expectedException \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
+     * @expectedExceptionMessageRegExp ~array~
      */
     public function array_to_php_value_cause_exception(ScalarEnumType $enumType)
     {
@@ -356,7 +357,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      * @test
      * @depends I_can_get_instance
      */
-    public function I_can_register_subtype(ScalarEnumType $enumType)
+    public function I_can_register_subtype(ScalarEnumType $enumType): ScalarEnumType
     {
         self::assertTrue($enumType::addSubTypeEnum($this->getSubTypeEnumClass(), $regexp = '~foo~'));
         self::assertTrue($enumType::hasSubTypeEnum($this->getSubTypeEnumClass()));
@@ -646,11 +647,11 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      * @test
      * @depends I_can_register_it
      * @expectedException \Doctrineum\Scalar\Exceptions\InvalidRegexpFormat
-     * @expectedExceptionMessageRegExp ~null~i
+     * @expectedExceptionMessageRegExp ~/foo~i
      */
     public function I_can_not_add_subtype_with_invalid_regexp()
     {
-        ScalarEnumType::addSubTypeEnum($this->getSubTypeEnumClass(), null);
+        ScalarEnumType::addSubTypeEnum($this->getSubTypeEnumClass(), '/foo');
     }
 
     /**
@@ -715,7 +716,7 @@ class TestAnotherScalarEnumType extends ScalarEnumType
 {
     const DIFFERENT_NAME = 'different_name';
 
-    public function getName()
+    public function getName(): string
     {
         return self::DIFFERENT_NAME;
     }

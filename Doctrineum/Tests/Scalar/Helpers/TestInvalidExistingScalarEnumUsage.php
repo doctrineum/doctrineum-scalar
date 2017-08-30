@@ -23,7 +23,7 @@ class TestInvalidExistingScalarEnumUsage extends ScalarEnum
      * @param string $namespace
      * @return \Doctrineum\Scalar\ScalarEnumInterface|null
      */
-    protected static function getEnumFromNamespace($enumValue, $namespace)
+    protected static function getEnumFromNamespace($enumValue, string $namespace)
     {
         $finalValue = static::convertToEnumFinalValue($enumValue);
         if (self::$forceAdding) {

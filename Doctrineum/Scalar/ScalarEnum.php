@@ -11,14 +11,10 @@ use Granam\Tools\ValueDescriber;
  */
 class ScalarEnum extends StrictObject implements ScalarEnumInterface
 {
-    /**
-     * @var ScalarEnum[]
-     */
+    /** @var ScalarEnum[] */
     private static $createdEnums = [];
 
-    /**
-     * @var string|int|float|bool
-     */
+    /** @var string|int|float|bool */
     protected $enumValue;
 
     /**
@@ -32,8 +28,8 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
 
     /**
      * @param bool|float|int|string|ScalarInterface $enumValue
-     * @return string|float|int
-     * @throws Exceptions\UnexpectedValueToEnum
+     * @return string|float|int|bool
+     * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
      */
     protected static function convertToEnumFinalValue($enumValue)
     {
@@ -47,8 +43,8 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
     /**
      * @param bool|float|int|string|ScalarInterface $enumValue
      * @return ScalarEnumInterface
-     * @throws Exceptions\UnexpectedValueToEnum
-     * @throws Exceptions\CanNotCreateInstanceOfAbstractEnum
+     * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
+     * @throws \Doctrineum\Scalar\Exceptions\CanNotCreateInstanceOfAbstractEnum
      */
     public static function getEnum($enumValue)
     {
@@ -56,13 +52,13 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
     }
 
     /**
-     * @param int|float|string $enumValue
+     * @param int|float|string|bool $enumValue
      * @param string $namespace
      * @return ScalarEnumInterface
      * @throws Exceptions\UnexpectedValueToEnum
      * @throws Exceptions\CanNotCreateInstanceOfAbstractEnum
      */
-    protected static function getEnumFromNamespace($enumValue, $namespace)
+    protected static function getEnumFromNamespace($enumValue, string $namespace)
     {
         $finalEnumValue = static::convertToEnumFinalValue($enumValue);
         if (!static::hasCreatedEnum($finalEnumValue, $namespace)) {
@@ -74,14 +70,13 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
         return static::getCreatedEnum($finalEnumValue, $namespace);
     }
 
-    protected static function hasCreatedEnum($enumValue, $namespace)
+    protected static function hasCreatedEnum($enumValue, string $namespace)
     {
         return isset(self::$createdEnums[self::createKey($namespace)][self::createKey($enumValue)]);
     }
 
     /**
-     * @param mixed $key
-     *
+     * @param string|int|float|bool $key
      * @return string
      */
     protected static function createKey($key)
@@ -91,10 +86,10 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
 
     /**
      * @param ScalarEnumInterface $enum
-     * @param mixed $namespace
-     * @throws Exceptions\EnumIsAlreadyBuilt
+     * @param string $namespace
+     * @throws \Doctrineum\Scalar\Exceptions\EnumIsAlreadyBuilt
      */
-    protected static function addCreatedEnum(ScalarEnumInterface $enum, $namespace)
+    protected static function addCreatedEnum(ScalarEnumInterface $enum, string $namespace)
     {
         $namespaceKey = self::createKey($namespace);
         $enumKey = self::createKey($enum->getValue());
@@ -119,7 +114,7 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
      * @return ScalarEnumInterface
      * @throws Exceptions\EnumIsNotBuilt
      */
-    protected static function getCreatedEnum($enumValue, $namespace)
+    protected static function getCreatedEnum($enumValue, string $namespace)
     {
         $namespaceKey = self::createKey($namespace);
         $enumKey = self::createKey($enumValue);
@@ -135,8 +130,8 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
     /**
      * @param string|int|float|bool $finalEnumValue
      * @return ScalarEnum
-     * @throws Exceptions\CanNotCreateInstanceOfAbstractEnum
-     * @throws Exceptions\UnexpectedValueToEnum
+     * @throws \Doctrineum\Scalar\Exceptions\CanNotCreateInstanceOfAbstractEnum
+     * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
      */
     protected static function createEnum($finalEnumValue)
     {
@@ -158,16 +153,16 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
     /**
      * @return string
      */
-    protected static function getInnerNamespace()
+    protected static function getInnerNamespace(): string
     {
-        return get_called_class();
+        return static::class;
     }
 
     /**
      * @return string
      * @see getValue()
      */
-    public function __toString()
+    public function __toString(): string
     {
         return (string)$this->getValue();
     }
@@ -182,7 +177,7 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
 
     /**
      * Doctrineum enums are intentionally not final, but should not be compared by just a value.
-     * Use $enum1 === $enum2 or $enum1->is($enum2) for equality of different instances.
+     * Use $enum1 === $enum2 find out same instances or $enum1->is($enum2) for equality of different instances.
      * Think twice before suppressing $sameClassOnly condition, because ArticleTypeEnum->getValue == RoleEnum->getValue
      * is true.
      *
@@ -190,7 +185,7 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
      * @param bool $sameClassOnly = false
      * @return bool
      */
-    public function is(ScalarEnumInterface $enum, $sameClassOnly = true)
+    public function is(ScalarEnumInterface $enum, bool $sameClassOnly = true): bool
     {
         return
             $this->getValue() === $enum->getValue()
@@ -198,11 +193,10 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
     }
 
     /**
-     * @throws Exceptions\CanNotBeCloned
+     * @throws \Doctrineum\Scalar\Exceptions\CanNotBeCloned
      */
     public function __clone()
     {
         throw new Exceptions\CanNotBeCloned('Enum as a singleton can not be cloned. Use same instance everywhere.');
     }
-
 }

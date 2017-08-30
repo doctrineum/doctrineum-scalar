@@ -23,9 +23,12 @@ class EnumTest extends TestCase
         $enumReflection = new \ReflectionClass(ScalarEnumInterface::class);
         $isMethod = $enumReflection->getMethod('is');
         $parameters = $isMethod->getParameters();
-        self::assertCount(1, $parameters);
+        self::assertCount(2, $parameters);
         /** @var \ReflectionParameter $enumAsParameter */
-        $enumAsParameter = current($parameters);
+        $enumAsParameter = reset($parameters);
         self::assertFalse($enumAsParameter->isOptional());
+        $sameClassParameter = end($parameters);
+        self::assertTrue($sameClassParameter->isOptional());
+        self::assertTrue($sameClassParameter->getDefaultValue());
     }
 }
