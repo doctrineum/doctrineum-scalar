@@ -13,7 +13,6 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
 {
     /** @var ScalarEnum[] */
     private static $createdEnums = [];
-
     /** @var string|int|float|bool */
     protected $enumValue;
 
@@ -143,7 +142,7 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
             throw new Exceptions\CanNotCreateInstanceOfAbstractEnum(
                 'Can not create instance of enum ' . self::class
                 . ' (with value ' . ValueDescriber::describe($finalEnumValue) . ').'
-                . ' Have you forget to register a descendant or sub-type?'
+                . ' Have you forget to register a descendant or a sub-type?'
             );
         }
 

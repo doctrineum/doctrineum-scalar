@@ -1,15 +1,14 @@
 <?php
 namespace Doctrineum\Tests\Scalar;
 
-use Doctrineum\Scalar\ScalarEnum;
 use Doctrineum\Tests\Scalar\Helpers\TestInheritedScalarEnum;
 use Doctrineum\Tests\Scalar\Helpers\TestInvalidExistingScalarEnumUsage;
 use Doctrineum\Tests\Scalar\Helpers\TestInvalidScalarEnumValue;
 use Doctrineum\Tests\Scalar\Helpers\TestOfAbstractScalarEnum;
 use Doctrineum\Tests\Scalar\Helpers\WithToStringTestObject;
-use PHPUnit\Framework\TestCase;
+use Granam\Tests\Tools\TestWithMockery;
 
-class ScalarEnumTest extends TestCase
+class ScalarEnumTest extends TestWithMockery
 {
     /**
      * @test
@@ -26,7 +25,7 @@ class ScalarEnumTest extends TestCase
      */
     protected function getEnumClass()
     {
-        return ScalarEnum::class;
+        return static::getSutClass();
     }
 
     /**
@@ -104,10 +103,11 @@ class ScalarEnumTest extends TestCase
      */
     public function I_can_compare_enums()
     {
-        $firstEnum = ScalarEnum::getEnum('foo');
+        $sutClass = $this->getEnumClass();
+        $firstEnum = $sutClass::getEnum('foo');
         self::assertTrue($firstEnum->is($firstEnum), 'Enum should recognize itself');
 
-        $secondEnum = ScalarEnum::getEnum($secondValue = 'bar');
+        $secondEnum = $sutClass::getEnum($secondValue = 'bar');
         self::assertFalse($firstEnum->is($secondEnum), 'Same classes with different values should not be equal');
         self::assertFalse($secondEnum->is($firstEnum), 'Same classes with different values should not be equal');
 
@@ -183,7 +183,8 @@ class ScalarEnumTest extends TestCase
      */
     public function I_can_not_create_it_with_null()
     {
-        ScalarEnum::getEnum(null);
+        $sutClass = $this->getEnumClass();
+        $sutClass::getEnum(null);
     }
 
     /**
