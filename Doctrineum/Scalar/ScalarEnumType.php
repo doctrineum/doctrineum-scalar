@@ -316,7 +316,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
             return $inParentNamespace;
         }
 
-        throw new Exceptions\EnumClassNotFound('Default enum class not found for enum type ' . self::class);
+        throw new Exceptions\EnumClassNotFound('Default enum class not found for enum type ' . static::class);
     }
 
     /**
