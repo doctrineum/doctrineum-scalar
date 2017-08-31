@@ -12,6 +12,7 @@ use Doctrineum\Tests\Scalar\Helpers\EnumTypes\WithoutEnumIsThisType;
 use Doctrineum\Tests\Scalar\Helpers\EnumWithSubNamespace;
 use Doctrineum\Tests\Scalar\Helpers\WithToStringTestObject;
 use Doctrineum\Tests\SelfRegisteringType\AbstractSelfRegisteringTypeTest;
+use Granam\Scalar\ScalarInterface;
 
 class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 {
@@ -210,12 +211,14 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
     }
 
     /**
+     * @param ScalarInterface $toStringObject = null
      * @test
      */
-    public function object_with_to_string_to_php_value_is_enum_with_that_string()
+    public function object_with_to_string_to_php_value_is_enum_with_that_string(ScalarInterface $toStringObject = null)
     {
         $platform = $this->getPlatform();
-        $enum = $this->createSut()->convertToPHPValue(new WithToStringTestObject($value = 'foo'), $platform);
+        $value = $toStringObject ? $toStringObject->__toString() : 'foo';
+        $enum = $this->createSut()->convertToPHPValue($toStringObject ?? new WithToStringTestObject($value), $platform);
         self::assertInstanceOf($this->getRegisteredClass(), $enum);
         self::assertSame($value, $enum->getValue());
         self::assertSame($value, (string)$enum);
