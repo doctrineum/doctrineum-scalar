@@ -100,12 +100,13 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
     }
 
     /**
+     * @param string $stringFromDb = null
      * @test
      */
-    public function string_to_php_value_is_enum_with_that_string()
+    public function string_to_php_value_is_enum_with_that_string(string $stringFromDb = null)
     {
         $platform = $this->getPlatform();
-        $enum = $this->createSut()->convertToPHPValue($string = 'foo', $platform);
+        $enum = $this->createSut()->convertToPHPValue($string = $stringFromDb ?? 'foo', $platform);
         self::assertInstanceOf($this->getRegisteredClass(), $enum);
         self::assertSame($string, $enum->getValue());
     }
@@ -131,7 +132,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      */
     public function I_can_get_pure_integer_in_enum()
     {
-
         $platform = $this->getPlatform();
         $enum = $this->createSut()->convertToPHPValue($integer = 12345, $platform);
         self::assertInstanceOf($this->getRegisteredClass(), $enum);
