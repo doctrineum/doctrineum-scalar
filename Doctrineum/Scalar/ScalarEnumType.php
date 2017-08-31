@@ -282,7 +282,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
             || count(self::$enumSubTypesMap[static::getSubTypeEnumInnerNamespace()]) === 0
         ) {
             // no subtype is registered at all
-            return static::getDefaultEnumClass();
+            return static::getDefaultEnumClass($enumValue);
         }
 
         foreach (self::$enumSubTypesMap[static::getSubTypeEnumInnerNamespace()] as $subTypeEnumClass => $subTypeEnumValueRegexp) {
@@ -292,15 +292,16 @@ class ScalarEnumType extends AbstractSelfRegisteringType
         }
 
         // no subtype matched
-        return static::getDefaultEnumClass();
+        return static::getDefaultEnumClass($enumValue);
     }
 
     /**
+     * @param int|float|string|bool $enumValue
      * @return string
      * @throws \Doctrineum\Scalar\Exceptions\CouldNotDetermineEnumClass
      * @throws \Doctrineum\Scalar\Exceptions\EnumClassNotFound
      */
-    protected static function getDefaultEnumClass(): string
+    protected static function getDefaultEnumClass($enumValue): string
     {
         $enumTypeClass = static::class;
         $enumInSameNamespace = preg_replace('~Type$~', '', $enumTypeClass);
@@ -316,7 +317,10 @@ class ScalarEnumType extends AbstractSelfRegisteringType
             return $inParentNamespace;
         }
 
-        throw new Exceptions\EnumClassNotFound('Default enum class not found for enum type ' . static::class);
+        throw new Exceptions\EnumClassNotFound(
+            'Default enum class not found for enum type ' . static::class
+            . ' (potential sub-types have not matched enum value ' . ValueDescriber::describe($enumValue) . ')'
+        );
     }
 
     /**

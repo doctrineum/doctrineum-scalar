@@ -600,6 +600,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
     /**
      * @test
      * @expectedException \Doctrineum\Scalar\Exceptions\EnumClassNotFound
+     * @expectedExceptionMessageRegExp ~foo~
      */
     public function I_am_stopped_by_exception_on_conversion_to_unknown_enum()
     {
