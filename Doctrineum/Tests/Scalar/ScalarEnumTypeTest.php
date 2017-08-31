@@ -567,14 +567,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
     /**
      * @test
      */
-    public function repeated_self_registration_returns_false()
-    {
-        self::assertFalse(ScalarEnumType::registerSelf());
-    }
-
-    /**
-     * @test
-     */
     public function I_can_use_subtype()
     {
         ScalarEnumType::addSubTypeEnum($this->getSubTypeEnumClass(), $pattern = '~foo~');
