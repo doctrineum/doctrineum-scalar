@@ -71,11 +71,12 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
     }
 
     /**
+     * @param string|int|float|bool|null $value = null
      * @test
      */
-    public function enum_as_database_value_is_string_value_of_that_enum()
+    public function enum_as_database_value_is_string_value_of_that_enum($value = null)
     {
-        $value = 'foo';
+        $value = $value ?? 'foo';
         $platform = $this->getPlatform();
         $enumClass = $this->getRelatedEnumClass();
         self::assertSame($value, $this->createSut()->convertToDatabaseValue($enumClass::getEnum($value), $platform));
