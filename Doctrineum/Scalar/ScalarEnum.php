@@ -78,7 +78,7 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
      * @param string|int|float|bool $key
      * @return string
      */
-    protected static function createKey($key)
+    protected static function createKey($key): string
     {
         return serialize($key);
     }
