@@ -140,7 +140,7 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
         $reflection = new \ReflectionClass(static::class);
         if ($reflection->isAbstract()) {
             throw new Exceptions\CanNotCreateInstanceOfAbstractEnum(
-                'Can not create instance of enum ' . self::class
+                'Can not create instance of abstract enum ' . static::class
                 . ' (with value ' . ValueDescriber::describe($finalEnumValue) . ').'
                 . ' Have you forget to register a descendant or a sub-type?'
             );

@@ -190,6 +190,7 @@ class ScalarEnumTest extends TestWithMockery
     /**
      * @test
      * @expectedException \Doctrineum\Scalar\Exceptions\CanNotCreateInstanceOfAbstractEnum
+     * @expectedExceptionMessageRegExp ~abstract.+TestOfAbstractScalarEnum~
      */
     public function I_am_stopped_by_exception_if_trying_to_create_abstract_enum()
     {
