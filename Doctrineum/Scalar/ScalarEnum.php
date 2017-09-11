@@ -161,7 +161,7 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
      * @return string
      * @see getValue()
      */
-    public function __toString(): string
+    public function __toString() // do NOT use : string type hint as it is very complicated for tests with mocks to satisfy
     {
         return (string)$this->getValue();
     }
