@@ -186,8 +186,7 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
      */
     public function is(ScalarEnumInterface $enum, bool $sameClassOnly = true): bool
     {
-        return
-            $this->getValue() === $enum->getValue()
+        return $this->getValue() === $enum->getValue()
             && (!$sameClassOnly || static::class === get_class($enum));
     }
 
