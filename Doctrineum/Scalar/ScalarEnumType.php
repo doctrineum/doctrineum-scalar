@@ -244,16 +244,12 @@ class ScalarEnumType extends AbstractSelfRegisteringType
         try {
             return $enumClass::getEnum($enumValue);
         } catch (Exceptions\CanNotCreateInstanceOfAbstractEnum $canNotCreateInstanceOfAbstractEnum) {
-            try {
-                $defaultEnumClass = static::getDefaultEnumClass($enumValue);
-            } catch (\Exception $exception) {
-                $defaultEnumClass = 'none: ' . $exception->getMessage();
-            }
             throw new Exceptions\CanNotCreateInstanceOfAbstractEnum(
                 'Enum value ' . ValueDescriber::describe($enumValue) . ' is paired with enum class ' . $enumClass
                 . ', but creating an enum by it causes: ' . $canNotCreateInstanceOfAbstractEnum->getMessage()
-                . '; registered sub-types are ' . \var_export(static::$enumSubTypesMap, true)
-                . ' and default enum class for given value ' . ValueDescriber::describe($enumValue) . ' is ' . $defaultEnumClass
+                . "\nRegistered sub-types are " . (self::$enumSubTypesMap ?\var_export(self::$enumSubTypesMap, true) : "'none'")
+                . ' and default enum class for given value ' . ValueDescriber::describe($enumValue)
+                . ' is ' . static::getDefaultEnumClass($enumValue)
             );
         }
     }
