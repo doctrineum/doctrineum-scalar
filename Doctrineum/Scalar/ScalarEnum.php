@@ -44,6 +44,7 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
      * @return ScalarEnumInterface
      * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
      * @throws \Doctrineum\Scalar\Exceptions\CanNotCreateInstanceOfAbstractEnum
+     * @throws \ReflectionException
      */
     public static function getEnum($enumValue)
     {
@@ -56,6 +57,7 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
      * @return ScalarEnumInterface
      * @throws Exceptions\UnexpectedValueToEnum
      * @throws Exceptions\CanNotCreateInstanceOfAbstractEnum
+     * @throws \ReflectionException
      */
     protected static function getEnumFromNamespace($enumValue, string $namespace)
     {
@@ -80,7 +82,7 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
      */
     protected static function createKey($key): string
     {
-        return serialize($key);
+        return \serialize($key);
     }
 
     /**
@@ -95,8 +97,8 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
         if (isset(self::$createdEnums[$namespaceKey][$enumKey])) {
             /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
             throw new Exceptions\EnumIsAlreadyBuilt(
-                'Enum of namespace key ' . var_export($namespaceKey, true) . ' and enum key ' . var_export($enumKey, true) .
-                ' is already registered with enum of class ' . get_class(static::getCreatedEnum($enum->getValue(), $namespace))
+                'Enum of namespace key ' . \var_export($namespaceKey, true) . ' and enum key ' . \var_export($enumKey, true) .
+                ' is already registered with enum of class ' . \get_class(static::getCreatedEnum($enum->getValue(), $namespace))
             );
         }
 
@@ -109,7 +111,7 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
 
     /**
      * @param mixed $enumValue
-     * @param mixed $namespace
+     * @param string $namespace
      * @return ScalarEnumInterface
      * @throws Exceptions\EnumIsNotBuilt
      */
@@ -119,7 +121,7 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
         $enumKey = self::createKey($enumValue);
         if (!isset(self::$createdEnums[$namespaceKey][$enumKey])) {
             throw new Exceptions\EnumIsNotBuilt(
-                'Enum of namespace key ' . var_export($namespaceKey, true) . ' and enum key ' . var_export($enumKey, true) . ' is not registered'
+                'Enum of namespace key ' . \var_export($namespaceKey, true) . ' and enum key ' . \var_export($enumKey, true) . ' is not registered'
             );
         }
 
@@ -131,11 +133,12 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
      * @return ScalarEnum
      * @throws \Doctrineum\Scalar\Exceptions\CanNotCreateInstanceOfAbstractEnum
      * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
+     * @throws \ReflectionException
      */
     protected static function createEnum($finalEnumValue)
     {
-        if (!is_scalar($finalEnumValue)) {
-            throw new Exceptions\UnexpectedValueToEnum('Expected scalar, got ' . gettype($finalEnumValue));
+        if (!\is_scalar($finalEnumValue)) {
+            throw new Exceptions\UnexpectedValueToEnum('Expected scalar, got ' . \gettype($finalEnumValue));
         }
         $reflection = new \ReflectionClass(static::class);
         if ($reflection->isAbstract()) {
@@ -187,7 +190,7 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
     public function is(ScalarEnumInterface $enum, bool $sameClassOnly = true): bool
     {
         return $this->getValue() === $enum->getValue()
-            && (!$sameClassOnly || static::class === get_class($enum));
+            && (!$sameClassOnly || static::class === \get_class($enum));
     }
 
     /**

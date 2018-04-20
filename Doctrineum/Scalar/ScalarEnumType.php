@@ -12,7 +12,7 @@ use Granam\Tools\ValueDescriber;
 class ScalarEnumType extends AbstractSelfRegisteringType
 {
 
-    const SCALAR_ENUM = 'scalar_enum';
+    public const SCALAR_ENUM = 'scalar_enum';
 
     /** @var string[][] */
     private static $enumSubTypesMap = [];
@@ -194,7 +194,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
         if ($value === null) {
             return null;
         }
-        if (!is_object($value) || !is_a($value, ScalarEnumInterface::class)) {
+        if (!\is_object($value) || !\is_a($value, ScalarEnumInterface::class)) {
             throw new Exceptions\UnexpectedValueToDatabaseValue(
                 'Expected NULL or instance of ' . ScalarEnumInterface::class . ', got ' . ValueDescriber::describe($value)
             );
@@ -216,6 +216,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
      * @throws \Doctrineum\Scalar\Exceptions\CouldNotDetermineEnumClass
      * @throws \Doctrineum\Scalar\Exceptions\EnumClassNotFound
      * @throws \Doctrineum\Scalar\Exceptions\CanNotCreateInstanceOfAbstractEnum
+     * @throws \ReflectionException
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
@@ -231,6 +232,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
      * @throws \Doctrineum\Scalar\Exceptions\CouldNotDetermineEnumClass
      * @throws \Doctrineum\Scalar\Exceptions\EnumClassNotFound
      * @throws \Doctrineum\Scalar\Exceptions\CanNotCreateInstanceOfAbstractEnum
+     * @throws \ReflectionException
      */
     protected function convertToEnum($enumValue)
     {
@@ -239,7 +241,21 @@ class ScalarEnumType extends AbstractSelfRegisteringType
         $enumClass = static::getEnumClass($enumValue);
         $enumValue = $this->prepareValueForEnum($enumValue);
 
-        return $enumClass::getEnum($enumValue);
+        try {
+            return $enumClass::getEnum($enumValue);
+        } catch (Exceptions\CanNotCreateInstanceOfAbstractEnum $canNotCreateInstanceOfAbstractEnum) {
+            try {
+                $defaultEnumClass = static::getDefaultEnumClass($enumValue);
+            } catch (\Exception $exception) {
+                $defaultEnumClass = 'none: ' . $exception->getMessage();
+            }
+            throw new Exceptions\CanNotCreateInstanceOfAbstractEnum(
+                'Enum value ' . ValueDescriber::describe($enumValue) . ' is paired with enum class ' . $enumClass
+                . ', but creating an enum by it causes: ' . $canNotCreateInstanceOfAbstractEnum->getMessage()
+                . '; registered sub-types are ' . \var_export(static::$enumSubTypesMap, true)
+                . ' and default enum class for given value ' . ValueDescriber::describe($enumValue) . ' is ' . $defaultEnumClass
+            );
+        }
     }
 
     /**
@@ -278,15 +294,15 @@ class ScalarEnumType extends AbstractSelfRegisteringType
      */
     protected static function getEnumClass($enumValue): string
     {
-        if (!array_key_exists(static::getSubTypeEnumInnerNamespace(), self::$enumSubTypesMap)
-            || count(self::$enumSubTypesMap[static::getSubTypeEnumInnerNamespace()]) === 0
+        if (!\array_key_exists(static::getSubTypeEnumInnerNamespace(), self::$enumSubTypesMap)
+            || \count(self::$enumSubTypesMap[static::getSubTypeEnumInnerNamespace()]) === 0
         ) {
             // no subtype is registered at all
             return static::getDefaultEnumClass($enumValue);
         }
 
         foreach (self::$enumSubTypesMap[static::getSubTypeEnumInnerNamespace()] as $subTypeEnumClass => $subTypeEnumValueRegexp) {
-            if (preg_match($subTypeEnumValueRegexp, $enumValue)) {
+            if (\preg_match($subTypeEnumValueRegexp, $enumValue)) {
                 return $subTypeEnumClass;
             }
         }
@@ -304,16 +320,16 @@ class ScalarEnumType extends AbstractSelfRegisteringType
     protected static function getDefaultEnumClass($enumValue): string
     {
         $enumTypeClass = static::class;
-        $enumInSameNamespace = preg_replace('~Type$~', '', $enumTypeClass);
+        $enumInSameNamespace = \preg_replace('~Type$~', '', $enumTypeClass);
         if ($enumInSameNamespace === $enumTypeClass) {
             throw new Exceptions\CouldNotDetermineEnumClass('Enum class could not be parsed from enum type class ' . $enumTypeClass);
         }
-        if (class_exists($enumInSameNamespace)) {
+        if (\class_exists($enumInSameNamespace)) {
             return $enumInSameNamespace;
         }
 
-        $inParentNamespace = preg_replace('~\\\(\w+)\\\(\w+)$~', '\\\$2', $enumInSameNamespace);
-        if (class_exists($inParentNamespace)) {
+        $inParentNamespace = \preg_replace('~\\\(\w+)\\\(\w+)$~', '\\\$2', $enumInSameNamespace);
+        if (\class_exists($inParentNamespace)) {
             return $inParentNamespace;
         }
 
