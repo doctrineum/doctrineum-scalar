@@ -44,7 +44,6 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
      * @return ScalarEnumInterface
      * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
      * @throws \Doctrineum\Scalar\Exceptions\CanNotCreateInstanceOfAbstractEnum
-     * @throws \ReflectionException
      */
     public static function getEnum($enumValue)
     {
@@ -57,7 +56,6 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
      * @return ScalarEnumInterface
      * @throws Exceptions\UnexpectedValueToEnum
      * @throws Exceptions\CanNotCreateInstanceOfAbstractEnum
-     * @throws \ReflectionException
      */
     protected static function getEnumFromNamespace($enumValue, string $namespace)
     {
@@ -133,13 +131,13 @@ class ScalarEnum extends StrictObject implements ScalarEnumInterface
      * @return ScalarEnum
      * @throws \Doctrineum\Scalar\Exceptions\CanNotCreateInstanceOfAbstractEnum
      * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
-     * @throws \ReflectionException
      */
     protected static function createEnum($finalEnumValue)
     {
         if (!\is_scalar($finalEnumValue)) {
             throw new Exceptions\UnexpectedValueToEnum('Expected scalar, got ' . \gettype($finalEnumValue));
         }
+        /** @noinspection PhpUnhandledExceptionInspection */
         $reflection = new \ReflectionClass(static::class);
         if ($reflection->isAbstract()) {
             throw new Exceptions\CanNotCreateInstanceOfAbstractEnum(
