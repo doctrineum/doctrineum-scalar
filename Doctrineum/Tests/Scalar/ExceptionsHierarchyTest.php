@@ -8,7 +8,7 @@ class ExceptionsHierarchyTest extends AbstractExceptionsHierarchyTest
     /**
      * @return string
      */
-    protected function getTestedNamespace()
+    protected function getTestedNamespace(): string
     {
         return $this->getRootNamespace();
     }
@@ -16,15 +16,15 @@ class ExceptionsHierarchyTest extends AbstractExceptionsHierarchyTest
     /**
      * @return string
      */
-    protected function getRootNamespace()
+    protected function getRootNamespace(): string
     {
-        return str_replace('\Tests', '', __NAMESPACE__);
+        return \str_replace('\Tests', '', __NAMESPACE__);
     }
 
     /**
      * @return string
      */
-    protected function getExternalRootNamespaces()
+    protected function getExternalRootNamespaces(): string
     {
         return 'Granam\Scalar';
     }

@@ -10,7 +10,7 @@ class EnumTest extends TestCase
     /**
      * @test
      */
-    public function I_can_use_enum_interface_as_scalar()
+    public function I_can_use_enum_interface_as_scalar(): void
     {
         self::assertTrue(is_a(ScalarEnumInterface::class, ScalarInterface::class, true));
     }
@@ -18,16 +18,16 @@ class EnumTest extends TestCase
     /**
      * @test
      */
-    public function I_got_enums_comparison_method()
+    public function I_got_enums_comparison_method(): void
     {
         $enumReflection = new \ReflectionClass(ScalarEnumInterface::class);
         $isMethod = $enumReflection->getMethod('is');
         $parameters = $isMethod->getParameters();
         self::assertCount(2, $parameters);
         /** @var \ReflectionParameter $enumAsParameter */
-        $enumAsParameter = reset($parameters);
+        $enumAsParameter = \reset($parameters);
         self::assertFalse($enumAsParameter->isOptional());
-        $sameClassParameter = end($parameters);
+        $sameClassParameter = \end($parameters);
         self::assertTrue($sameClassParameter->isOptional());
         self::assertTrue($sameClassParameter->getDefaultValue());
     }

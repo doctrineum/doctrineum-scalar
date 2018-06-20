@@ -23,7 +23,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      * This is called after every test
      * @throws \Doctrine\DBAL\DBALException
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
 
