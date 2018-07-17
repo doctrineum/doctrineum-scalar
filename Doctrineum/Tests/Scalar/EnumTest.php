@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1); // on PHP 7+ are standard PHP methods strict to types of given parameters
+
 namespace Doctrineum\Tests\Scalar;
 
 use Doctrineum\Scalar\ScalarEnumInterface;
@@ -17,6 +19,7 @@ class EnumTest extends TestCase
 
     /**
      * @test
+     * @throws \ReflectionException
      */
     public function I_got_enums_comparison_method(): void
     {

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1); // on PHP 7+ are standard PHP methods strict to types of given parameters
+
 namespace Doctrineum\Tests\Scalar;
 
 use Doctrineum\Tests\Scalar\Helpers\TestInheritedScalarEnum;
@@ -13,7 +15,7 @@ class ScalarEnumTest extends TestWithMockery
     /**
      * @test
      */
-    public function I_can_create_it()
+    public function I_can_create_it(): void
     {
         $enumClass = $this->getEnumClass();
         $instance = $enumClass::getEnum('foo');
@@ -23,7 +25,7 @@ class ScalarEnumTest extends TestWithMockery
     /**
      * @return string|\Doctrineum\Scalar\ScalarEnum
      */
-    protected function getEnumClass()
+    protected function getEnumClass(): string
     {
         return static::getSutClass();
     }
@@ -31,7 +33,7 @@ class ScalarEnumTest extends TestWithMockery
     /**
      * @test
      */
-    public function I_got_same_instance_for_same_name()
+    public function I_got_same_instance_for_same_name(): void
     {
         $enumClass = $this->getEnumClass();
         $firstInstance = $enumClass::getEnum($firstValue = 'foo');
@@ -48,7 +50,7 @@ class ScalarEnumTest extends TestWithMockery
     /**
      * @test
      */
-    public function I_got_same_value_as_I_created_with()
+    public function I_got_same_value_as_I_created_with(): void
     {
         $enumClass = $this->getEnumClass();
         $enum = $enumClass::getEnum('foo');
@@ -58,7 +60,7 @@ class ScalarEnumTest extends TestWithMockery
     /**
      * @test
      */
-    public function I_got_same_value_as_string()
+    public function I_got_same_value_as_string(): void
     {
         $enumClass = $this->getEnumClass();
         $enum = $enumClass::getEnum('foo');
@@ -69,7 +71,7 @@ class ScalarEnumTest extends TestWithMockery
      * @test
      * @expectedException \Doctrineum\Scalar\Exceptions\CanNotBeCloned
      */
-    public function I_can_not_clone_it()
+    public function I_can_not_clone_it(): void
     {
         $enumClass = $this->getEnumClass();
         $enum = $enumClass::getEnum('foo');
@@ -80,7 +82,7 @@ class ScalarEnumTest extends TestWithMockery
     /**
      * @test
      */
-    public function I_can_create_it_by_to_string_object_and_got_back_that_value()
+    public function I_can_create_it_by_to_string_object_and_got_back_that_value(): void
     {
         $enumClass = $this->getEnumClass();
         $enum = $enumClass::getEnum(new WithToStringTestObject('foo'));
@@ -92,7 +94,7 @@ class ScalarEnumTest extends TestWithMockery
      * @test
      * @expectedException \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
      */
-    public function I_can_not_create_it_by_object_without_to_string()
+    public function I_can_not_create_it_by_object_without_to_string(): void
     {
         $enumClass = $this->getEnumClass();
         $enumClass::getEnum(new \stdClass());
@@ -101,7 +103,7 @@ class ScalarEnumTest extends TestWithMockery
     /**
      * @test
      */
-    public function I_can_compare_enums()
+    public function I_can_compare_enums(): void
     {
         $sutClass = $this->getEnumClass();
         $firstEnum = $sutClass::getEnum('foo');
@@ -124,7 +126,7 @@ class ScalarEnumTest extends TestWithMockery
     /**
      * @test
      */
-    public function inherited_enum_with_same_value_lives_in_own_inner_namespace()
+    public function inherited_enum_with_same_value_lives_in_own_inner_namespace(): void
     {
         $enumClass = $this->getEnumClass();
 
@@ -148,7 +150,7 @@ class ScalarEnumTest extends TestWithMockery
      * @test
      * @expectedException \Doctrineum\Scalar\Exceptions\EnumIsAlreadyBuilt
      */
-    public function adding_an_existing_enum_cause_exception()
+    public function adding_an_existing_enum_cause_exception(): void
     {
         TestInvalidExistingScalarEnumUsage::forceGetting(false);
         TestInvalidExistingScalarEnumUsage::forceAdding(true);
@@ -161,7 +163,7 @@ class ScalarEnumTest extends TestWithMockery
      * @test
      * @expectedException \Doctrineum\Scalar\Exceptions\EnumIsNotBuilt
      */
-    public function getting_an_non_existing_enum_cause_exception()
+    public function getting_an_non_existing_enum_cause_exception(): void
     {
         TestInvalidExistingScalarEnumUsage::forceAdding(false);
         TestInvalidExistingScalarEnumUsage::forceGetting(true);
@@ -172,7 +174,7 @@ class ScalarEnumTest extends TestWithMockery
      * @test
      * @expectedException \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
      */
-    public function using_invalid_value_without_casting_cause_exception()
+    public function using_invalid_value_without_casting_cause_exception(): void
     {
         TestInvalidScalarEnumValue::getEnum(new \stdClass());
     }
@@ -181,7 +183,7 @@ class ScalarEnumTest extends TestWithMockery
      * @test
      * @expectedException \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
      */
-    public function I_can_not_create_it_with_null()
+    public function I_can_not_create_it_with_null(): void
     {
         $sutClass = $this->getEnumClass();
         $sutClass::getEnum(null);
@@ -192,7 +194,7 @@ class ScalarEnumTest extends TestWithMockery
      * @expectedException \Doctrineum\Scalar\Exceptions\CanNotCreateInstanceOfAbstractEnum
      * @expectedExceptionMessageRegExp ~abstract.+TestOfAbstractScalarEnum~
      */
-    public function I_am_stopped_by_exception_if_trying_to_create_abstract_enum()
+    public function I_am_stopped_by_exception_if_trying_to_create_abstract_enum(): void
     {
         TestOfAbstractScalarEnum::getEnum('foo');
     }

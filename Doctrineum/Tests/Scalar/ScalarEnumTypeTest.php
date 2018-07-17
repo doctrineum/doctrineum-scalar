@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1); // on PHP 7+ are standard PHP methods strict to types of given parameters
+
 namespace Doctrineum\Tests\Scalar;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -50,6 +52,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @test
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function Its_sql_declaration_is_valid(): void
     {
@@ -68,6 +71,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @test
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function Null_to_database_value_is_null(): void
     {
@@ -78,7 +82,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
     /**
      * @test
      * @param string|int|float|bool|null $value = null
-     * @throws \ReflectionException
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function Enum_as_database_value_is_string_value_of_that_enum($value = null): void
     {
@@ -98,6 +102,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @test
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function null_from_database_gives_null(): void
     {
@@ -106,8 +111,9 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
     }
 
     /**
-     * @param string $stringFromDb = null
      * @test
+     * @param string $stringFromDb = null
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function string_to_php_value_is_enum_with_that_string(string $stringFromDb = null): void
     {
@@ -119,6 +125,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @test
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function I_get_enum_with_empty_string_on_conversion(): void
     {
@@ -135,6 +142,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      * (But saving the value into database and pulling it back probably will.)
      *
      * @test
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function I_can_get_pure_integer_in_enum(): void
     {
@@ -149,6 +157,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      * (But saving the value into database and pulling it back probably will.)
      *
      * @test
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function I_can_get_enum_with_pure_integer_zero(): void
     {
@@ -164,6 +173,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      * (But saving the value into database and pulling it back probably will.)
      *
      * @test
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function I_can_get_enum_with_pure_float(): void
     {
@@ -178,6 +188,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      * (But saving the value into database and pulling it back probably will.)
      *
      * @test
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function I_can_get_enum_with_pure_float_zero(): void
     {
@@ -192,6 +203,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      * (But saving the value into database and pulling it back probably will.)
      *
      * @test
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function I_can_get_enum_with_pure_false(): void
     {
@@ -206,6 +218,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      * (But saving the value into database and pulling it back probably will.)
      *
      * @test
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function I_can_get_enum_with_pure_true(): void
     {
@@ -216,8 +229,9 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
     }
 
     /**
-     * @param ScalarInterface $toStringObject = null
      * @test
+     * @param ScalarInterface $toStringObject = null
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function object_with_to_string_to_php_value_is_enum_with_that_string(ScalarInterface $toStringObject = null): void
     {
@@ -233,6 +247,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      * @test
      * @expectedException \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
      * @expectedExceptionMessageRegExp ~array~
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function array_to_php_value_cause_exception(): void
     {
@@ -244,6 +259,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
     /**
      * @test
      * @expectedException \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function resource_to_php_value_cause_exception(): void
     {
@@ -254,6 +270,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
     /**
      * @test
      * @expectedException \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function object_to_php_value_cause_exception(): void
     {
@@ -264,6 +281,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
     /**
      * @test
      * @expectedException \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function callback_to_php_value_cause_exception(): void
     {
@@ -369,6 +387,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
     /**
      * @test
      * @throws \ReflectionException
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function I_get_registered_subtype_enum_on_match(): void
     {
@@ -392,6 +411,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
     /**
      * @test
      * @throws \ReflectionException
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function I_get_default_enum_class_if_subtype_regexp_does_not_match(): void
     {

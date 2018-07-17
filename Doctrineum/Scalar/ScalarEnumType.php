@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1); // on PHP 7+ are standard PHP methods strict to types of given parameters
+
 namespace Doctrineum\Scalar;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -247,7 +249,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
             throw new Exceptions\CanNotCreateInstanceOfAbstractEnum(
                 'Enum value ' . ValueDescriber::describe($enumValue) . ' is paired with enum class ' . $enumClass
                 . ', but creating an enum by it causes: ' . $canNotCreateInstanceOfAbstractEnum->getMessage()
-                . "\nRegistered sub-types are " . (self::$enumSubTypesMap ?\var_export(self::$enumSubTypesMap, true) : "'none'")
+                . "\nRegistered sub-types are " . (self::$enumSubTypesMap ? \var_export(self::$enumSubTypesMap, true) : "'none'")
                 . ' and default enum class for given value ' . ValueDescriber::describe($enumValue)
                 . ' is ' . static::getDefaultEnumClass($enumValue)
             );
