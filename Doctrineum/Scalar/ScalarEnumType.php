@@ -99,14 +99,14 @@ class ScalarEnumType extends AbstractSelfRegisteringType
      * @throws \Doctrineum\Scalar\Exceptions\SubTypeEnumClassNotFound
      * @throws \Doctrineum\Scalar\Exceptions\SubTypeEnumHasToBeEnum
      */
-    protected static function checkIfKnownEnum(string $subTypeClassName)
+    protected static function checkIfKnownEnum(string $subTypeClassName): void
     {
-        if (!class_exists($subTypeClassName)) {
+        if (!\class_exists($subTypeClassName)) {
             throw new Exceptions\SubTypeEnumClassNotFound(
                 'Sub-type class ' . ValueDescriber::describe($subTypeClassName) . ' has not been found'
             );
         }
-        if (!is_a($subTypeClassName, ScalarEnum::class, true)) {
+        if (!\is_a($subTypeClassName, ScalarEnum::class, true)) {
             throw new Exceptions\SubTypeEnumHasToBeEnum(
                 'Sub-type class ' . ValueDescriber::describe($subTypeClassName) . ' has to be child of ' . ScalarEnum::class
             );
@@ -120,7 +120,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
      */
     private static function guardRegexpValid(string $regexp): bool
     {
-        if (!preg_match('~^(.).*\1$~', $regexp)) {
+        if (!\preg_match('~^(.).*\1$~', $regexp)) {
             // the regexp does not start and end with same characters
             throw new Exceptions\InvalidRegexpFormat(
                 'The given regexp is not enclosed by same delimiters and therefore is not valid: '
@@ -138,7 +138,6 @@ class ScalarEnumType extends AbstractSelfRegisteringType
      */
     public static function removeSubTypeEnum(string $subTypeEnumClass): bool
     {
-        /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
         if (!static::hasSubTypeEnum($subTypeEnumClass)) {
             throw new Exceptions\SubTypeEnumIsNotRegistered(
                 'Sub-type ' . ValueDescriber::describe($subTypeEnumClass) . ' is not registered'
@@ -218,9 +217,8 @@ class ScalarEnumType extends AbstractSelfRegisteringType
      * @throws \Doctrineum\Scalar\Exceptions\CouldNotDetermineEnumClass
      * @throws \Doctrineum\Scalar\Exceptions\EnumClassNotFound
      * @throws \Doctrineum\Scalar\Exceptions\CanNotCreateInstanceOfAbstractEnum
-     * @throws \ReflectionException
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?ScalarEnumInterface
     {
         return $value === null
             ? null
@@ -234,9 +232,8 @@ class ScalarEnumType extends AbstractSelfRegisteringType
      * @throws \Doctrineum\Scalar\Exceptions\CouldNotDetermineEnumClass
      * @throws \Doctrineum\Scalar\Exceptions\EnumClassNotFound
      * @throws \Doctrineum\Scalar\Exceptions\CanNotCreateInstanceOfAbstractEnum
-     * @throws \ReflectionException
      */
-    protected function convertToEnum($enumValue)
+    protected function convertToEnum($enumValue): ScalarEnumInterface
     {
         $enumValue = $this->sanitizeValueForEnumClass($enumValue);
         // class of main enum or its registered sub-type, according to enum type and current value
@@ -300,7 +297,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
         }
 
         foreach (self::$enumSubTypesMap[static::getSubTypeEnumInnerNamespace()] as $subTypeEnumClass => $subTypeEnumValueRegexp) {
-            if (\preg_match($subTypeEnumValueRegexp, $enumValue)) {
+            if (\preg_match($subTypeEnumValueRegexp, (string)$enumValue)) {
                 return $subTypeEnumClass;
             }
         }

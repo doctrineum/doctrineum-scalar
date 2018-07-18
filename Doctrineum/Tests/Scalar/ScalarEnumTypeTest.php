@@ -18,6 +18,9 @@ use Doctrineum\Tests\Scalar\Helpers\WithToStringTestObject;
 use Doctrineum\Tests\SelfRegisteringType\AbstractSelfRegisteringTypeTest;
 use Granam\Scalar\ScalarInterface;
 
+/**
+ * @method ScalarEnumType createSut()
+ */
 class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 {
 
@@ -112,15 +115,52 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @test
-     * @param string $stringFromDb = null
+     * @dataProvider provideValuesFromDb
+     * @param mixed $valueFromDb = null
      * @throws \Doctrine\DBAL\DBALException
      */
-    public function string_to_php_value_is_enum_with_that_string(string $stringFromDb = null): void
+    public function Scalar_value_is_converted_to_enum_with_that_value($valueFromDb = null): void
     {
         $platform = $this->getPlatform();
-        $enum = $this->createSut()->convertToPHPValue($string = $stringFromDb ?? 'foo', $platform);
-        self::assertInstanceOf($this->getRegisteredClass(), $enum);
-        self::assertSame($string, $enum->getValue());
+        $enum = $this->createSut()->convertToPHPValue($valueFromDb, $platform);
+        if ($valueFromDb === null) {
+            self::assertNull($enum);
+        } else {
+            self::assertInstanceOf($this->getRegisteredClass(), $enum);
+            self::assertSame($valueFromDb, $enum->getValue());
+        }
+    }
+
+    public function provideValuesFromDb(): array
+    {
+        return [
+            [-15],
+            [456.789],
+            ['foo'],
+            [true]
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider provideValuesFromDb
+     * @param mixed $valueFromDb = null
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function Scalar_value_is_converted_to_enum_subtype_with_that_value($valueFromDb = null): void
+    {
+        $platform = $this->getPlatform();
+        /** @var ScalarEnumType $scalaEnumTypeClass */
+        $scalaEnumTypeClass = static::getSutClass();
+        $scalaEnumTypeClass::registerSubTypeEnum($this->getSubTypeEnumClass(), '~^.*$~' /* everything goes to sub-type */);
+        $enum = $this->createSut()->convertToPHPValue($valueFromDb, $platform);
+        if ($valueFromDb === null) {
+            self::assertNull($enum);
+        } else {
+            self::assertInstanceOf($this->getRegisteredClass(), $enum);
+            self::assertSame($valueFromDb, $enum->getValue());
+        }
+        $scalaEnumTypeClass::removeSubTypeEnum($this->getSubTypeEnumClass());
     }
 
     /**
@@ -161,7 +201,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      */
     public function I_can_get_enum_with_pure_integer_zero(): void
     {
-
         $platform = $this->getPlatform();
         $enum = $this->createSut()->convertToPHPValue($zeroInteger = 0, $platform);
         self::assertInstanceOf($this->getRegisteredClass(), $enum);
@@ -386,7 +425,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @test
-     * @throws \ReflectionException
      * @throws \Doctrine\DBAL\DBALException
      */
     public function I_get_registered_subtype_enum_on_match(): void
@@ -410,7 +448,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @test
-     * @throws \ReflectionException
      * @throws \Doctrine\DBAL\DBALException
      */
     public function I_get_default_enum_class_if_subtype_regexp_does_not_match(): void
@@ -600,7 +637,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
     /**
      * @test
      * @throws \Doctrine\DBAL\DBALException
-     * @throws \ReflectionException
      */
     public function I_can_use_subtype(): void
     {
@@ -624,7 +660,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
     /**
      * @test
      * @throws \Doctrine\DBAL\DBALException
-     * @throws \ReflectionException
      */
     public function I_can_use_enum_type_from_sub_namespace(): void
     {
@@ -639,7 +674,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      * @expectedException \Doctrineum\Scalar\Exceptions\EnumClassNotFound
      * @expectedExceptionMessageRegExp ~foo~
      * @throws \Doctrine\DBAL\DBALException
-     * @throws \ReflectionException
      */
     public function I_am_stopped_by_exception_on_conversion_to_unknown_enum(): void
     {
@@ -652,7 +686,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      * @test
      * @expectedException \Doctrineum\Scalar\Exceptions\CouldNotDetermineEnumClass
      * @throws \Doctrine\DBAL\DBALException
-     * @throws \ReflectionException
      */
     public function I_can_not_use_type_with_unexpected_name_structure(): void
     {
@@ -679,7 +712,6 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
      * @expectedException \Doctrineum\Scalar\Exceptions\CanNotCreateInstanceOfAbstractEnum
      * @expectedExceptionMessageRegExp ~foo.+TestOfAbstractScalarEnum~
      * @throws \Doctrine\DBAL\DBALException
-     * @throws \ReflectionException
      */
     public function I_got_descriptive_exception_message_if_abstract_class_for_enum_is_used(): void
     {
@@ -716,7 +748,7 @@ class WithOwnDefaultEnumClass extends ScalarEnumType
 
     private static $defaultEnumClass;
 
-    public static function setDefaultEnumClass(string $defaultEnumClass)
+    public static function setDefaultEnumClass(string $defaultEnumClass): void
     {
         self::$defaultEnumClass = $defaultEnumClass;
     }
