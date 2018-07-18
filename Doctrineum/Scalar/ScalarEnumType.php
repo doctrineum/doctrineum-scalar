@@ -98,6 +98,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
      * @param string $subTypeClassName
      * @throws \Doctrineum\Scalar\Exceptions\SubTypeEnumClassNotFound
      * @throws \Doctrineum\Scalar\Exceptions\SubTypeEnumHasToBeEnum
+     * @throws \Doctrineum\Scalar\Exceptions\SubTypeEnumHasToHaveFactoryMethod
      */
     protected static function checkIfKnownEnum(string $subTypeClassName): void
     {
@@ -106,9 +107,14 @@ class ScalarEnumType extends AbstractSelfRegisteringType
                 'Sub-type class ' . ValueDescriber::describe($subTypeClassName) . ' has not been found'
             );
         }
-        if (!\is_a($subTypeClassName, ScalarEnum::class, true)) {
+        if (!\is_a($subTypeClassName, ScalarEnumInterface::class, true)) {
             throw new Exceptions\SubTypeEnumHasToBeEnum(
-                'Sub-type class ' . ValueDescriber::describe($subTypeClassName) . ' has to be child of ' . ScalarEnum::class
+                'Sub-type class ' . ValueDescriber::describe($subTypeClassName) . ' has to be child of ' . ScalarEnumInterface::class
+            );
+        }
+        if (!\method_exists($subTypeClassName, 'getEnum')) {
+            throw new Exceptions\SubTypeEnumHasToHaveFactoryMethod(
+                'Sub-type class ' . ValueDescriber::describe($subTypeClassName) . ' has to have public static method getEnum($enumValue)'
             );
         }
     }

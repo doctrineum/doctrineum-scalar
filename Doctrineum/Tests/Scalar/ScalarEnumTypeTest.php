@@ -157,7 +157,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
         if ($valueFromDb === null) {
             self::assertNull($enum);
         } else {
-            self::assertInstanceOf($this->getRegisteredClass(), $enum);
+            self::assertInstanceOf($this->getSubTypeEnumClass(), $enum);
             self::assertSame($valueFromDb, $enum->getValue());
         }
         $scalaEnumTypeClass::removeSubTypeEnum($this->getSubTypeEnumClass());
@@ -292,6 +292,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
     {
         $platform = $this->getPlatform();
         $enumType = $this->createSut();
+        /** @noinspection PhpParamsInspection */
         $enumType->convertToPHPValue([], $platform);
     }
 
@@ -629,9 +630,14 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
         self::assertSame($matchingValue, (string)$enumSubType);
 
         $anotherEnumSubType = $enumType->convertToPHPValue($matchingValue, $this->getPlatform());
+        self::assertInstanceOf($this->getSubTypeEnumClass(), $anotherEnumSubType);
         self::assertSame($matchingValue, (string)$anotherEnumSubType);
         // despite their DIFFERENT sub-type classes the result is unwillingly the same because of same regexp
-        self::assertSame($enumSubType, $anotherEnumSubType);
+        self::assertSame(
+            $enumSubType,
+            $anotherEnumSubType,
+            'Sub-type enum class ' . $this->getSubTypeEnumClass() . ' should return the very same instance for same value'
+        );
     }
 
     /**
