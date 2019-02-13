@@ -1,12 +1,10 @@
 <?php
-declare(strict_types=1); // on PHP 7+ are standard PHP methods strict to types of given parameters
+declare(strict_types=1);
 
 namespace Doctrineum\Tests\Scalar;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Doctrineum\Scalar\ScalarEnum;
-use Doctrineum\Scalar\ScalarEnumInterface;
 use Doctrineum\Scalar\ScalarEnumType;
 use Doctrineum\Tests\Scalar\Helpers\EnumTypes\EnumWithSubNamespaceType;
 use Doctrineum\Tests\Scalar\Helpers\EnumTypes\IShouldHaveTypeKeywordOnEnd;
@@ -17,6 +15,8 @@ use Doctrineum\Tests\Scalar\Helpers\TestSubTypeScalarEnum;
 use Doctrineum\Tests\Scalar\Helpers\WithToStringTestObject;
 use Doctrineum\Tests\SelfRegisteringType\AbstractSelfRegisteringTypeTest;
 use Granam\Scalar\ScalarInterface;
+use Granam\ScalarEnum\ScalarEnum;
+use Granam\ScalarEnum\ScalarEnumInterface;
 
 /**
  * @method ScalarEnumType createSut()
@@ -715,7 +715,7 @@ class ScalarEnumTypeTest extends AbstractSelfRegisteringTypeTest
 
     /**
      * @test
-     * @expectedException \Doctrineum\Scalar\Exceptions\CanNotCreateInstanceOfAbstractEnum
+     * @expectedException \Granam\ScalarEnum\Exceptions\CanNotCreateInstanceOfAbstractEnum
      * @expectedExceptionMessageRegExp ~foo.+TestOfAbstractScalarEnum~
      * @throws \Doctrine\DBAL\DBALException
      */

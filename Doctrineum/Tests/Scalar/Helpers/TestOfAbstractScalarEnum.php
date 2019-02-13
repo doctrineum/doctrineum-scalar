@@ -1,7 +1,7 @@
 <?php
 namespace Doctrineum\Tests\Scalar\Helpers;
 
-use Doctrineum\Scalar\ScalarEnum;
+use Granam\ScalarEnum\ScalarEnum;
 
 abstract class TestOfAbstractScalarEnum extends ScalarEnum
 {

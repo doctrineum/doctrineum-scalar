@@ -1,10 +1,10 @@
 <?php
-declare(strict_types=1); // on PHP 7+ are standard PHP methods strict to types of given parameters
+declare(strict_types=1);
 
 namespace Doctrineum\Tests\Scalar\Helpers;
 
-use Doctrineum\Scalar\ScalarEnum;
-use Doctrineum\Scalar\ScalarEnumInterface;
+use Granam\ScalarEnum\ScalarEnum;
+use Granam\ScalarEnum\ScalarEnumInterface;
 
 class TestInvalidExistingScalarEnumUsage extends ScalarEnum
 {
@@ -24,7 +24,7 @@ class TestInvalidExistingScalarEnumUsage extends ScalarEnum
     /**
      * @param float|int|string $enumValue
      * @param string $namespace
-     * @return \Doctrineum\Scalar\ScalarEnumInterface|null
+     * @return ScalarEnumInterface|null
      */
     protected static function getEnumFromNamespace($enumValue, string $namespace): ?ScalarEnumInterface
     {

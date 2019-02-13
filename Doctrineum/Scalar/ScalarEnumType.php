@@ -1,11 +1,14 @@
 <?php
-declare(strict_types=1); // on PHP 7+ are standard PHP methods strict to types of given parameters
+declare(strict_types=1);
 
 namespace Doctrineum\Scalar;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrineum\SelfRegisteringType\AbstractSelfRegisteringType;
 use Granam\Scalar\Tools\ToScalar;
+use Granam\ScalarEnum\Exceptions\CanNotCreateInstanceOfAbstractEnum;
+use Granam\ScalarEnum\ScalarEnum;
+use Granam\ScalarEnum\ScalarEnumInterface;
 use Granam\Tools\ValueDescriber;
 
 /**
@@ -182,6 +185,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
     /**
      * @param AbstractPlatform $platform
      * @return int
+     * @deprecated Rely on information provided by the platform instead.
      */
     public function getDefaultLength(AbstractPlatform $platform): int
     {
@@ -222,7 +226,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
      * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
      * @throws \Doctrineum\Scalar\Exceptions\CouldNotDetermineEnumClass
      * @throws \Doctrineum\Scalar\Exceptions\EnumClassNotFound
-     * @throws \Doctrineum\Scalar\Exceptions\CanNotCreateInstanceOfAbstractEnum
+     * @throws \Granam\ScalarEnum\Exceptions\CanNotCreateInstanceOfAbstractEnum
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): ?ScalarEnumInterface
     {
@@ -237,7 +241,7 @@ class ScalarEnumType extends AbstractSelfRegisteringType
      * @throws \Doctrineum\Scalar\Exceptions\UnexpectedValueToEnum
      * @throws \Doctrineum\Scalar\Exceptions\CouldNotDetermineEnumClass
      * @throws \Doctrineum\Scalar\Exceptions\EnumClassNotFound
-     * @throws \Doctrineum\Scalar\Exceptions\CanNotCreateInstanceOfAbstractEnum
+     * @throws \Granam\ScalarEnum\Exceptions\CanNotCreateInstanceOfAbstractEnum
      */
     protected function convertToEnum($enumValue): ScalarEnumInterface
     {
@@ -248,8 +252,8 @@ class ScalarEnumType extends AbstractSelfRegisteringType
 
         try {
             return $enumClass::getEnum($enumValue);
-        } catch (Exceptions\CanNotCreateInstanceOfAbstractEnum $canNotCreateInstanceOfAbstractEnum) {
-            throw new Exceptions\CanNotCreateInstanceOfAbstractEnum(
+        } catch (CanNotCreateInstanceOfAbstractEnum $canNotCreateInstanceOfAbstractEnum) {
+            throw new CanNotCreateInstanceOfAbstractEnum(
                 'Enum value ' . ValueDescriber::describe($enumValue) . ' is paired with enum class ' . $enumClass
                 . ', but creating an enum by it causes: ' . $canNotCreateInstanceOfAbstractEnum->getMessage()
                 . "\nRegistered sub-types are " . (self::$enumSubTypesMap ? \var_export(self::$enumSubTypesMap, true) : "'none'")

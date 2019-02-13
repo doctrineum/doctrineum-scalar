@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
-/** be strict for parameter types, https://www.quora.com/Are-strict_types-in-PHP-7-not-a-bad-idea */
 
 namespace Doctrineum\Tests\Scalar\Helpers;
 
-use Doctrineum\Scalar\ScalarEnumInterface;
+use Granam\Scalar\ScalarInterface;
+use Granam\ScalarEnum\ScalarEnumInterface;
 use Granam\Strict\Object\StrictObject;
 
 class TestSubTypeScalarEnum extends StrictObject implements ScalarEnumInterface
@@ -26,8 +26,11 @@ class TestSubTypeScalarEnum extends StrictObject implements ScalarEnumInterface
         $this->value = $value;
     }
 
-    public function is(ScalarEnumInterface $enum, bool $sameClassOnly = true): bool
+    public function is($enum, bool $sameClassOnly = true): bool
     {
+        if (!($enum instanceof ScalarInterface)) {
+            return $this->getValue() === $enum;
+        }
         return $this->getValue() === $enum->getValue()
             && (!$sameClassOnly || static::class === \get_class($enum));
     }
